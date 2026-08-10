@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #0f0f0f;
+  --body: #4a4a4a;
+  --bg: #ffffff;
+  --bg-soft: #f6f6f7;
+  --border: #e8e8ea;
+  --candy-pink: #ff5fa2;
+  --candy-pink-100: #ffe3ef;
+  --jungle: #2e7d4f;
+  --lavender: #9b84e8;
+  --gold: #f2c14e;
+  --gold-deep: #8a6a12;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Poppins", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* Kickers / nav labels / buttons */
+.kicker, .btn-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.logo-mark {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Buttons */
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 14px 28px;
+  transition: transform 300ms ease, box-shadow 300ms ease, background 300ms ease, color 300ms ease;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+.btn-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+.btn-primary {
+  background: var(--ink);
+  color: #fff;
+}
+.btn-secondary {
+  background: #fff;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+}
+.btn-outline-gold {
+  background: transparent;
+  color: var(--gold);
+  border: 1.5px solid var(--gold);
+}
+.btn-outline-gold:hover {
+  color: #fff;
+}
+
+/* Badge rosa */
+.badge-pink {
+  display: inline-block;
+  border-radius: 999px;
+  background: var(--candy-pink-100);
+  color: var(--candy-pink);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 5px 14px;
+}
+
+/* Progress bar */
+.progress-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #efeff1;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--candy-pink);
+  transition: width 400ms ease;
+}
+
+/* Fade-up on scroll */
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fade-up {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Scrollbar hide for horizontal carousels */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* Secret rare pulse */
+@keyframes goldPulse {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(242, 193, 78, 0.35)); }
+  50% { filter: drop-shadow(0 0 22px rgba(242, 193, 78, 0.75)); }
+}
+.gold-pulse {
+  animation: goldPulse 3s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gold-pulse { animation: none; }
+}
+
+/* Scroll indicator bounce */
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+.scroll-bounce { animation: scrollBounce 1.8s ease-in-out infinite; }
+
+/* Nav transparency -> white on scroll */
+.nav-scrolled {
+  background: rgba(255, 255, 255, 0.97) !important;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Image zoom on hover */
+.zoom-img {
+  transition: transform 400ms ease;
+}
+.zoom-parent:hover .zoom-img {
+  transform: scale(1.03);
+}

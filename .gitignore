@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+.DS_Store
+/tmp/
+/tmp/yeypee-server-build/
+PROGRESS_NOTES.md
+AUDIT_NOTES.md
+pnpm-lock.yaml
