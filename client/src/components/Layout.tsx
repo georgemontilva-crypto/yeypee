@@ -45,7 +45,16 @@ export default function Layout() {
     contentApi
       .settings()
       .then((d: any) =>
-        setLogos({ header: d?.settings?.logo_header ?? null, footer: d?.settings?.logo_footer ?? null })
+        {
+          const st = d?.settings ?? {};
+          setLogos({ header: st.logo_header ?? null, footer: st.logo_footer ?? null });
+          // Rarity badge colours, applied site-wide as CSS variables.
+          const root = document.documentElement;
+          for (const r of ["common", "rare", "secret_rare"]) {
+            if (st[`rarity_${r}_bg`]) root.style.setProperty(`--rarity-${r}-bg`, st[`rarity_${r}_bg`]);
+            if (st[`rarity_${r}_fg`]) root.style.setProperty(`--rarity-${r}-fg`, st[`rarity_${r}_fg`]);
+          }
+        }
       )
       .catch(() => undefined);
   }, []);

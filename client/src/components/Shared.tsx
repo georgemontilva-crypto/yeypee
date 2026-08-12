@@ -21,9 +21,24 @@ export function BackLink({ to = "/collections", label = "BACK TO COLLECTIONS" }:
   );
 }
 
-export function Badge({ label = "COMMON" }: { label?: string }) {
+/**
+ * Rarity badge. Colours come from CSS variables that Layout writes from the
+ * site settings, so the admin can restyle them without a deploy.
+ */
+export function Badge({ label = "COMMON", rarity }: { label?: string; rarity?: string }) {
   if (!label) return null;
-  return <span className="badge-pink">{label}</span>;
+  const key = (rarity || "common").toLowerCase().replace(/\s+/g, "_");
+  return (
+    <span
+      className="text-[11px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-md inline-block"
+      style={{
+        background: `var(--rarity-${key}-bg, var(--candy-pink-100))`,
+        color: `var(--rarity-${key}-fg, var(--candy-pink))`,
+      }}
+    >
+      {label}
+    </span>
+  );
 }
 
 /** Elegant clean placeholder figure: a bear silhouette rendered as SVG */

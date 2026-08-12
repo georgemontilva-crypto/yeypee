@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { contentApi } from "../lib/api";
+import { Icon } from "../components/Icons";
 import { useFadeUp } from "../components/ScrollToTop";
 import { BackLink, EmptyState, FigurePlaceholder, Badge } from "../components/Shared";
 
@@ -10,6 +11,11 @@ export default function CharacterDetail() {
   const [data, setData] = useState<any>(null);
   const [view, setView] = useState<"front" | "side" | "back">("front");
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    contentApi.settings().then((d) => setSettings(d?.settings ?? {})).catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     if (!slug) return;
@@ -34,10 +40,10 @@ export default function CharacterDetail() {
   }
   const ch = data.character;
   const attrs = [
-    { icon: "🍭", label: "Favorite Candy", value: ch.favoriteCandy },
-    { icon: "♥", label: "Best Friend", value: ch.bestFriend },
-    { icon: "📅", label: "Birthday", value: ch.birthday },
-    { icon: "◎", label: "Appears In", value: ch.appearsIn || ch.collectionName },
+    { icon: "🍭", key: settings.icon_favorite_candy, label: "Favorite Candy", value: ch.favoriteCandy },
+    { icon: "♥", key: settings.icon_best_friend, label: "Best Friend", value: ch.bestFriend },
+    { icon: "📅", key: settings.icon_birthday, label: "Birthday", value: ch.birthday },
+    { icon: "◎", key: settings.icon_appears_in, label: "Appears In", value: ch.appearsIn || ch.collectionName },
   ].filter((a) => a.value);
   const currentImg = view === "front" ? ch.imageFront : view === "side" ? ch.imageSide : ch.imageBack;
 
@@ -104,12 +110,14 @@ export default function CharacterDetail() {
           <div className="fade-up">
             <div className="kicker text-candy-pink mb-2">{ch.collectionName} SERIES</div>
             <h1 className="text-[30px] sm:text-4xl md:text-6xl mb-4">{ch.name}</h1>
-            <div className="mb-6"><Badge label={ch.rarity.toUpperCase().replace("_", " ")} /></div>
+            <div className="mb-6"><Badge label={ch.rarity.toUpperCase().replace("_", " ")} rarity={ch.rarity} /></div>
             <p className="text-body leading-relaxed mb-8">{ch.description || "A lovable YEYPEE character waiting to join your collection."}</p>
             <div className="space-y-4 mb-10">
               {attrs.map((a) => (
                 <div key={a.label} className="flex items-center gap-4 border-b border-borderc pb-4">
-                  <span className="text-xl w-8 text-center">{a.icon}</span>
+                  <span className="w-8 flex items-center justify-center text-xl text-ink">
+                    {a.key ? <Icon name={a.key} size={22} /> : a.icon}
+                  </span>
                   <div className="kicker text-body w-36">{a.label}</div>
                   <div className="font-bold text-ink">{a.value}</div>
                 </div>

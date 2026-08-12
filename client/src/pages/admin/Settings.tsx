@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { adminApi } from "../../lib/api";
 import MediaPickerModal from "./MediaPickerModal";
+import { Icon, ICON_KEYS, iconLabel } from "../../components/Icons";
 
 interface SettingRow {
   key: string;
@@ -28,6 +29,19 @@ interface CharacterRow {
   collectionName?: string;
   imageFront?: string | null;
 }
+
+const ATTR_ICONS = [
+  { key: "icon_favorite_candy", label: "Favorite Candy", fallback: "candy" },
+  { key: "icon_best_friend", label: "Best Friend", fallback: "heart" },
+  { key: "icon_birthday", label: "Birthday", fallback: "calendar" },
+  { key: "icon_appears_in", label: "Appears In", fallback: "sparkle" },
+];
+
+const RARITIES = [
+  { key: "common", label: "Common", bg: "#FFE3EF", fg: "#FF5FA2" },
+  { key: "rare", label: "Rare", bg: "#EDE7FD", fg: "#9B84E8" },
+  { key: "secret_rare", label: "Secret Rare", bg: "#FDF1D6", fg: "#8A6A12" },
+];
 
 const SETTINGS: SettingRow[] = [
   {
@@ -229,6 +243,95 @@ export default function AdminSettingsPage() {
             ))}
           </select>
           <p className="text-[11px] text-body mt-1.5">The character highlighted in the Secret Rare section. If unset, the character with rarity "secret rare" is used.</p>
+        </div>
+      </div>
+
+      {/* Character card styling */}
+      <h3 className="text-lg font-extrabold uppercase tracking-tight mb-3">Character details</h3>
+      <div className="bg-white rounded-xl border border-borderc divide-y divide-borderc max-w-2xl mb-8">
+        <div className="p-5">
+          <div className="kicker text-body mb-1.5">Icons</div>
+          <p className="text-[11px] text-body mb-4">
+            Shown next to each fact on a character's page. The same icon is used for every character.
+          </p>
+          <div className="space-y-5">
+            {ATTR_ICONS.map((a) => {
+              const current = values[a.key] || a.fallback;
+              return (
+                <div key={a.key}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Icon name={current} size={20} />
+                    <span className="text-[13px] font-bold">{a.label}</span>
+                    <span className="text-[11px] text-body">— {iconLabel(current)}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {ICON_KEYS.map((k) => (
+                      <button
+                        key={k}
+                        onClick={() => setValues({ ...values, [a.key]: k })}
+                        title={iconLabel(k)}
+                        aria-label={iconLabel(k)}
+                        className={`w-9 h-9 rounded-lg border flex items-center justify-center transition-colors ${
+                          current === k ? "bg-ink text-white border-ink" : "bg-white border-borderc text-body hover:border-ink"
+                        }`}
+                      >
+                        <Icon name={k} size={19} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="p-5">
+          <div className="kicker text-body mb-1.5">Rarity label colours</div>
+          <p className="text-[11px] text-body mb-4">
+            The little badge shown on character cards and detail pages.
+          </p>
+          <div className="space-y-4">
+            {RARITIES.map((r) => {
+              const bg = values[`rarity_${r.key}_bg`] || r.bg;
+              const fg = values[`rarity_${r.key}_fg`] || r.fg;
+              return (
+                <div key={r.key} className="flex flex-wrap items-center gap-4">
+                  <span
+                    className="text-[11px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-md"
+                    style={{ background: bg, color: fg }}
+                  >
+                    {r.label}
+                  </span>
+                  <label className="flex items-center gap-2 text-[11px] text-body">
+                    Background
+                    <input
+                      type="color"
+                      value={bg}
+                      onChange={(e) => setValues({ ...values, [`rarity_${r.key}_bg`]: e.target.value })}
+                      className="w-9 h-9 rounded border border-borderc bg-white cursor-pointer"
+                    />
+                  </label>
+                  <label className="flex items-center gap-2 text-[11px] text-body">
+                    Text
+                    <input
+                      type="color"
+                      value={fg}
+                      onChange={(e) => setValues({ ...values, [`rarity_${r.key}_fg`]: e.target.value })}
+                      className="w-9 h-9 rounded border border-borderc bg-white cursor-pointer"
+                    />
+                  </label>
+                  <button
+                    onClick={() =>
+                      setValues({ ...values, [`rarity_${r.key}_bg`]: r.bg, [`rarity_${r.key}_fg`]: r.fg })
+                    }
+                    className="text-[11px] font-bold text-body underline"
+                  >
+                    Reset
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

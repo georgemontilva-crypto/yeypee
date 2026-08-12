@@ -281,7 +281,17 @@ export default function Home() {
                     </div>
                     <div className="text-center py-4 bg-white">
                       <div className="font-extrabold uppercase tracking-tight text-lg">{ch.name}</div>
-                      {ch.rarity !== "common" && <div className="badge-pink mt-1 text-[10px]">{ch.rarity.replace("_", " ")}</div>}
+                      {ch.rarity !== "common" && (
+                    <div
+                      className="mt-1 text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-md inline-block"
+                      style={{
+                        background: `var(--rarity-${ch.rarity}-bg, var(--candy-pink-100))`,
+                        color: `var(--rarity-${ch.rarity}-fg, var(--candy-pink))`,
+                      }}
+                    >
+                      {ch.rarity.replace("_", " ")}
+                    </div>
+                  )}
                     </div>
                   </Link>
                 ))}
