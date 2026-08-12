@@ -115,6 +115,32 @@ export async function r2Diagnostics(): Promise<{
   }
 }
 
+/**
+ * Uploads bytes to R2 from the server. Used by the admin upload endpoint so the
+ * browser never talks to R2 directly — that avoids depending on the bucket's
+ * CORS configuration entirely.
+ */
+export async function putObject(
+  key: string,
+  body: Buffer,
+  contentType: string
+): Promise<{ key: string; publicUrl: string }> {
+  const client = getClient();
+  if (!client) {
+    throw new Error("R2 is not configured (missing R2 credentials/endpoint)");
+  }
+  await client.send(
+    new PutObjectCommand({
+      Bucket: cfg.r2.bucket,
+      Key: key,
+      Body: body,
+      ContentType: contentType,
+    })
+  );
+  const publicUrl = cfg.r2.publicUrl ? `${cfg.r2.publicUrl}/${key}` : "";
+  return { key, publicUrl };
+}
+
 export function placeholderUrl(type: "image" | "video", folder?: string): string {
   // Local placeholder fallback when no media asset is assigned
   return type === "video" ? "/video/placeholder.mp4" : `/images/${folder ?? "other"}/placeholder.png`;

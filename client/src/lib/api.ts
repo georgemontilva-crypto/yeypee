@@ -119,60 +119,47 @@ export async function uploadToR2(
   onProgress?: (pct: number) => void
 ): Promise<{ key: string; publicUrl: string; id: number }> {
   const folder = inferFolder(file.type, file.name);
-  const presign = await adminApi.getPresign({
-    filename: file.name,
-    mimeType: file.type || "application/octet-stream",
-    sizeBytes: file.size,
-    folder,
-  });
-  const xhr = new XMLHttpRequest();
-  await new Promise<void>((resolve, reject) => {
-    xhr.open("PUT", presign.uploadUrl);
-    xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+  const mimeType = file.type || "application/octet-stream";
+  const qs = new URLSearchParams({ filename: file.name, mimeType, folder }).toString();
+
+  // The file goes to our own API, which forwards it to R2. Uploading straight
+  // from the browser to R2 requires a CORS rule on the bucket; routing through
+  // the server removes that dependency.
+  const registered = await new Promise<any>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${BASE}/api/admin/media/upload?${qs}`);
+    xhr.withCredentials = true;
+    xhr.setRequestHeader("Content-Type", mimeType);
     if (onProgress) {
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
       };
     }
     xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) return resolve();
-      // R2 answers with an XML error body; surface its <Code> if present.
-      const code = /<Code>([^<]+)<\/Code>/.exec(xhr.responseText || "")?.[1];
-      if (xhr.status === 403) {
-        return reject(
-          new Error(
-            `R2 rejected the upload (403${code ? " " + code : ""}). Check that R2_BUCKET matches the bucket your API token was issued for, and that the access key and secret are correct.`
-          )
-        );
+      let payload: any = null;
+      try {
+        payload = JSON.parse(xhr.responseText);
+      } catch {
+        /* not json */
       }
-      if (xhr.status === 404) {
-        return reject(
-          new Error(`Bucket not found (404). Check R2_BUCKET and R2_ENDPOINT.`)
-        );
+      if (xhr.status >= 200 && xhr.status < 300 && payload) return resolve(payload);
+      if (xhr.status === 401 || xhr.status === 403) {
+        return reject(new Error("Your admin session expired. Log in again and retry."));
       }
-      reject(new Error(`Upload failed with HTTP ${xhr.status}${code ? " (" + code + ")" : ""}.`));
-    };
-    xhr.onerror = () =>
+      if (xhr.status === 413) {
+        return reject(new Error("The file is too large to upload through the server."));
+      }
       reject(
         new Error(
-          "The browser could not reach R2. This is almost always a missing CORS rule on the bucket: add your site's URL to the bucket's CORS policy with PUT allowed."
+          payload?.detail || payload?.error || `Upload failed with HTTP ${xhr.status}.`
         )
       );
+    };
+    xhr.onerror = () => reject(new Error("Could not reach the server. Check your connection and retry."));
     xhr.send(file);
   });
-  const imgSize = await imageDimensions(file);
-  const registered = await adminApi.registerMedia({
-    key: presign.key,
-    url: presign.publicUrl,
-    filename: file.name,
-    mimeType: file.type,
-    type: file.type.startsWith("video/") ? "video" : "image",
-    sizeBytes: file.size,
-    width: imgSize.width,
-    height: imgSize.height,
-    folder,
-  });
-  return { key: presign.key, publicUrl: presign.publicUrl || registered.url, id: registered.id };
+
+  return { key: registered.key, publicUrl: registered.url, id: registered.id };
 }
 
 function inferFolder(mime: string, name: string): string {

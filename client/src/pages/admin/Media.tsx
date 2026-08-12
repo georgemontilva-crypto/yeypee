@@ -29,7 +29,7 @@ export default function AdminMedia() {
     setLoading(true);
     try {
       const d = await adminApi.media(filter === "all" ? {} : { type: filter });
-      setItems(d.media || []);
+      setItems(d.assets || d.media || []);
     } catch {
       setItems([]);
     } finally {

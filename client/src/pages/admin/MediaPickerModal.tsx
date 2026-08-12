@@ -28,7 +28,7 @@ export default function MediaPickerModal({
     setLoading(true);
     try {
       const d = await adminApi.media({ type: typeFilter || "image" });
-      setItems(d.media || []);
+      setItems(d.assets || d.media || []);
     } catch {
       setItems([]);
     } finally {

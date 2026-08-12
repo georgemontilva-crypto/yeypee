@@ -34,7 +34,8 @@ import {
 } from "../db/schema";
 import { getDb } from "../db/client";
 import { requireAuth, requireAdmin, recordAudit, type AuthedRequest } from "../middleware/auth";
-import { getPresignedUploadUrl, deleteObject, objectExists, r2Diagnostics } from "../services/r2";
+import express from "express";
+import { getPresignedUploadUrl, deleteObject, objectExists, r2Diagnostics, putObject } from "../services/r2";
 import { sendEmail, shippingEmail } from "../services/email";
 import { cfg } from "../config";
 import { rowsToCsv, slugify } from "../utils";
@@ -427,6 +428,60 @@ router.post("/media/presign", async (req: AuthedRequest, res) => {
   const { uploadUrl, publicUrl } = await getPresignedUploadUrl(key, mimeType);
   res.json({ uploadUrl, key, publicUrl });
 });
+
+// Server-side upload. The browser POSTs the raw file bytes here and the server
+// forwards them to R2. Because the browser only ever talks to our own origin,
+// this path does not depend on the bucket's CORS policy at all.
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const MAX_VIDEO_BYTES = 200 * 1024 * 1024;
+
+router.post(
+  "/media/upload",
+  express.raw({ type: "*/*", limit: "210mb" }),
+  async (req: AuthedRequest, res) => {
+    const filename = String(req.query.filename || "").slice(0, 255);
+    const mimeType = String(req.query.mimeType || "application/octet-stream").slice(0, 120);
+    const folderRaw = String(req.query.folder || "other");
+    const folders = ["characters", "collections", "hero", "video", "partners", "news", "products", "other"];
+    const folder = folders.includes(folderRaw) ? folderRaw : "other";
+
+    if (!filename) {
+      res.status(400).json({ error: "Missing filename" });
+      return;
+    }
+    const body = req.body as Buffer;
+    if (!Buffer.isBuffer(body) || body.length === 0) {
+      res.status(400).json({ error: "Empty file" });
+      return;
+    }
+    const isVideo = mimeType.startsWith("video/");
+    const max = isVideo ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+    if (body.length > max) {
+      res.status(400).json({ error: `File too large (max ${max / 1024 / 1024} MB)` });
+      return;
+    }
+
+    const ext = filename.includes(".") ? filename.split(".").pop() : "";
+    const key = `${folder}/${Date.now()}-${uuidv4().slice(0, 8)}${ext ? "." + ext : ""}`;
+    const { publicUrl } = await putObject(key, body, mimeType);
+
+    const db = await getDb();
+    const url = publicUrl || (cfg.r2.publicUrl ? `${cfg.r2.publicUrl}/${key}` : "");
+    await db.insert(mediaAssets).values({
+      key,
+      url,
+      filename,
+      mimeType,
+      type: isVideo ? "video" : "image",
+      sizeBytes: body.length,
+      folder,
+      uploadedBy: req.user?.id ?? null,
+    });
+    const [row] = await db.select().from(mediaAssets).orderBy(desc(mediaAssets.id)).limit(1);
+    await recordAudit(db, req.user?.id, "create", "media", String(row.id), { key, filename }, ipOf(req));
+    res.status(201).json(row);
+  }
+);
 
 const registerMediaSchema = z.object({
   key: z.string().min(1),
