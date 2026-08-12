@@ -41,7 +41,7 @@ function StoreLocatorModal({ partners, onClose }: { partners: any[]; onClose: ()
 
   return (
     <Modal title="Find in store" onClose={onClose}>
-      <div className="flex gap-3 mb-3">
+      <div className="flex flex-col sm:flex-row gap-3 mb-3">
         <input
           value={zip}
           onChange={(e) => {
@@ -51,7 +51,7 @@ function StoreLocatorModal({ partners, onClose }: { partners: any[]; onClose: ()
           placeholder="ZIP code"
           className="flex-1 rounded-smcard border border-borderc px-4 py-3 outline-none focus:border-ink"
         />
-        <button onClick={search} className="btn-pill btn-primary">SEARCH</button>
+        <button onClick={search} className="btn-pill btn-primary shrink-0">SEARCH</button>
       </div>
       {error && <p className="text-candy-pink text-sm mb-3">Please enter a valid ZIP code.</p>}
       <div className="flex gap-5 mb-6">
@@ -152,7 +152,7 @@ export default function Shop() {
     <section className="pt-32 pb-24 md:py-[96px]">
       <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
         <div className="mb-10 fade-up">
-          <h1 className="text-4xl md:text-[56px] mb-3">SHOP YEYPEE</h1>
+          <h1 className="text-[30px] sm:text-4xl md:text-[56px] mb-3">SHOP YEYPEE</h1>
           <p className="text-body text-lg italic">Available Now!</p>
         </div>
 

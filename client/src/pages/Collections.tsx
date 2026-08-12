@@ -22,7 +22,7 @@ export default function Collections() {
     <section className="pt-32 pb-24 md:py-[96px]">
       <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
         <div className="mb-12 fade-up">
-          <h1 className="text-4xl md:text-[56px] mb-3">EXPLORE THE WORLDS</h1>
+          <h1 className="text-[30px] sm:text-4xl md:text-[56px] mb-3">EXPLORE THE WORLDS</h1>
           <p className="text-body text-lg italic">Each world. A new adventure.</p>
         </div>
         {loading ? null : collections.length ? (
@@ -34,7 +34,7 @@ export default function Collections() {
                   {c.cardImage && <img src={c.cardImage} alt={c.name} className="zoom-img absolute inset-0 w-full h-full object-cover" />}
                   {/* Only a soft scrim on the text side, so the artwork keeps its own colours. */}
                   <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
-                  <div className="relative z-10 h-full flex items-center justify-between px-8 md:px-12">
+                  <div className="relative z-10 h-full flex items-center justify-between px-5 sm:px-8 md:px-12">
                     <div>
                       <h3 className="text-white text-2xl md:text-[28px] mb-1">{c.name}</h3>
                       <p className="text-white/85 text-sm md:text-base italic">{c.tagline || c.description}</p>

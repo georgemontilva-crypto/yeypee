@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import CrudPage, { FieldSpec } from "./CrudPage";
+import { Link } from "react-router-dom";
 import { adminApi } from "../../lib/api";
 
 const RARITY_OPTIONS = [
@@ -10,12 +11,14 @@ const RARITY_OPTIONS = [
 
 export default function AdminCharacters() {
   const [fields, setFields] = useState<FieldSpec[]>([]);
+  const [noCollections, setNoCollections] = useState(false);
 
   useEffect(() => {
     adminApi.crud("collections").list({ pageSize: "100" }).then((d) => {
+      setNoCollections(((d.collections || d.rows || []) as any[]).length === 0);
       setFields([
         { key: "name", label: "Character Name", type: "text", placeholder: "Bubble Bear" },
-        { key: "collectionId", label: "Collection", type: "select", options: (d.rows || []).map((c: any) => ({ value: String(c.id), label: c.name })) },
+        { key: "collectionId", label: "Collection", type: "select", options: (d.collections || d.rows || []).map((c: any) => ({ value: String(c.id), label: c.name })) },
         { key: "rarity", label: "Rarity", type: "select", options: RARITY_OPTIONS },
         { key: "description", label: "Description", type: "textarea", placeholder: "Personality and story..." },
         { key: "favoriteCandy", label: "Favorite Candy", type: "text", placeholder: "Lollipop" },
@@ -47,6 +50,17 @@ export default function AdminCharacters() {
   });
 
   if (fields.length === 0) return <div className="p-10 text-center text-body text-sm">Loading...</div>;
+  if (noCollections)
+    return (
+      <div className="bg-white rounded-xl border border-borderc p-10 text-center">
+        <p className="text-sm text-body mb-4">
+          Characters belong to a collection, so create a collection first.
+        </p>
+        <Link to="/admin/collections" className="btn-pill btn-primary text-[10px] px-5 py-3">
+          GO TO COLLECTIONS
+        </Link>
+      </div>
+    );
 
   return (
     <CrudPage

@@ -331,3 +331,38 @@ h1, h2, h3 {
     transform: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Mobile safety nets.
+   --------------------------------------------------------------------------- */
+
+/* Nothing should ever push the page sideways on a phone. */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Long words (character names, emails, URLs) break instead of overflowing. */
+h1, h2, h3, p, a, span, li {
+  overflow-wrap: break-word;
+}
+
+/* Media never exceeds its container. */
+img, video, svg {
+  max-width: 100%;
+}
+
+/* Touch targets: anything tappable keeps a comfortable minimum height. */
+@media (max-width: 767px) {
+  .btn-pill {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* iOS zooms the page when a focused input is under 16px. */
+  input, select, textarea {
+    font-size: 16px;
+  }
+}

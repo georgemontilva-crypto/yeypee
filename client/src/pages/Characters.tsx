@@ -54,7 +54,7 @@ export default function Characters() {
   return (
     <section className="pt-32 pb-24 md:py-[96px]">
       <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
-        <h1 className="text-4xl md:text-[56px] mb-8 fade-up">ALL CHARACTERS</h1>
+        <h1 className="text-[30px] sm:text-4xl md:text-[56px] mb-8 fade-up">ALL CHARACTERS</h1>
         {/* Chips */}
         <div className="flex flex-wrap gap-3 mb-10 fade-up">
           <button

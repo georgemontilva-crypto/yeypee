@@ -203,14 +203,14 @@ export default function Home() {
       </section>
 
       {/* 3. Featured collection */}
-      <section className="py-24 md:py-[96px]">
+      <section className="py-14 md:py-[96px]">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
           {featured ? (
             <>
               <div className="grid md:grid-cols-2 gap-10 items-center fade-up">
                 <div>
                   <div className="kicker text-candy-pink mb-3">FEATURED COLLECTION</div>
-                  <h2 className="text-4xl md:text-6xl mb-4">{featured.name}</h2>
+                  <h2 className="text-[30px] sm:text-4xl md:text-6xl mb-4">{featured.name}</h2>
                   <p className="text-body leading-relaxed mb-8">{featured.tagline || featured.description}</p>
                   <Link to={`/collections/${featured.slug}`} className="btn-pill btn-primary">
                     MEET THE COLLECTION
@@ -227,15 +227,15 @@ export default function Home() {
                 </div>
               </div>
               {/* Stats bar */}
-              <div className="mt-12 border-t border-borderc grid grid-cols-3 divide-x divide-borderc fade-up">
+              <div className="mt-10 md:mt-12 border-t border-borderc grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-borderc fade-up">
                 {[
                   { big: "7", small: "CHARACTERS + 1 SECRET RARE" },
                   { big: featured.seriesLabel || "SERIES 1", small: (featured.name || "").toUpperCase() },
                   { big: featured.releaseYear || "2024", small: "RELEASED" },
                 ].map((s, i) => (
-                  <div key={i} className="py-6 text-center">
-                    <div className="text-3xl md:text-4xl font-extrabold text-ink">{s.big}</div>
-                    <div className="kicker text-body mt-1">{s.small}</div>
+                  <div key={i} className="py-5 md:py-6 px-3 text-center">
+                    <div className="text-2xl md:text-4xl font-extrabold text-ink break-words">{s.big}</div>
+                    <div className="kicker text-body mt-1 leading-snug">{s.small}</div>
                   </div>
                 ))}
               </div>
@@ -249,10 +249,10 @@ export default function Home() {
       </section>
 
       {/* 4. Meet the characters */}
-      <section className="py-24 md:py-[96px]">
+      <section className="py-14 md:py-[96px]">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
           <div className="flex items-end justify-between mb-10 fade-up">
-            <h2 className="text-4xl md:text-[56px]">MEET THE CHARACTERS</h2>
+            <h2 className="text-[30px] sm:text-4xl md:text-[56px]">MEET THE CHARACTERS</h2>
             <div className="hidden md:flex gap-3">
               <button onClick={() => scrollCarousel(-1)} aria-label="Previous" className="w-11 h-11 rounded-full border border-borderc text-ink hover:bg-bg-soft transition-colors">←</button>
               <button onClick={() => scrollCarousel(1)} aria-label="Next" className="w-11 h-11 rounded-full border border-borderc text-ink hover:bg-bg-soft transition-colors">→</button>
@@ -310,12 +310,12 @@ export default function Home() {
       <section className="py-10 md:py-16">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10 fade-up">
           <div
-            className="rounded-card relative overflow-hidden px-8 md:px-16 py-14 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8"
+            className="rounded-card relative overflow-hidden px-6 sm:px-8 md:px-16 py-10 sm:py-14 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8"
             style={{ background: "radial-gradient(ellipse at 70% 30%, rgba(242,193,78,0.35) 0%, #0F0F0F 60%)" }}
           >
             <div className="text-center md:text-left">
               <div className="kicker text-gold mb-3">SECRET RARE</div>
-              <h2 className="text-4xl md:text-[56px] text-white mb-3">{secretRare?.name || "THE GOLDEN ONE"}</h2>
+              <h2 className="text-[30px] sm:text-4xl md:text-[56px] text-white mb-3">{secretRare?.name || "THE GOLDEN ONE"}</h2>
               <p className="text-white/80 text-lg italic mb-6">{secretRare?.description || "Can you find the Golden YEYPEE?"}</p>
               <Link to={secretRare?.slug ? `/characters/${secretRare.slug}` : "/characters"} className="btn-pill btn-outline-gold">LEARN MORE</Link>
             </div>
@@ -335,9 +335,9 @@ export default function Home() {
       </section>
 
       {/* 6. Retail partners */}
-      <section className="py-24 md:py-[96px] bg-bg-soft">
+      <section className="py-14 md:py-[96px] bg-bg-soft">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10 text-center">
-          <h2 className="text-4xl md:text-[56px] mb-10 fade-up">WHERE TO FIND YEYPEE</h2>
+          <h2 className="text-[30px] sm:text-4xl md:text-[56px] mb-10 fade-up">WHERE TO FIND YEYPEE</h2>
           <div className="flex flex-wrap items-center justify-center gap-8 md:gap-14 mb-10 fade-up">
             {data?.partners?.length ? (
               data.partners.map((p: any) => (
@@ -361,10 +361,10 @@ export default function Home() {
       </section>
 
       {/* 7. Latest news */}
-      <section className="py-24 md:py-[96px]">
+      <section className="py-14 md:py-[96px]">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
           <div className="mb-10 fade-up">
-            <h2 className="text-4xl md:text-[56px] mb-3">WHAT'S COMING NEXT?</h2>
+            <h2 className="text-[30px] sm:text-4xl md:text-[56px] mb-3">WHAT'S COMING NEXT?</h2>
             <p className="text-body text-lg italic">More adventures on the way.</p>
           </div>
           <div className="space-y-4">
@@ -396,11 +396,11 @@ export default function Home() {
       </section>
 
       {/* 8. Collector club */}
-      <section className="py-24 md:py-[96px] bg-bg-soft">
+      <section className="py-14 md:py-[96px] bg-bg-soft">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
           <div className="grid md:grid-cols-2 gap-10 items-center fade-up">
             <div>
-              <h2 className="text-4xl md:text-[56px] mb-4">JOIN THE YEYPEE CLUB!</h2>
+              <h2 className="text-[30px] sm:text-4xl md:text-[56px] mb-4">JOIN THE YEYPEE CLUB!</h2>
               <p className="text-body text-lg mb-8">Get special updates, collector tips, and early access!</p>
               {leadStatus === "done" ? (
                 <div className="rounded-smcard bg-candy-pink-100 text-candy-pink font-bold px-6 py-5 text-center">

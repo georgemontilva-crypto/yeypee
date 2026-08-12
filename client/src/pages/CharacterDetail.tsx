@@ -103,7 +103,7 @@ export default function CharacterDetail() {
 
           <div className="fade-up">
             <div className="kicker text-candy-pink mb-2">{ch.collectionName} SERIES</div>
-            <h1 className="text-4xl md:text-6xl mb-4">{ch.name}</h1>
+            <h1 className="text-[30px] sm:text-4xl md:text-6xl mb-4">{ch.name}</h1>
             <div className="mb-6"><Badge label={ch.rarity.toUpperCase().replace("_", " ")} /></div>
             <p className="text-body leading-relaxed mb-8">{ch.description || "A lovable YEYPEE character waiting to join your collection."}</p>
             <div className="space-y-4 mb-10">
