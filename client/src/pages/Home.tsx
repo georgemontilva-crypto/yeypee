@@ -23,6 +23,7 @@ export default function Home() {
   const [leadEmail, setLeadEmail] = useState("");
   const [leadStatus, setLeadStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const bannerAsset = data?.settings?.hero_banner ?? null;
   const videoAsset = data?.settings?.hero_video ?? null;
   const posterAsset = data?.settings?.hero_poster ?? null;
   const prefersReducedMotion =
@@ -83,12 +84,20 @@ export default function Home() {
 
   return (
     <>
-      {/* 1. Full-screen video hero */}
-      <section className="relative h-[100vh] overflow-hidden bg-ink">
-        {!prefersReducedMotion && videoAsset ? (
+      {/* 1. Hero — horizontal banner. The image sets the height (no cropping);
+          the headline and CTA sit on top, aligned left. Falls back to the
+          video only if no banner has been set in Settings. */}
+      <section className="relative overflow-hidden bg-white">
+        {bannerAsset ? (
+          <img
+            src={bannerAsset}
+            alt=""
+            className="block w-full h-auto"
+          />
+        ) : !prefersReducedMotion && videoAsset ? (
           <video
             ref={videoRef}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="block w-full h-auto"
             autoPlay
             muted
             loop
@@ -98,22 +107,37 @@ export default function Home() {
             <source src={videoAsset.url || videoAsset} type="video/mp4" />
           </video>
         ) : (
-          <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#FF5FA2]/30 via-[#9B84E8]/20 to-[#0F0F0F] flex items-center justify-center">
-            <FigurePlaceholder color="#F2C14E" size={240} />
+          <div className="w-full aspect-[21/9] bg-gradient-to-br from-[#FFE3EF] via-[#F7E9FF] to-[#FFF6E5] flex items-center justify-center">
+            <FigurePlaceholder color="#F2C14E" size={200} />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
-          <div className="logo-mark text-white text-5xl md:text-7xl tracking-[0.08em] mb-6">YEYPEE</div>
-          <h1 className="text-white font-extrabold uppercase tracking-tight" style={{ fontSize: "clamp(48px, 7vw, 88px)", lineHeight: 0.95 }}>
-            Collect.<br />Discover. Trade.
-          </h1>
-          <p className="mt-5 text-white/85 text-base md:text-lg italic">Step into the magical world of YEYPEE.</p>
-          <Link to="/collections" className="btn-pill btn-primary mt-8 bg-white text-ink hover:bg-white/90">
-            EXPLORE COLLECTIONS
-          </Link>
+
+        {/* Readability scrim: only on the left, where the text sits. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/40 to-transparent md:from-white/75 md:via-white/20" />
+
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
+            <div className="max-w-[52%] md:max-w-[46%]">
+              <h1
+                className="text-ink font-extrabold uppercase tracking-tight"
+                style={{ fontSize: "clamp(26px, 5.2vw, 76px)", lineHeight: 0.95 }}
+              >
+                Collect.<br />Discover.<br />Trade.
+              </h1>
+              <p className="mt-3 md:mt-5 text-ink/80" style={{ fontSize: "clamp(12px, 1.5vw, 20px)" }}>
+                Step into the magical<br className="hidden sm:block" /> world of YEYPEE.
+              </p>
+              <Link
+                to="/collections"
+                className="btn-pill mt-4 md:mt-8 inline-flex items-center gap-2 bg-ink text-white hover:bg-ink/90"
+                style={{ fontSize: "clamp(9px, 1.05vw, 13px)" }}
+              >
+                EXPLORE COLLECTIONS <span aria-hidden>→</span>
+              </Link>
+            </div>
+          </div>
         </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/70 scroll-bounce">
+        <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 text-ink/40 scroll-bounce">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M7 10l5 5 5-5" />
           </svg>

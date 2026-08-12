@@ -20,6 +20,7 @@ export default function AdminMedia() {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [filter, setFilter] = useState<"image" | "video" | "all">("all");
+  const [uploadError, setUploadError] = useState<string>("");
 
   const load = async () => {
     setLoading(true);
@@ -42,13 +43,14 @@ export default function AdminMedia() {
     if (!files.length) return;
     setUploading(true);
     setProgress(0);
+    setUploadError("");
     try {
       for (const f of files) {
         await uploadToR2(f, (pct) => setProgress(pct));
       }
       await load();
     } catch (err: any) {
-      alert(err?.message || "Upload failed");
+      setUploadError(err?.data?.detail || err?.data?.error || err?.message || "Upload failed");
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -113,6 +115,14 @@ export default function AdminMedia() {
           />
         </label>
       </div>
+
+      {uploadError && (
+        <div className="mb-6 rounded-xl border border-candy-pink/40 bg-candy-pink/5 p-4">
+          <div className="kicker text-candy-pink mb-1">Upload failed</div>
+          <p className="text-[13px] text-ink">{uploadError}</p>
+          <button onClick={() => setUploadError("")} className="text-[11px] font-bold text-body underline mt-2">Dismiss</button>
+        </div>
+      )}
 
       {loading ? (
         <div className="p-10 text-center text-body text-sm">Loading library...</div>

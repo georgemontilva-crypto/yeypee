@@ -7,6 +7,10 @@ interface SettingRow {
   label: string;
   hint: string;
   media?: boolean;
+  /** Where this image shows up on the site, in plain words. */
+  where?: string;
+  /** Recommended dimensions / format. */
+  spec?: string;
   textarea?: boolean;
 }
 
@@ -26,8 +30,30 @@ interface CharacterRow {
 }
 
 const SETTINGS: SettingRow[] = [
-  { key: "hero_video_asset_id", label: "Homepage hero video", hint: "URL of the full-screen video shown on the homepage (upload it in Media first and paste the URL, or pick below)", media: true },
-  { key: "hero_poster_asset_id", label: "Hero poster image", hint: "Fallback image shown while the video loads or if video is not set", media: true },
+  {
+    key: "hero_banner_asset_id",
+    label: "Homepage hero banner",
+    where: "Top of the homepage — the first thing a visitor sees.",
+    spec: "Horizontal image, ideally 2400 × 1000 px or wider. The headline and button are drawn on the left, so keep that area free of important artwork.",
+    hint: "",
+    media: true,
+  },
+  {
+    key: "hero_video_asset_id",
+    label: "Homepage hero video (optional)",
+    where: "Only used if no hero banner is set.",
+    spec: "MP4, landscape.",
+    hint: "",
+    media: true,
+  },
+  {
+    key: "hero_poster_asset_id",
+    label: "Hero video poster (optional)",
+    where: "Still frame shown while the video loads.",
+    spec: "Same dimensions as the video.",
+    hint: "",
+    media: true,
+  },
   { key: "site_name", label: "Site name", hint: "Used in browser tab and emails" },
   { key: "support_email", label: "Support email", hint: "Where contact messages are routed" },
   { key: "welcome_email_template", label: "Welcome email template", hint: "Sent when someone joins the Collector Club", textarea: true },
@@ -44,11 +70,14 @@ export default function AdminSettingsPage() {
   const [saved, setSaved] = useState(false);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [mediaKey, setMediaKey] = useState("");
+  // key -> url, only for showing a thumbnail of the current selection
+  const [previews, setPreviews] = useState<Record<string, string>>({});
 
   useEffect(() => {
     Promise.all([adminApi.settings(), adminApi.crud("collections").list(), adminApi.crud("characters").list()])
       .then(([settings, colls, chars]) => {
         setValues(settings.settings || {});
+        setPreviews(settings.previews || {});
         setCollections(colls.collections || []);
         setCharacters(chars.characters || []);
       })
@@ -177,12 +206,21 @@ export default function AdminSettingsPage() {
           <div key={s.key} className="p-5">
             <div className="kicker text-body mb-1.5">{s.label}</div>
             {s.media ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <button onClick={() => { setMediaKey(s.key); setMediaPickerOpen(true); }} className="btn-pill btn-secondary text-[10px] px-5 py-3">PICK FROM MEDIA LIBRARY</button>
                 {values[s.key] ? (
                   <div className="flex items-center gap-2">
-                    <img src={values[s.key]} alt="" className="h-12 rounded-lg border border-borderc" />
-                    <button onClick={() => setValues({ ...values, [s.key]: "" })} className="text-xs text-candy-pink font-bold underline">Remove</button>
+                    {previews[s.key] ? (
+                      <img src={previews[s.key]} alt="" className="h-14 rounded-lg border border-borderc object-cover" />
+                    ) : (
+                      <span className="text-[11px] font-bold text-body bg-bg-soft border border-borderc rounded-lg px-2 py-1">Media #{values[s.key]}</span>
+                    )}
+                    <button
+                      onClick={() => { setValues({ ...values, [s.key]: null }); setPreviews({ ...previews, [s.key]: "" }); }}
+                      className="text-xs text-candy-pink font-bold underline"
+                    >
+                      Remove
+                    </button>
                   </div>
                 ) : (
                   <span className="text-[11px] text-body">Not set</span>
@@ -212,7 +250,9 @@ export default function AdminSettingsPage() {
                 className="w-full rounded-lg border border-borderc px-3 py-2.5 text-sm outline-none focus:border-ink"
               />
             )}
-            <p className="text-[11px] text-body mt-1.5">{s.hint}</p>
+            {s.where && <p className="text-[11px] font-semibold text-ink mt-2">Where it appears: <span className="font-normal text-body">{s.where}</span></p>}
+            {s.spec && <p className="text-[11px] text-body mt-0.5">{s.spec}</p>}
+            {s.hint && <p className="text-[11px] text-body mt-1.5">{s.hint}</p>}
           </div>
         ))}
       </div>
@@ -220,7 +260,10 @@ export default function AdminSettingsPage() {
       {mediaPickerOpen && (
         <MediaPickerModal
           onPick={(item) => {
-            setValues({ ...values, [mediaKey]: item.url });
+            // Settings keys ending in _asset_id store the media id; the url is
+            // kept apart just to render the thumbnail.
+            setValues({ ...values, [mediaKey]: item.id });
+            setPreviews({ ...previews, [mediaKey]: item.url });
             setMediaPickerOpen(false);
           }}
           onClose={() => setMediaPickerOpen(false)}

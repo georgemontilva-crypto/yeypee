@@ -807,7 +807,22 @@ router.get("/settings", async (req: AuthedRequest, res) => {
   const rows = await db.select().from(siteSettings);
   const out: Record<string, any> = {};
   for (const r of rows) out[r.key] = r.value;
-  res.json({ settings: out });
+  // Settings that hold a media asset id are resolved to a URL so the admin can
+  // show a thumbnail of what is currently selected.
+  const mediaKeys = ["hero_banner_asset_id", "hero_video_asset_id", "hero_poster_asset_id"];
+  const ids = mediaKeys
+    .map((k) => out[k])
+    .filter((v): v is number => typeof v === "number" && v > 0);
+  const previews: Record<string, string> = {};
+  if (ids.length) {
+    const assets = await db.select().from(mediaAssets).where(inArray(mediaAssets.id, ids));
+    const byId = new Map(assets.map((a) => [a.id, a.url]));
+    for (const k of mediaKeys) {
+      const url = typeof out[k] === "number" ? byId.get(out[k]) : undefined;
+      if (url) previews[k] = url;
+    }
+  }
+  res.json({ settings: out, previews });
 });
 
 router.patch("/settings", async (req: AuthedRequest, res) => {

@@ -133,8 +133,30 @@ export async function uploadToR2(
         if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
       };
     }
-    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error("Upload failed")));
-    xhr.onerror = () => reject(new Error("Upload failed"));
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) return resolve();
+      // R2 answers with an XML error body; surface its <Code> if present.
+      const code = /<Code>([^<]+)<\/Code>/.exec(xhr.responseText || "")?.[1];
+      if (xhr.status === 403) {
+        return reject(
+          new Error(
+            `R2 rejected the upload (403${code ? " " + code : ""}). Check that R2_BUCKET matches the bucket your API token was issued for, and that the access key and secret are correct.`
+          )
+        );
+      }
+      if (xhr.status === 404) {
+        return reject(
+          new Error(`Bucket not found (404). Check R2_BUCKET and R2_ENDPOINT.`)
+        );
+      }
+      reject(new Error(`Upload failed with HTTP ${xhr.status}${code ? " (" + code + ")" : ""}.`));
+    };
+    xhr.onerror = () =>
+      reject(
+        new Error(
+          "The browser could not reach R2. This is almost always a missing CORS rule on the bucket: add your site's URL to the bucket's CORS policy with PUT allowed."
+        )
+      );
     xhr.send(file);
   });
   const imgSize = await imageDimensions(file);
