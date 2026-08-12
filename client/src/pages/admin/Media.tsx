@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { adminApi, uploadToR2 } from "../../lib/api";
+import ImageSlots from "./ImageSlots";
 
 interface MediaItem {
   id: number;
@@ -21,6 +22,8 @@ export default function AdminMedia() {
   const [progress, setProgress] = useState(0);
   const [filter, setFilter] = useState<"image" | "video" | "all">("all");
   const [uploadError, setUploadError] = useState<string>("");
+  // bumped after an upload so the slots panel refreshes its thumbnails
+  const [slotsKey, setSlotsKey] = useState(0);
 
   const load = async () => {
     setLoading(true);
@@ -49,6 +52,7 @@ export default function AdminMedia() {
         await uploadToR2(f, (pct) => setProgress(pct));
       }
       await load();
+      setSlotsKey((k) => k + 1);
     } catch (err: any) {
       setUploadError(err?.data?.detail || err?.data?.error || err?.message || "Upload failed");
     } finally {
@@ -124,6 +128,9 @@ export default function AdminMedia() {
         </div>
       )}
 
+      <ImageSlots key={slotsKey} />
+
+      <h3 className="text-lg font-extrabold uppercase tracking-tight mb-3">Media library</h3>
       {loading ? (
         <div className="p-10 text-center text-body text-sm">Loading library...</div>
       ) : items.length === 0 ? (
