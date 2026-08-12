@@ -23,6 +23,37 @@ export default function MediaPickerModal({
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
+  const [deleting, setDeleting] = useState<number | null>(null);
+
+  /** Deletes the file from the library AND from R2 storage. */
+  const del = async (m: MediaItem) => {
+    // First call without confirm: the API reports where the file is in use.
+    let warning = "";
+    try {
+      const check = await adminApi.deleteMedia(m.id, false);
+      if (check?.warning) warning = check.warning;
+    } catch {
+      /* fall through to the plain confirmation */
+    }
+    const msg = warning
+      ? `${warning}\n\nDelete "${m.filename}" anyway? It will be removed from storage too.`
+      : `Delete "${m.filename}" permanently? It will be removed from storage too.`;
+    if (!window.confirm(msg)) return;
+
+    setDeleting(m.id);
+    setError("");
+    try {
+      const out = await adminApi.deleteMedia(m.id, true);
+      if (out && out.storageDeleted === false) {
+        setError("Removed from the library, but the file could not be deleted from R2.");
+      }
+      await load();
+    } catch (e: any) {
+      setError(e?.data?.error || e?.message || "Could not delete the file");
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -85,18 +116,35 @@ export default function MediaPickerModal({
           ) : items.length === 0 ? (
             <div className="text-center py-12 text-body text-sm">Library is empty. Upload your first file above.</div>
           ) : (
-            <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
               {items.map((m) => (
-                <button key={m.id} onClick={() => onPick(m)} className="group relative rounded-lg border border-borderc overflow-hidden bg-bg-soft hover:border-ink transition-colors aspect-square">
-                  {m.type === "video" ? (
-                    <video src={m.url} className="w-full h-full object-cover" />
-                  ) : (
-                    <img src={m.url} alt={m.filename} className="w-full h-full object-cover" />
-                  )}
-                  <span className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[9px] truncate px-2 py-1">
+                <div key={m.id} className="group relative rounded-lg border border-borderc overflow-hidden bg-bg-soft hover:border-ink transition-colors aspect-square">
+                  <button onClick={() => onPick(m)} className="absolute inset-0 w-full h-full" aria-label={`Use ${m.filename}`}>
+                    {m.type === "video" ? (
+                      <video src={m.url} className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={m.url} alt={m.filename} loading="lazy" className="w-full h-full object-cover" />
+                    )}
+                  </button>
+                  <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-black/60 text-white text-[9px] truncate px-2 py-1">
                     {m.filename}
                   </span>
-                </button>
+                  <button
+                    onClick={() => del(m)}
+                    disabled={deleting === m.id}
+                    aria-label={`Delete ${m.filename}`}
+                    title="Delete from library and storage"
+                    className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-white/90 text-candy-pink border border-borderc flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity hover:bg-white"
+                  >
+                    {deleting === m.id ? (
+                      <span className="text-[9px] font-bold">...</span>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                        <path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13M10 11v6M14 11v6" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               ))}
             </div>
           )}

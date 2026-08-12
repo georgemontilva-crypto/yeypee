@@ -529,7 +529,7 @@ router.get("/media", async (req: AuthedRequest, res) => {
     .select()
     .from(mediaAssets)
     .where(conds.length ? and(...conds) : undefined)
-    .orderBy(desc(mediaAssets.createdAt))
+    .orderBy(desc(mediaAssets.id))
     .limit(limit)
     .offset((page - 1) * limit);
   const [countRow] = await db
@@ -587,10 +587,11 @@ router.delete("/media/:id", async (req: AuthedRequest, res) => {
   await db.update(newsPosts).set({ thumbnailImageId: null }).where(eq(newsPosts.thumbnailImageId, id));
   await db.update(retailPartners).set({ logoImageId: null }).where(eq(retailPartners.logoImageId, id));
   await db.update(products).set({ imageId: null }).where(eq(products.imageId, id));
-  await deleteObject(asset.key);
+  // Remove the file from R2 first, then the database row.
+  const storageDeleted = await deleteObject(asset.key);
   await db.delete(mediaAssets).where(eq(mediaAssets.id, id));
-  await recordAudit(db, req.user?.id, "delete", "media", String(id), { inUse }, ipOf(req));
-  res.json({ ok: true });
+  await recordAudit(db, req.user?.id, "delete", "media", String(id), { inUse, storageDeleted }, ipOf(req));
+  res.json({ ok: true, storageDeleted });
 });
 
 // ---------------- Generic entity CRUD ----------------

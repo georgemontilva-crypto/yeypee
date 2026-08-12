@@ -78,10 +78,14 @@ export default function AdminMedia() {
     const ok = window.confirm(`Delete "${item.filename}" permanently from storage?`);
     if (!ok) return;
     try {
-      await adminApi.deleteMedia(item.id, true);
+      const out = await adminApi.deleteMedia(item.id, true);
+      if (out && out.storageDeleted === false) {
+        setUploadError("Removed from the library, but the file could not be deleted from R2.");
+      }
       await load();
+      setSlotsKey((k) => k + 1);
     } catch (e: any) {
-      alert(e?.data?.error || e.message || "Delete failed");
+      setUploadError(e?.data?.error || e.message || "Delete failed");
     }
   };
 

@@ -11,6 +11,7 @@ import {
   index,
   double,
 } from "drizzle-orm/mysql-core";
+import { sql } from "drizzle-orm";
 
 export const users = mysqlTable(
   "users",
@@ -161,7 +162,9 @@ export const mediaAssets = mysqlTable(
     altText: varchar("alt_text", { length: 512 }),
     folder: varchar("folder", { length: 50 }).notNull().default("other"),
     uploadedBy: varchar("uploaded_by", { length: 36 }),
-    createdAt: datetime("created_at").notNull().default(new Date()),
+    // CURRENT_TIMESTAMP, not new Date(): the latter is evaluated once when the
+    // module loads, so every row would share the process start time.
+    createdAt: datetime("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => ({
     keyIdx: uniqueIndex("media_key_unique").on(table.key),
