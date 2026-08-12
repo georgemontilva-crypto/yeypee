@@ -518,7 +518,9 @@ router.post("/media", async (req: AuthedRequest, res) => {
 router.get("/media", async (req: AuthedRequest, res) => {
   const db = await getDb();
   const page = Math.max(1, Number(req.query.page) || 1);
-  const limit = 40;
+  // The admin grid pages at 40; the media picker asks for a bigger batch so it
+  // can resolve thumbnails for records that already have images assigned.
+  const limit = Math.min(200, Math.max(1, Number(req.query.pageSize) || 40));
   const conds: any[] = [];
   if (req.query.type) conds.push(eq(mediaAssets.type, String(req.query.type)));
   if (req.query.folder) conds.push(eq(mediaAssets.folder, String(req.query.folder)));

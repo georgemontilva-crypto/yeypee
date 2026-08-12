@@ -64,6 +64,7 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [mediaUrls, setMediaUrls] = useState<Record<number, string>>({});
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [mediaField, setMediaField] = useState<string | null>(null);
 
@@ -98,6 +99,19 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
     load(1);
   }, [entity]);
 
+  // Only needed when this module has image fields.
+  useEffect(() => {
+    if (!fields.some((f) => f.type === "media")) return;
+    adminApi
+      .media({ pageSize: "200" })
+      .then((d) => {
+        const map: Record<number, string> = {};
+        for (const m of d.assets || d.media || []) map[m.id] = m.url;
+        setMediaUrls(map);
+      })
+      .catch(() => undefined);
+  }, [fields]);
+
   const openCreate = () => {
     setEditing(null);
     const initial: Record<string, any> = {};
@@ -113,7 +127,16 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
 
   const openEdit = (row: any) => {
     setEditing(row);
-    setForm(toForm ? toForm(row) : row);
+    const base = toForm ? toForm(row) : row;
+    const withPreviews: Record<string, any> = { ...base };
+    for (const f of fields) {
+      if (f.type !== "media") continue;
+      const id = base[f.key];
+      if (typeof id === "number" && mediaUrls[id]) {
+        withPreviews[`${f.key}${PREVIEW_SUFFIX}`] = mediaUrls[id];
+      }
+    }
+    setForm(withPreviews);
     setModalOpen(true);
   };
 
@@ -253,10 +276,12 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
       )}
 
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-xl max-w-xl w-full my-8 shadow-soft p-6">
-            <h3 className="text-xl font-extrabold uppercase mb-5">{editing ? `Edit ${labelSingular}` : `New ${labelSingular}`}</h3>
-            <div className="space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-xl w-full shadow-soft flex flex-col max-h-[calc(100dvh-2rem)]">
+            <h3 className="text-xl font-extrabold uppercase px-6 pt-6 pb-4 border-b border-borderc shrink-0">
+              {editing ? `Edit ${labelSingular}` : `New ${labelSingular}`}
+            </h3>
+            <div className="space-y-4 px-6 py-5 overflow-y-auto flex-1">
               {fields.map((f) => (
                 <div key={f.key}>
                   <label className="kicker text-body block mb-1.5">{f.label}</label>
@@ -294,8 +319,8 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
                       </button>
                       {form[f.key] ? (
                         <div className="flex items-center gap-2">
-                          {form[`${f.key}${PREVIEW_SUFFIX}`] ? (
-                            <img src={form[`${f.key}${PREVIEW_SUFFIX}`]} alt="" className="h-12 rounded-lg border border-borderc object-cover" />
+                          {form[`${f.key}${PREVIEW_SUFFIX}`] || mediaUrls[form[f.key]] ? (
+                            <img src={form[`${f.key}${PREVIEW_SUFFIX}`] || mediaUrls[form[f.key]]} alt="" className="h-12 rounded-lg border border-borderc object-cover" />
                           ) : (
                             <span className="text-[11px] font-bold text-body bg-bg-soft border border-borderc rounded-lg px-2 py-1">
                               Media #{form[f.key]}
@@ -323,7 +348,7 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
                 </div>
               ))}
             </div>
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-borderc shrink-0 bg-white rounded-b-xl">
               <button onClick={() => setModalOpen(false)} className="btn-pill btn-secondary">CANCEL</button>
               <button onClick={save} disabled={saving} className="btn-pill btn-primary">{saving ? "SAVING..." : "SAVE"}</button>
             </div>
