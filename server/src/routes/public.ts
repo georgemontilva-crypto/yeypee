@@ -74,6 +74,7 @@ router.get("/settings", async (_req, res) => {
   // Resolve asset ids to URLs
   const assetIds = [
     out.hero_banner_asset_id,
+    out.hero_banner_mobile_asset_id,
     out.hero_video_asset_id,
     out.hero_poster_asset_id,
     out.featured_collection_id,
@@ -94,6 +95,7 @@ router.get("/home", async (_req, res) => {
   for (const row of settingsRows) settings[row.key] = row.value;
   const assetIds: number[] = [
     settings.hero_banner_asset_id,
+    settings.hero_banner_mobile_asset_id,
     settings.hero_video_asset_id,
     settings.hero_poster_asset_id,
     settings.featured_collection_id,
@@ -147,6 +149,9 @@ router.get("/home", async (_req, res) => {
   const assetById = new Map(allAssetRows.map((a) => [a.id, a.url]));
   const assetUrls: Record<string, string | null> = {
     hero_banner: settings.hero_banner_asset_id ? (assetById.get(settings.hero_banner_asset_id) ?? null) : null,
+    hero_banner_mobile: settings.hero_banner_mobile_asset_id
+      ? (assetById.get(settings.hero_banner_mobile_asset_id) ?? null)
+      : null,
     hero_video: settings.hero_video_asset_id ? (assetById.get(settings.hero_video_asset_id) ?? null) : null,
     hero_poster: settings.hero_poster_asset_id ? (assetById.get(settings.hero_poster_asset_id) ?? null) : null,
     featured_collection_hero: settings.featured_collection_id ? (assetById.get(settings.featured_collection_id) ?? null) : null,

@@ -24,6 +24,7 @@ export default function Home() {
   const [leadStatus, setLeadStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const videoRef = useRef<HTMLVideoElement>(null);
   const bannerAsset = data?.settings?.hero_banner ?? null;
+  const mobileBannerAsset = data?.settings?.hero_banner_mobile ?? null;
   const videoAsset = data?.settings?.hero_video ?? null;
   const posterAsset = data?.settings?.hero_poster ?? null;
   const prefersReducedMotion =
@@ -84,16 +85,22 @@ export default function Home() {
 
   return (
     <>
-      {/* 1. Hero — horizontal banner. The image sets the height (no cropping);
-          the headline and CTA sit on top, aligned left. Falls back to the
-          video only if no banner has been set in Settings. */}
+      {/* 1. Hero — horizontal banner. The image sets the height (no cropping).
+          Desktop: headline on the left, vertically centred.
+          Phone/tablet: a taller image is used and the headline sits centred at
+          the top, leaving the lower half of the frame free for the figures. */}
       <section className="relative overflow-hidden bg-white">
-        {bannerAsset ? (
-          <img
-            src={bannerAsset}
-            alt=""
-            className="block w-full h-auto"
-          />
+        {bannerAsset || mobileBannerAsset ? (
+          <picture>
+            {mobileBannerAsset && (
+              <source media="(max-width: 1023px)" srcSet={mobileBannerAsset} />
+            )}
+            <img
+              src={bannerAsset || mobileBannerAsset}
+              alt=""
+              className="block w-full h-auto"
+            />
+          </picture>
         ) : !prefersReducedMotion && videoAsset ? (
           <video
             ref={videoRef}
@@ -107,30 +114,34 @@ export default function Home() {
             <source src={videoAsset.url || videoAsset} type="video/mp4" />
           </video>
         ) : (
-          <div className="w-full aspect-[21/9] bg-gradient-to-br from-[#FFE3EF] via-[#F7E9FF] to-[#FFF6E5] flex items-center justify-center">
+          <div className="w-full aspect-[4/5] lg:aspect-[21/9] bg-gradient-to-br from-[#FFE3EF] via-[#F7E9FF] to-[#FFF6E5] flex items-center justify-center">
             <FigurePlaceholder color="#F2C14E" size={200} />
           </div>
         )}
 
-        {/* Readability scrim: only on the left, where the text sits. */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/40 to-transparent md:from-white/75 md:via-white/20" />
+        {/* Readability scrim: from the top on phones (text above the figures),
+            from the left on desktop (text beside them). */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/35 to-transparent lg:bg-gradient-to-r lg:from-white/80 lg:via-white/25 lg:to-transparent" />
 
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
-            <div className="max-w-[52%] md:max-w-[46%]">
+        <div className="absolute inset-0 flex items-start lg:items-center">
+          <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-[7%] lg:pt-0">
+            <div className="text-center lg:text-left mx-auto lg:mx-0 max-w-none lg:max-w-[46%]">
               <h1
                 className="text-ink font-extrabold uppercase tracking-tight"
-                style={{ fontSize: "clamp(26px, 5.2vw, 76px)", lineHeight: 0.95 }}
+                style={{ fontSize: "clamp(34px, 7.2vw, 104px)", lineHeight: 1.08 }}
               >
                 Collect.<br />Discover.<br />Trade.
               </h1>
-              <p className="mt-3 md:mt-5 text-ink/80" style={{ fontSize: "clamp(12px, 1.5vw, 20px)" }}>
-                Step into the magical<br className="hidden sm:block" /> world of YEYPEE.
+              <p
+                className="mt-4 lg:mt-7 text-ink/80 mx-auto lg:mx-0 max-w-[22ch]"
+                style={{ fontSize: "clamp(14px, 2.1vw, 24px)", lineHeight: 1.45 }}
+              >
+                Step into the magical world of YEYPEE.
               </p>
               <Link
                 to="/collections"
-                className="btn-pill mt-4 md:mt-8 inline-flex items-center gap-2 bg-ink text-white hover:bg-ink/90"
-                style={{ fontSize: "clamp(9px, 1.05vw, 13px)" }}
+                className="btn-pill mt-5 lg:mt-9 inline-flex items-center gap-2 bg-ink text-white hover:bg-ink/90"
+                style={{ fontSize: "clamp(10px, 1.15vw, 14px)" }}
               >
                 EXPLORE COLLECTIONS <span aria-hidden>→</span>
               </Link>

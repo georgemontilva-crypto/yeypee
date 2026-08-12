@@ -871,7 +871,12 @@ router.get("/settings", async (req: AuthedRequest, res) => {
   for (const r of rows) out[r.key] = r.value;
   // Settings that hold a media asset id are resolved to a URL so the admin can
   // show a thumbnail of what is currently selected.
-  const mediaKeys = ["hero_banner_asset_id", "hero_video_asset_id", "hero_poster_asset_id"];
+  const mediaKeys = [
+    "hero_banner_asset_id",
+    "hero_banner_mobile_asset_id",
+    "hero_video_asset_id",
+    "hero_poster_asset_id",
+  ];
   const ids = mediaKeys
     .map((k) => out[k])
     .filter((v): v is number => typeof v === "number" && v > 0);

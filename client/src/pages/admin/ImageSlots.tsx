@@ -40,6 +40,13 @@ const SITE_SLOTS: SiteSlot[] = [
   },
   {
     kind: "site",
+    key: "hero_banner_mobile_asset_id",
+    label: "Hero banner — phone & tablet",
+    where: "Replaces the wide banner on phones and tablets (screens under 1024px).",
+    spec: "Vertical or square, around 1200 × 1600 px. The headline sits at the TOP, so put the characters in the LOWER half.",
+  },
+  {
+    kind: "site",
     key: "hero_video_asset_id",
     label: "Homepage hero video (optional)",
     where: "Replaces the banner only if no banner is set.",

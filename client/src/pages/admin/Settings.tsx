@@ -39,6 +39,14 @@ const SETTINGS: SettingRow[] = [
     media: true,
   },
   {
+    key: "hero_banner_mobile_asset_id",
+    label: "Hero banner — phone & tablet",
+    where: "Used instead of the wide banner on screens under 1024px.",
+    spec: "Vertical or square, around 1200 × 1600 px. Keep the characters in the lower half — the headline goes on top.",
+    hint: "",
+    media: true,
+  },
+  {
     key: "hero_video_asset_id",
     label: "Homepage hero video (optional)",
     where: "Only used if no hero banner is set.",
