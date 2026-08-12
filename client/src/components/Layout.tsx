@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { contentApi } from "../lib/api";
+import CursorHaze from "./CursorHaze";
 
 interface SearchItem {
   kind: string;
@@ -93,7 +94,8 @@ export default function Layout() {
   const results = query.trim().length >= 2 ? searchIndex(catalog, query) : [];
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-white relative">
+      <CursorHaze />
       {/* Navigation */}
       <header
         className={`fixed top-0 inset-x-0 z-50 bg-white border-b border-borderc transition-shadow duration-300 ${
