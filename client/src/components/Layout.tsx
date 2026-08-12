@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/auth";
+import { contentApi } from "../lib/api";
+
+interface SearchItem {
+  kind: string;
+  label: string;
+  to: string;
+  image: string | null;
+}
+
+function searchIndex(items: SearchItem[], q: string): SearchItem[] {
+  const needle = q.trim().toLowerCase();
+  return items.filter((i) => i.label.toLowerCase().includes(needle)).slice(0, 8);
+}
 
 const NAV_LINKS = [
   { to: "/collections", label: "COLLECTIONS" },
@@ -12,6 +25,9 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [catalog, setCatalog] = useState<SearchItem[]>([]);
   const location = useLocation();
 
   useEffect(() => {
@@ -23,105 +39,186 @@ export default function Layout() {
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
-  const transparent = scrolled || location.pathname !== "/";
+  // The search index is fetched once, the first time the overlay is opened.
+  useEffect(() => {
+    if (!searchOpen || catalog.length) return;
+    Promise.all([
+      contentApi.characters().catch(() => ({ characters: [] })),
+      contentApi.collections().catch(() => ({ collections: [] })),
+      contentApi.products().catch(() => ({ products: [] })),
+    ]).then(([ch, co, pr]: any[]) => {
+      setCatalog([
+        ...(co.collections || []).map((c: any) => ({
+          kind: "Collection", label: c.name, to: `/collections/${c.slug}`, image: c.cardImage || c.heroImage || null,
+        })),
+        ...(ch.characters || []).map((c: any) => ({
+          kind: "Character", label: c.name, to: `/characters/${c.slug}`, image: c.imageFront || null,
+        })),
+        ...(pr.products || []).map((p: any) => ({
+          kind: "Product", label: p.name, to: "/shop", image: p.image || null,
+        })),
+      ]);
+    });
+  }, [searchOpen, catalog.length]);
+
+  // The bar is always a solid white strip, on every page and at any scroll
+  // position, so the links are legible over any hero artwork.
+  const compact = scrolled;
+
+  const closeSearch = () => {
+    setSearchOpen(false);
+    setQuery("");
+  };
+
+  const results = query.trim().length >= 2 ? searchIndex(catalog, query) : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Navigation */}
       <header
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-          transparent ? "nav-scrolled bg-white/97" : "bg-transparent"
+        className={`fixed top-0 inset-x-0 z-50 bg-white border-b border-borderc transition-shadow duration-300 ${
+          compact ? "shadow-soft" : ""
         }`}
       >
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-10 flex items-center justify-between h-16">
-          <Link to="/" className={`logo-mark text-xl ${transparent ? "text-ink" : "text-white"}`}>
+        <div className="max-w-[1280px] mx-auto px-5 lg:px-10 flex items-center justify-between h-16 lg:h-[72px] gap-4">
+          <Link to="/" className="logo-mark text-ink text-xl lg:text-2xl shrink-0">
             YEYPEE
           </Link>
-          <nav className="hidden md:flex items-center gap-8">
+
+          <nav className="hidden lg:flex items-center gap-9 absolute left-1/2 -translate-x-1/2">
             {NAV_LINKS.map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                className={`btn-label ${transparent ? "text-body hover:text-ink" : "text-white/90 hover:text-white"}`}
-              >
+              <Link key={l.to} to={l.to} className="nav-link btn-label text-body">
                 {l.label}
               </Link>
             ))}
-          </nav>
-          <div className="flex items-center gap-4">
-            {user ? (
-              <div className="hidden md:flex items-center gap-4">
-                <Link to="/my-collection" className={`btn-label ${transparent ? "text-body hover:text-ink" : "text-white/90 hover:text-white"}`}>
-                  MY COLLECTION
-                </Link>
-                <Link to="/account" className={`btn-label ${transparent ? "text-body hover:text-ink" : "text-white/90 hover:text-white"}`}>
-                  {user.displayName}
-                </Link>
-                {user.role === "admin" && (
-                  <Link to="/admin" className={`btn-label ${transparent ? "text-candy-pink" : "text-gold"}`}>
-                    ADMIN
-                  </Link>
-                )}
-              </div>
-            ) : (
-              <Link to="/login" className={`btn-label hidden md:block ${transparent ? "text-body hover:text-ink" : "text-white/90 hover:text-white"}`}>
-                LOG IN
+            {user && (
+              <Link to="/my-collection" className="nav-link btn-label text-body">
+                MY COLLECTION
               </Link>
             )}
+          </nav>
+
+          <div className="flex items-center gap-1.5 lg:gap-3 shrink-0">
             <button
-              aria-label="Open menu"
-              className={`md:hidden ${transparent ? "text-ink" : "text-white"}`}
+              aria-label="Search"
+              onClick={() => setSearchOpen(true)}
+              className="nav-icon"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+            </button>
+            <button
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              className="nav-icon"
               onClick={() => setMenuOpen((v) => !v)}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                {menuOpen ? (
-                  <path d="M6 6l12 12M6 18L18 6" />
-                ) : (
-                  <path d="M4 7h16M4 12h16M4 17h16" />
-                )}
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                {menuOpen ? <path d="M6 6l12 12M6 18L18 6" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
               </svg>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile full-screen menu */}
+      {/* Menu panel — same button on every screen size, but the phone version
+          fills the screen and the desktop one drops from the bar. */}
       {menuOpen && (
-        <div className="fixed inset-0 z-40 bg-white flex flex-col items-center justify-center gap-8 md:hidden">
-          {NAV_LINKS.map((l) => (
-            <Link key={l.to} to={l.to} className="text-2xl font-extrabold uppercase tracking-tight text-ink">
-              {l.label}
-            </Link>
-          ))}
-          <Link to="/my-collection" className="text-2xl font-extrabold uppercase tracking-tight text-ink">
-            MY COLLECTION
-          </Link>
-          {user ? (
-            <>
-              <Link to="/account" className="text-2xl font-extrabold uppercase tracking-tight text-ink">
-                {user.displayName}
+        <>
+          <button
+            aria-label="Close menu"
+            onClick={() => setMenuOpen(false)}
+            className="fixed inset-0 z-40 bg-black/20 hidden lg:block"
+          />
+          <div className="fixed z-40 inset-x-0 top-16 lg:top-[72px] bottom-0 lg:bottom-auto bg-white lg:border-b lg:border-borderc lg:shadow-soft overflow-y-auto">
+            <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-8 lg:py-9 flex flex-col lg:flex-row lg:flex-wrap items-center lg:items-start justify-center lg:justify-start gap-6 lg:gap-x-12 lg:gap-y-4">
+              {NAV_LINKS.map((l) => (
+                <Link key={l.to} to={l.to} className="menu-link">
+                  {l.label}
+                </Link>
+              ))}
+              <Link to="/my-collection" className="menu-link">
+                MY COLLECTION
               </Link>
-              {user.role === "admin" && (
-                <Link to="/admin" className="text-2xl font-extrabold uppercase tracking-tight text-candy-pink">
-                  ADMIN
+              {user ? (
+                <>
+                  <Link to="/account" className="menu-link">
+                    {user.displayName}
+                  </Link>
+                  {user.role === "admin" && (
+                    <Link to="/admin" className="menu-link text-candy-pink">
+                      ADMIN
+                    </Link>
+                  )}
+                  <button onClick={() => logout()} className="btn-label text-body hover:text-ink">
+                    LOG OUT
+                  </button>
+                </>
+              ) : (
+                <Link to="/login" className="menu-link">
+                  LOG IN
                 </Link>
               )}
-              <button
-                onClick={() => logout()}
-                className="text-lg font-bold uppercase tracking-wider text-body"
-              >
-                LOG OUT
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Search overlay */}
+      {searchOpen && (
+        <div className="fixed inset-0 z-[60] bg-black/40 flex items-start justify-center p-4 pt-24">
+          <div className="bg-white rounded-card w-full max-w-xl shadow-soft overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-borderc">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="text-body shrink-0">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+              <input
+                autoFocus
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Escape" && closeSearch()}
+                placeholder="Search characters, collections, products..."
+                className="flex-1 text-base outline-none"
+              />
+              <button onClick={closeSearch} aria-label="Close search" className="text-body hover:text-ink">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                  <path d="M6 6l12 12M6 18L18 6" />
+                </svg>
               </button>
-            </>
-          ) : (
-            <Link to="/login" className="text-2xl font-extrabold uppercase tracking-tight text-ink">
-              LOG IN
-            </Link>
-          )}
+            </div>
+            <div className="max-h-[50vh] overflow-y-auto">
+              {query.trim().length < 2 ? (
+                <p className="px-5 py-6 text-sm text-body">Type at least two letters.</p>
+              ) : results.length === 0 ? (
+                <p className="px-5 py-6 text-sm text-body">Nothing found for “{query}”.</p>
+              ) : (
+                results.map((r) => (
+                  <Link
+                    key={r.kind + r.to}
+                    to={r.to}
+                    onClick={closeSearch}
+                    className="flex items-center gap-3 px-5 py-3 hover:bg-bg-soft transition-colors border-b border-borderc last:border-0"
+                  >
+                    {r.image ? (
+                      <img src={r.image} alt="" className="w-9 h-9 rounded-lg object-cover shrink-0" />
+                    ) : (
+                      <span className="w-9 h-9 rounded-lg bg-candy-pink-100 shrink-0" />
+                    )}
+                    <span className="min-w-0">
+                      <span className="block text-sm font-bold truncate">{r.label}</span>
+                      <span className="block text-[11px] uppercase tracking-wider text-body">{r.kind}</span>
+                    </span>
+                  </Link>
+                ))
+              )}
+            </div>
+          </div>
         </div>
       )}
 
-      <main className="flex-1">
+      <main className="flex-1 pt-16 lg:pt-[72px]">
         <Outlet />
       </main>
 

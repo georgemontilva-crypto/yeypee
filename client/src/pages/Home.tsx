@@ -98,7 +98,7 @@ export default function Home() {
             <img
               src={bannerAsset || mobileBannerAsset}
               alt=""
-              className="block w-full h-auto"
+              className="block w-full h-auto max-h-[86vh] object-cover object-bottom lg:max-h-none lg:object-contain"
             />
           </picture>
         ) : !prefersReducedMotion && videoAsset ? (
@@ -121,27 +121,27 @@ export default function Home() {
 
         {/* Readability scrim: from the top on phones (text above the figures),
             from the left on desktop (text beside them). */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/35 to-transparent lg:bg-gradient-to-r lg:from-white/80 lg:via-white/25 lg:to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/92 via-white/30 via-45% to-transparent lg:bg-gradient-to-r lg:from-white/80 lg:via-white/25 lg:to-transparent" />
 
         <div className="absolute inset-0 flex items-start lg:items-center">
-          <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-[7%] lg:pt-0">
+          <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-[12%] sm:pt-[10%] lg:pt-0">
             <div className="text-center lg:text-left mx-auto lg:mx-0 max-w-none lg:max-w-[46%]">
               <h1
                 className="text-ink font-extrabold uppercase tracking-tight"
-                style={{ fontSize: "clamp(34px, 7.2vw, 104px)", lineHeight: 1.08 }}
+                style={{ fontSize: "clamp(40px, 9vw, 104px)", lineHeight: 1.1 }}
               >
                 Collect.<br />Discover.<br />Trade.
               </h1>
               <p
                 className="mt-4 lg:mt-7 text-ink/80 mx-auto lg:mx-0 max-w-[22ch]"
-                style={{ fontSize: "clamp(14px, 2.1vw, 24px)", lineHeight: 1.45 }}
+                style={{ fontSize: "clamp(16px, 2.6vw, 24px)", lineHeight: 1.45 }}
               >
                 Step into the magical world of YEYPEE.
               </p>
               <Link
                 to="/collections"
                 className="btn-pill mt-5 lg:mt-9 inline-flex items-center gap-2 bg-ink text-white hover:bg-ink/90"
-                style={{ fontSize: "clamp(10px, 1.15vw, 14px)" }}
+                style={{ fontSize: "clamp(11px, 1.3vw, 14px)" }}
               >
                 EXPLORE COLLECTIONS <span aria-hidden>→</span>
               </Link>
