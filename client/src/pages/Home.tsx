@@ -156,7 +156,7 @@ export default function Home() {
           </div>
 
           {data?.collections?.length ? (
-            <div className="flex gap-6 md:gap-10 overflow-x-auto overflow-y-visible pt-4 pb-5 -mt-4 fade-up justify-start md:justify-center">
+            <div className="flex gap-6 md:gap-10 overflow-x-auto overflow-y-visible pt-4 pb-5 -mt-4 fade-up justify-start lg:justify-center -mx-6 px-6 lg:mx-0 lg:px-0">
               {data.collections.map((c: any) => {
                 const comingSoon = c.status === "coming_soon";
                 const inner = (
@@ -261,7 +261,7 @@ export default function Home() {
           </div>
           <div
             ref={carouselRef}
-            className="flex gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 fade-up"
+            className="flex gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 fade-up -mx-6 px-6 lg:mx-0 lg:px-0"
           >
             {commonChars.length ? (
               <>
@@ -297,12 +297,16 @@ export default function Home() {
                 ))}
                 {/* Secret rare card */}
                 <Link
-                  to="/characters"
+                  to={secretRare?.slug ? `/characters/${secretRare.slug}` : "/characters"}
                   className="snap-start shrink-0 w-56 md:w-64 rounded-card overflow-hidden transition-transform hover:-translate-y-1 relative"
                   style={{ background: "radial-gradient(circle at 50% 40%, #F2C14E 0%, #0F0F0F 55%)" }}
                 >
                   <div className="flex items-center justify-center p-6 h-52 gold-pulse">
-                    <FigurePlaceholder mystery size={150} />
+                    {secretRare?.imageFront ? (
+                      <img src={secretRare.imageFront} alt={secretRare.name} className="h-full object-contain" />
+                    ) : (
+                      <FigurePlaceholder mystery size={150} />
+                    )}
                   </div>
                   <div className="text-center py-4">
                     <div className="font-extrabold uppercase tracking-tight text-lg text-gold">SECRET RARE</div>
@@ -324,20 +328,21 @@ export default function Home() {
           {secretBanner ? (
             <div className="rounded-card relative overflow-hidden bg-ink">
               <img src={secretBanner} alt="" className="block w-full h-auto" />
-              {/* Scrim on the text side only. */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
-              <div className="absolute inset-0 flex items-center">
-                <div className="px-6 sm:px-8 md:px-16 max-w-[60%]">
+              {/* On phones the copy sits under the image so nothing gets clipped;
+                  from lg it overlays the left half as designed. */}
+              <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
+              <div className="lg:absolute lg:inset-0 flex items-center">
+                <div className="px-6 sm:px-8 lg:px-16 py-8 lg:py-0 w-full lg:w-auto lg:max-w-[60%]">
                   <div className="kicker text-gold mb-2 md:mb-3">SECRET RARE</div>
                   <h2
                     className="text-white mb-2 md:mb-3"
-                    style={{ fontSize: "clamp(22px, 4.2vw, 56px)", lineHeight: 1.08 }}
+                    style={{ fontSize: "clamp(28px, 4.6vw, 56px)", lineHeight: 1.08 }}
                   >
                     {secretRare?.name || "THE GOLDEN ONE"}
                   </h2>
                   <p
                     className="text-white/80 italic mb-4 md:mb-6"
-                    style={{ fontSize: "clamp(12px, 1.5vw, 18px)" }}
+                    style={{ fontSize: "clamp(14px, 1.7vw, 18px)" }}
                   >
                     {secretRare?.description || "Can you find the Golden YEYPEE?"}
                   </p>

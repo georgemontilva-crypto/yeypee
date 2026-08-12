@@ -55,7 +55,7 @@ export default function CharacterDetail() {
 
   return (
     <>
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-10 pt-24">
+      <div className="max-w-[1280px] mx-auto px-6 lg:px-10 pt-6 md:pt-10">
         <div className="flex items-center justify-between">
           <Link to="/characters" className="btn-label text-body hover:text-ink inline-flex items-center gap-1">
             ‹ ALL CHARACTERS

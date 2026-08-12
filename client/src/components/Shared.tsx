@@ -13,7 +13,7 @@ export function EmptyState({ title = "Coming soon", text = "There's nothing here
 
 export function BackLink({ to = "/collections", label = "BACK TO COLLECTIONS" }: { to?: string; label?: string }) {
   return (
-    <div className="max-w-[1280px] mx-auto px-6 lg:px-10 pt-24">
+    <div className="max-w-[1280px] mx-auto px-6 lg:px-10 pt-6 md:pt-10">
       <Link to={to} className="btn-label text-body hover:text-ink inline-flex items-center gap-1">
         ‹ {label}
       </Link>
