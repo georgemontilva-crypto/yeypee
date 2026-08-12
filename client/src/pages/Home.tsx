@@ -155,7 +155,7 @@ export default function Home() {
           </div>
 
           {data?.collections?.length ? (
-            <div className="flex gap-6 md:gap-10 overflow-x-auto pb-2 fade-up justify-start md:justify-center">
+            <div className="flex gap-6 md:gap-10 overflow-x-auto overflow-y-visible pt-4 pb-5 -mt-4 fade-up justify-start md:justify-center">
               {data.collections.map((c: any) => {
                 const comingSoon = c.status === "coming_soon";
                 const inner = (
