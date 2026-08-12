@@ -2,6 +2,9 @@
   "name": "yeypee",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "type": "module",
   "scripts": {
     "dev": "concurrently -k \"npm run dev:server\" \"npm run dev:client\"",
@@ -17,6 +20,13 @@
     "db:studio": "drizzle-kit studio --config drizzle.config.ts"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
+    "drizzle-kit": "^0.22.8",
+    "tsx": "^4.16.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.622.0",
+    "@aws-sdk/s3-request-presigner": "^3.622.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
@@ -29,17 +39,6 @@
     "@types/uuid": "^9.0.8",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
-    "concurrently": "^8.2.2",
-    "drizzle-kit": "^0.22.8",
-    "postcss": "^8.4.39",
-    "tailwindcss": "^3.4.6",
-    "tsx": "^4.16.2",
-    "typescript": "^5.5.3",
-    "vite": "^5.3.4"
-  },
-  "dependencies": {
-    "@aws-sdk/client-s3": "^3.622.0",
-    "@aws-sdk/s3-request-presigner": "^3.622.0",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -50,11 +49,15 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.3",
+    "postcss": "^8.4.39",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1",
     "resend": "^3.5.0",
+    "tailwindcss": "^3.4.6",
+    "typescript": "^5.5.3",
     "uuid": "^10.0.0",
+    "vite": "^5.3.4",
     "zod": "^3.23.8"
   }
 }
