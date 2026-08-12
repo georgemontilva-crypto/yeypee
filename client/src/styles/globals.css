@@ -298,3 +298,36 @@ h1, h2, h3 {
     transform: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   "Explore our worlds" — circular shortcuts. The artwork is shown untouched;
+   only the ring and the lift react to hover.
+   --------------------------------------------------------------------------- */
+
+.world-bubble {
+  box-shadow: 0 0 0 0 rgba(255, 95, 162, 0);
+  transition: box-shadow 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.world-link:hover .world-bubble,
+.world-link:focus-visible .world-bubble {
+  box-shadow: 0 0 0 4px var(--candy-pink-100), 0 8px 22px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px) scale(1.03);
+}
+
+.world-link .kicker {
+  transition: color 0.2s ease;
+}
+
+.world-link:hover .kicker,
+.world-link:focus-visible .kicker {
+  color: var(--candy-pink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-bubble,
+  .world-link:hover .world-bubble {
+    transition: none;
+    transform: none;
+  }
+}

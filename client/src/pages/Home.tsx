@@ -4,18 +4,6 @@ import { contentApi } from "../lib/api";
 import { useFadeUp } from "../components/ScrollToTop";
 import { EmptyState, FigurePlaceholder } from "../components/Shared";
 
-const GRADIENTS: Record<string, string> = {
-  jungle: "linear-gradient(105deg, #2E7D4F 0%, #4E9B6F 100%)",
-  pink: "linear-gradient(105deg, #FF5FA2 0%, #FF9DC4 100%)",
-  lavender: "linear-gradient(105deg, #9B84E8 0%, #C3B4F5 100%)",
-};
-
-const COLOR_BY_SLUG: Record<string, string> = {
-  "wild-friends": "jungle",
-  "candy-carnival": "pink",
-  "tiny-friends": "lavender",
-};
-
 export default function Home() {
   useFadeUp();
   const [data, setData] = useState<any>(null);
@@ -155,7 +143,66 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. Featured collection */}
+      {/* 2. Explore our worlds — circular shortcuts, one per collection.
+          The artwork is shown as-is: no tint, no blend mode, no scrim. */}
+      <section className="pt-16 md:pt-20 pb-4">
+        <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
+          <div className="flex items-center justify-between gap-4 mb-8 fade-up">
+            <h2 className="text-2xl md:text-[32px]">EXPLORE OUR WORLDS</h2>
+            <Link to="/collections" className="nav-link btn-label text-body shrink-0">
+              VIEW ALL
+            </Link>
+          </div>
+
+          {data?.collections?.length ? (
+            <div className="flex gap-6 md:gap-10 overflow-x-auto pb-2 fade-up justify-start md:justify-center">
+              {data.collections.map((c: any) => {
+                const comingSoon = c.status === "coming_soon";
+                const inner = (
+                  <>
+                    <span className="world-bubble block rounded-full overflow-hidden bg-bg-soft w-[104px] h-[104px] md:w-[132px] md:h-[132px]">
+                      {c.cardImage || c.heroImage ? (
+                        <img
+                          src={c.cardImage || c.heroImage}
+                          alt={c.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="w-full h-full flex items-center justify-center text-3xl font-extrabold text-body">
+                          ?
+                        </span>
+                      )}
+                    </span>
+                    <span className="kicker text-ink mt-3 block text-center max-w-[140px] mx-auto">
+                      {c.name}
+                    </span>
+                  </>
+                );
+                return comingSoon ? (
+                  <span key={c.id} className="shrink-0 opacity-60 cursor-default" title="Coming soon">
+                    {inner}
+                  </span>
+                ) : (
+                  <Link key={c.id} to={`/collections/${c.slug}`} className="world-link shrink-0">
+                    {inner}
+                  </Link>
+                );
+              })}
+
+              <span className="shrink-0">
+                <span className="rounded-full w-[104px] h-[104px] md:w-[132px] md:h-[132px] bg-ink text-white flex items-center justify-center text-4xl font-extrabold">
+                  ?
+                </span>
+                <span className="kicker text-body mt-3 block text-center">COMING SOON</span>
+              </span>
+            </div>
+          ) : (
+            <EmptyState title="No worlds yet" text="Collections will appear here once created in the admin panel." />
+          )}
+        </div>
+      </section>
+
+      {/* 3. Featured collection */}
       <section className="py-24 md:py-[96px]">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
           {featured ? (
@@ -198,55 +245,6 @@ export default function Home() {
               <EmptyState title="No featured collection yet" text="The featured collection will appear here once it's set in the admin panel." />
             </div>
           )}
-        </div>
-      </section>
-
-      {/* 3. Explore all collections */}
-      <section className="py-24 md:py-[96px] bg-bg-soft">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
-          <div className="mb-12 fade-up">
-            <h2 className="text-4xl md:text-[56px] mb-3">EXPLORE THE WORLDS</h2>
-            <p className="text-body text-lg italic">Each world. A new adventure.</p>
-          </div>
-          <div className="space-y-6">
-            {data?.collections?.length ? (
-              data.collections.map((c: any, i: number) => {
-                const gradKey = COLOR_BY_SLUG[c.slug] || Object.keys(GRADIENTS)[i % 3];
-                const grad = GRADIENTS[gradKey] || GRADIENTS.pink;
-                const active = c.status !== "coming_soon";
-                return (
-                  <div
-                    key={c.id}
-                    className="zoom-parent relative rounded-card overflow-hidden h-[220px] md:h-[240px] fade-up"
-                    style={{ background: grad }}
-                  >
-                    {c.cardImage && <img src={c.cardImage} alt={c.name} className="zoom-img absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60" />}
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
-                    <div className="relative z-10 h-full flex items-center justify-between px-8 md:px-12">
-                      <div>
-                        <h3 className="text-white text-2xl md:text-[28px] mb-1">{c.name}</h3>
-                        <p className="text-white/85 text-sm md:text-base italic">{c.tagline || c.description}</p>
-                        {c.status === "coming_soon" && <span className="badge-pink mt-3">COMING SOON</span>}
-                      </div>
-                      {active ? (
-                        <Link
-                          to={`/collections/${c.slug}`}
-                          className="w-12 h-12 rounded-full bg-white text-ink flex items-center justify-center text-xl font-bold hover:scale-105 transition-transform"
-                          aria-label={`Explore ${c.name}`}
-                        >
-                          →
-                        </Link>
-                      ) : (
-                        <span className="w-12 h-12 rounded-full bg-white/25 text-white flex items-center justify-center text-xl">→</span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <EmptyState title="No worlds yet" text="Collections will appear here once created in the admin panel." />
-            )}
-          </div>
         </div>
       </section>
 
