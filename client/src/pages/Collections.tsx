@@ -4,7 +4,6 @@ import { contentApi } from "../lib/api";
 import { useFadeUp } from "../components/ScrollToTop";
 import { EmptyState } from "../components/Shared";
 
-const GRADIENTS = ["linear-gradient(105deg, #2E7D4F 0%, #4E9B6F 100%)", "linear-gradient(105deg, #FF5FA2 0%, #FF9DC4 100%)", "linear-gradient(105deg, #9B84E8 0%, #C3B4F5 100%)"];
 
 export default function Collections() {
   useFadeUp();
@@ -31,9 +30,10 @@ export default function Collections() {
             {collections.map((c, i) => {
               const active = c.status !== "coming_soon";
               return (
-                <div key={c.id} className="zoom-parent relative rounded-card overflow-hidden h-[220px] md:h-[240px] fade-up" style={{ background: c.accentColor ? `linear-gradient(105deg, ${c.accentColor}, ${c.accentColor}88)` : GRADIENTS[i % 3] }}>
-                  {c.cardImage && <img src={c.cardImage} alt={c.name} className="zoom-img absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60" />}
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
+                <div key={c.id} className="zoom-parent relative rounded-card overflow-hidden h-[220px] md:h-[240px] fade-up bg-bg-soft">
+                  {c.cardImage && <img src={c.cardImage} alt={c.name} className="zoom-img absolute inset-0 w-full h-full object-cover" />}
+                  {/* Only a soft scrim on the text side, so the artwork keeps its own colours. */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
                   <div className="relative z-10 h-full flex items-center justify-between px-8 md:px-12">
                     <div>
                       <h3 className="text-white text-2xl md:text-[28px] mb-1">{c.name}</h3>

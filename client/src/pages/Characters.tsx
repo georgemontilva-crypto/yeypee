@@ -67,8 +67,7 @@ export default function Characters() {
             <button
               key={c.id}
               onClick={() => setFilterCollection(filterCollection === c.id ? null : c.id)}
-              className={`btn-label px-5 py-3 rounded-full border transition-colors ${filterCollection === c.id ? "text-white border-transparent" : "bg-white border-borderc text-body hover:border-ink"}`}
-              style={filterCollection === c.id ? { background: c.accentColor } : undefined}
+              className={`btn-label px-5 py-3 rounded-full border transition-colors ${filterCollection === c.id ? "bg-ink text-white border-ink" : "bg-white border-borderc text-body hover:border-ink"}`}
             >
               {c.name}
             </button>

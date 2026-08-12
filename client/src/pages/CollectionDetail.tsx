@@ -41,12 +41,12 @@ export default function CollectionDetail() {
       <section className="pb-24 md:pb-[96px]">
         {/* Hero */}
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10 pt-8">
-          <div className="relative rounded-card overflow-hidden h-[300px] md:h-[420px] fade-up" style={{ background: `linear-gradient(105deg, ${c.accentColor}33, ${c.accentColor}77)` }}>
+          <div className="relative rounded-card overflow-hidden h-[300px] md:h-[420px] fade-up bg-bg-soft">
             {c.heroImage ? (
               <img src={c.heroImage} alt={c.name} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <FigurePlaceholder color={c.accentColor} size={240} />
+                <FigurePlaceholder color="#F2C14E" size={240} />
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

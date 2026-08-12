@@ -220,8 +220,8 @@ export default function Home() {
                   {featured.heroImage ? (
                     <img src={featured.heroImage} alt={featured.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(105deg, ${featured.accentColor}22, ${featured.accentColor}55)` }}>
-                      <FigurePlaceholder color={featured.accentColor} size={220} />
+                    <div className="w-full h-full flex items-center justify-center">
+                      <FigurePlaceholder color="#F2C14E" size={220} />
                     </div>
                   )}
                 </div>
