@@ -138,31 +138,44 @@ export default function AdminMedia() {
           Your media library is empty. Upload images and videos above — they're stored in Cloudflare R2 and served from your public CDN URL.
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-8 gap-3">
           {items.map((m) => (
             <div key={m.id} className="bg-white rounded-xl border border-borderc overflow-hidden flex flex-col">
-              <div className="aspect-square bg-bg-soft relative">
+              {/* Fixed square thumbnail: every card lines up regardless of the
+                  original aspect ratio. */}
+              <div className="relative w-full aspect-square bg-bg-soft shrink-0">
                 {m.type === "video" ? (
-                  <video src={m.url} className="w-full h-full object-cover" />
+                  <video src={m.url} className="absolute inset-0 w-full h-full object-cover" />
                 ) : (
-                  <img src={m.url} alt={m.altText || m.filename} className="w-full h-full object-cover" />
+                  <img
+                    src={m.url}
+                    alt={m.altText || m.filename}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 )}
-                <span className="absolute top-2 left-2 badge-pink" style={{ fontSize: 9 }}>{m.folder}</span>
+                <span className="absolute top-1.5 left-1.5 badge-pink" style={{ fontSize: 8, padding: "2px 6px" }}>
+                  {m.folder}
+                </span>
               </div>
-              <div className="p-3 flex-1 flex flex-col gap-1.5">
-                <div className="text-[11px] font-bold truncate" title={m.filename}>{m.filename}</div>
-                <div className="text-[10px] text-body">
+              <div className="p-2 flex flex-col gap-1">
+                <div className="text-[10px] font-bold truncate" title={m.filename}>{m.filename}</div>
+                <div className="text-[9px] text-body truncate">
                   {m.width ? `${m.width}×${m.height}` : m.type} · {(m.sizeBytes / 1024 / 1024).toFixed(2)} MB
                 </div>
                 <input
                   defaultValue={m.altText || ""}
-                  placeholder="Alt text / label"
+                  placeholder="Alt text"
                   onBlur={(e) => updateAlt(m.id, e.target.value)}
-                  className="text-[11px] rounded border border-borderc px-2 py-1 outline-none focus:border-ink"
+                  className="text-[10px] rounded border border-borderc px-1.5 py-1 outline-none focus:border-ink w-full"
                 />
-                <div className="flex gap-1.5 mt-auto pt-1">
-                  <button onClick={() => copyUrl(m.url)} className="flex-1 text-[9px] font-bold uppercase px-2 py-1.5 rounded border border-borderc text-body hover:border-ink">COPY URL</button>
-                  <button onClick={() => del(m)} className="text-[9px] font-bold uppercase px-2 py-1.5 rounded border border-candy-pink/30 text-candy-pink hover:bg-candy-pink/10">DELETE</button>
+                <div className="flex gap-1 mt-0.5">
+                  <button onClick={() => copyUrl(m.url)} className="flex-1 text-[8px] font-bold uppercase px-1 py-1 rounded border border-borderc text-body hover:border-ink">
+                    COPY
+                  </button>
+                  <button onClick={() => del(m)} className="flex-1 text-[8px] font-bold uppercase px-1 py-1 rounded border border-candy-pink/30 text-candy-pink hover:bg-candy-pink/10">
+                    DELETE
+                  </button>
                 </div>
               </div>
             </div>

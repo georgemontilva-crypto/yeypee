@@ -14,6 +14,7 @@ export default function Home() {
   const bannerAsset = data?.settings?.hero_banner ?? null;
   const mobileBannerAsset = data?.settings?.hero_banner_mobile ?? null;
   const secretBanner = data?.settings?.secret_rare_banner ?? null;
+  const secretCard = data?.settings?.secret_rare_card ?? null;
   const videoAsset = data?.settings?.hero_video ?? null;
   const posterAsset = data?.settings?.hero_poster ?? null;
   const prefersReducedMotion =
@@ -302,8 +303,12 @@ export default function Home() {
                   style={{ background: "radial-gradient(circle at 50% 40%, #F2C14E 0%, #0F0F0F 55%)" }}
                 >
                   <div className="flex items-center justify-center p-6 h-52 gold-pulse">
-                    {secretRare?.imageFront ? (
-                      <img src={secretRare.imageFront} alt={secretRare.name} className="h-full object-contain" />
+                    {secretCard || secretRare?.imageFront ? (
+                      <img
+                        src={secretCard || secretRare.imageFront}
+                        alt={secretRare?.name || "Secret rare"}
+                        className="h-full object-contain"
+                      />
                     ) : (
                       <FigurePlaceholder mystery size={150} />
                     )}

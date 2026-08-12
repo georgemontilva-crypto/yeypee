@@ -85,6 +85,14 @@ const SETTINGS: SettingRow[] = [
     media: true,
   },
   {
+    key: "secret_rare_card_asset_id",
+    label: "Secret rare card",
+    where: 'The dark card at the end of the "Meet the characters" row on the homepage.',
+    spec: "Square, around 1000 × 1000 px. Transparent PNG works best over the dark background.",
+    hint: "",
+    media: true,
+  },
+  {
     key: "hero_video_asset_id",
     label: "Homepage hero video (optional)",
     where: "Only used if no hero banner is set.",

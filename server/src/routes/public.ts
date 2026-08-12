@@ -78,6 +78,7 @@ router.get("/settings", async (_req, res) => {
     out.hero_banner_asset_id,
     out.hero_banner_mobile_asset_id,
     out.secret_rare_banner_asset_id,
+    out.secret_rare_card_asset_id,
     out.hero_video_asset_id,
     out.hero_poster_asset_id,
     out.featured_collection_id,
@@ -102,6 +103,7 @@ router.get("/settings", async (_req, res) => {
       hero_banner: urlFor(out.hero_banner_asset_id),
       hero_banner_mobile: urlFor(out.hero_banner_mobile_asset_id),
       secret_rare_banner: urlFor(out.secret_rare_banner_asset_id),
+      secret_rare_card: urlFor(out.secret_rare_card_asset_id),
       hero_video: urlFor(out.hero_video_asset_id),
       hero_poster: urlFor(out.hero_poster_asset_id),
     },
@@ -121,6 +123,7 @@ router.get("/home", async (_req, res) => {
     settings.hero_banner_asset_id,
     settings.hero_banner_mobile_asset_id,
     settings.secret_rare_banner_asset_id,
+    settings.secret_rare_card_asset_id,
     settings.hero_video_asset_id,
     settings.hero_poster_asset_id,
     settings.featured_collection_id,
@@ -181,6 +184,9 @@ router.get("/home", async (_req, res) => {
       : null,
     secret_rare_banner: settings.secret_rare_banner_asset_id
       ? (assetById.get(settings.secret_rare_banner_asset_id) ?? null)
+      : null,
+    secret_rare_card: settings.secret_rare_card_asset_id
+      ? (assetById.get(settings.secret_rare_card_asset_id) ?? null)
       : null,
     hero_video: settings.hero_video_asset_id ? (assetById.get(settings.hero_video_asset_id) ?? null) : null,
     hero_poster: settings.hero_poster_asset_id ? (assetById.get(settings.hero_poster_asset_id) ?? null) : null,

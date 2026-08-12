@@ -68,6 +68,13 @@ const SITE_SLOTS: SiteSlot[] = [
   },
   {
     kind: "site",
+    key: "secret_rare_card_asset_id",
+    label: "Secret rare card",
+    where: 'The dark card at the end of the "Meet the characters" row on the homepage.',
+    spec: "Square, around 1000 × 1000 px. Transparent PNG works best over the dark background.",
+  },
+  {
+    kind: "site",
     key: "hero_video_asset_id",
     label: "Homepage hero video (optional)",
     where: "Replaces the banner only if no banner is set.",
