@@ -13,6 +13,7 @@ export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const bannerAsset = data?.settings?.hero_banner ?? null;
   const mobileBannerAsset = data?.settings?.hero_banner_mobile ?? null;
+  const secretBanner = data?.settings?.secret_rare_banner ?? null;
   const videoAsset = data?.settings?.hero_video ?? null;
   const posterAsset = data?.settings?.hero_poster ?? null;
   const prefersReducedMotion =
@@ -306,31 +307,72 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. Secret rare */}
+      {/* 5. Secret rare. A banner uploaded in the admin fills the strip; if
+          none is set it falls back to the gold glow plus the character art. */}
       <section className="py-10 md:py-16">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10 fade-up">
-          <div
-            className="rounded-card relative overflow-hidden px-6 sm:px-8 md:px-16 py-10 sm:py-14 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8"
-            style={{ background: "radial-gradient(ellipse at 70% 30%, rgba(242,193,78,0.35) 0%, #0F0F0F 60%)" }}
-          >
-            <div className="text-center md:text-left">
-              <div className="kicker text-gold mb-3">SECRET RARE</div>
-              <h2 className="text-[30px] sm:text-4xl md:text-[56px] text-white mb-3">{secretRare?.name || "THE GOLDEN ONE"}</h2>
-              <p className="text-white/80 text-lg italic mb-6">{secretRare?.description || "Can you find the Golden YEYPEE?"}</p>
-              <Link to={secretRare?.slug ? `/characters/${secretRare.slug}` : "/characters"} className="btn-pill btn-outline-gold">LEARN MORE</Link>
+          {secretBanner ? (
+            <div className="rounded-card relative overflow-hidden bg-ink">
+              <img src={secretBanner} alt="" className="block w-full h-auto" />
+              {/* Scrim on the text side only. */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
+              <div className="absolute inset-0 flex items-center">
+                <div className="px-6 sm:px-8 md:px-16 max-w-[60%]">
+                  <div className="kicker text-gold mb-2 md:mb-3">SECRET RARE</div>
+                  <h2
+                    className="text-white mb-2 md:mb-3"
+                    style={{ fontSize: "clamp(22px, 4.2vw, 56px)", lineHeight: 1.08 }}
+                  >
+                    {secretRare?.name || "THE GOLDEN ONE"}
+                  </h2>
+                  <p
+                    className="text-white/80 italic mb-4 md:mb-6"
+                    style={{ fontSize: "clamp(12px, 1.5vw, 18px)" }}
+                  >
+                    {secretRare?.description || "Can you find the Golden YEYPEE?"}
+                  </p>
+                  <Link
+                    to={secretRare?.slug ? `/characters/${secretRare.slug}` : "/characters"}
+                    className="btn-pill btn-outline-gold"
+                  >
+                    LEARN MORE
+                  </Link>
+                </div>
+              </div>
             </div>
-            <div className="gold-pulse shrink-0">
-              {secretRare?.imageFront ? (
-                <img
-                  src={secretRare.imageFront}
-                  alt={secretRare.name}
-                  className="w-[220px] h-[220px] md:w-[260px] md:h-[260px] object-contain"
-                />
-              ) : (
-                <FigurePlaceholder mystery size={220} />
-              )}
+          ) : (
+            <div
+              className="rounded-card relative overflow-hidden px-6 sm:px-8 md:px-16 py-10 sm:py-14 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8"
+              style={{ background: "radial-gradient(ellipse at 70% 30%, rgba(242,193,78,0.35) 0%, #0F0F0F 60%)" }}
+            >
+              <div className="text-center md:text-left">
+                <div className="kicker text-gold mb-3">SECRET RARE</div>
+                <h2 className="text-[30px] sm:text-4xl md:text-[56px] text-white mb-3">
+                  {secretRare?.name || "THE GOLDEN ONE"}
+                </h2>
+                <p className="text-white/80 text-lg italic mb-6">
+                  {secretRare?.description || "Can you find the Golden YEYPEE?"}
+                </p>
+                <Link
+                  to={secretRare?.slug ? `/characters/${secretRare.slug}` : "/characters"}
+                  className="btn-pill btn-outline-gold"
+                >
+                  LEARN MORE
+                </Link>
+              </div>
+              <div className="gold-pulse shrink-0">
+                {secretRare?.imageFront ? (
+                  <img
+                    src={secretRare.imageFront}
+                    alt={secretRare.name}
+                    className="w-[180px] h-[180px] md:w-[260px] md:h-[260px] object-contain"
+                  />
+                ) : (
+                  <FigurePlaceholder mystery size={200} />
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 

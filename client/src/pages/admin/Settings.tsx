@@ -63,6 +63,14 @@ const SETTINGS: SettingRow[] = [
     media: true,
   },
   {
+    key: "secret_rare_banner_asset_id",
+    label: "Secret rare banner",
+    where: 'The dark gold “Secret Rare” strip on the homepage.',
+    spec: "Wide image, around 2400 × 900 px. The title and button sit on the LEFT, so keep the figure on the right side.",
+    hint: "",
+    media: true,
+  },
+  {
     key: "hero_video_asset_id",
     label: "Homepage hero video (optional)",
     where: "Only used if no hero banner is set.",

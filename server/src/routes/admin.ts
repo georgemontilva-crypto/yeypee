@@ -878,6 +878,7 @@ router.get("/settings", async (req: AuthedRequest, res) => {
     "logo_footer_asset_id",
     "hero_banner_asset_id",
     "hero_banner_mobile_asset_id",
+    "secret_rare_banner_asset_id",
     "hero_video_asset_id",
     "hero_poster_asset_id",
   ];

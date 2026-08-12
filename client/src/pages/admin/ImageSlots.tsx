@@ -61,6 +61,13 @@ const SITE_SLOTS: SiteSlot[] = [
   },
   {
     kind: "site",
+    key: "secret_rare_banner_asset_id",
+    label: "Secret rare banner",
+    where: 'The dark gold “Secret Rare” strip on the homepage.',
+    spec: "Wide image, around 2400 × 900 px. The title and button sit on the LEFT, so keep the figure on the right side.",
+  },
+  {
+    kind: "site",
     key: "hero_video_asset_id",
     label: "Homepage hero video (optional)",
     where: "Replaces the banner only if no banner is set.",
