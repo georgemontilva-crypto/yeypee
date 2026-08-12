@@ -316,11 +316,19 @@ export default function Home() {
             <div className="text-center md:text-left">
               <div className="kicker text-gold mb-3">SECRET RARE</div>
               <h2 className="text-4xl md:text-[56px] text-white mb-3">{secretRare?.name || "THE GOLDEN ONE"}</h2>
-              <p className="text-white/80 text-lg italic mb-6">Can you find the Golden YEYPEE?</p>
-              <Link to="/characters" className="btn-pill btn-outline-gold">LEARN MORE</Link>
+              <p className="text-white/80 text-lg italic mb-6">{secretRare?.description || "Can you find the Golden YEYPEE?"}</p>
+              <Link to={secretRare?.slug ? `/characters/${secretRare.slug}` : "/characters"} className="btn-pill btn-outline-gold">LEARN MORE</Link>
             </div>
-            <div className="gold-pulse">
-              <FigurePlaceholder mystery size={220} />
+            <div className="gold-pulse shrink-0">
+              {secretRare?.imageFront ? (
+                <img
+                  src={secretRare.imageFront}
+                  alt={secretRare.name}
+                  className="w-[220px] h-[220px] md:w-[260px] md:h-[260px] object-contain"
+                />
+              ) : (
+                <FigurePlaceholder mystery size={220} />
+              )}
             </div>
           </div>
         </div>
