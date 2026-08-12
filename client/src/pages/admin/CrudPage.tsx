@@ -2,6 +2,32 @@ import React, { useEffect, useMemo, useState } from "react";
 import { adminApi } from "../../lib/api";
 import MediaPickerModal, { type MediaItem } from "./MediaPickerModal";
 
+/** Companion form key that holds a media preview URL; never sent to the API. */
+const PREVIEW_SUFFIX = "__previewUrl";
+
+/**
+ * The API expects ids as numbers (collectionId, heroImageId, ...) but <select>
+ * and <input> always hand back strings. This normalises the form before saving
+ * and drops the preview-only keys.
+ */
+function normalizePayload(form: Record<string, any>): Record<string, any> {
+  const out: Record<string, any> = {};
+  for (const [key, value] of Object.entries(form)) {
+    if (key.endsWith(PREVIEW_SUFFIX)) continue;
+    if (key.endsWith("Id") && key !== "id") {
+      if (value === "" || value === null || value === undefined) {
+        out[key] = null;
+        continue;
+      }
+      const asNumber = Number(value);
+      out[key] = Number.isFinite(asNumber) ? asNumber : value;
+      continue;
+    }
+    out[key] = value;
+  }
+  return out;
+}
+
 export interface FieldSpec {
   key: string;
   label: string;
@@ -94,7 +120,7 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
   const save = async () => {
     setSaving(true);
     try {
-      const payload = toPayload ? toPayload(form) : form;
+      const payload = normalizePayload(toPayload ? toPayload(form) : form);
       if (editing) {
         await adminApi.crud(entity).patch(editing.id, payload);
       } else {
@@ -268,8 +294,19 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
                       </button>
                       {form[f.key] ? (
                         <div className="flex items-center gap-2">
-                          <img src={form[f.key] ?? ""} alt="" className="h-12 rounded-lg border border-borderc object-cover" />
-                          <button onClick={() => setForm({ ...form, [f.key]: "" })} className="text-xs text-candy-pink font-bold underline">Remove</button>
+                          {form[`${f.key}${PREVIEW_SUFFIX}`] ? (
+                            <img src={form[`${f.key}${PREVIEW_SUFFIX}`]} alt="" className="h-12 rounded-lg border border-borderc object-cover" />
+                          ) : (
+                            <span className="text-[11px] font-bold text-body bg-bg-soft border border-borderc rounded-lg px-2 py-1">
+                              Media #{form[f.key]}
+                            </span>
+                          )}
+                          <button
+                            onClick={() => setForm({ ...form, [f.key]: null, [`${f.key}${PREVIEW_SUFFIX}`]: "" })}
+                            className="text-xs text-candy-pink font-bold underline"
+                          >
+                            Remove
+                          </button>
                         </div>
                       ) : null}
                     </div>
@@ -297,7 +334,10 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
       {mediaPickerOpen && mediaField && (
         <MediaPickerModal
           onPick={(item: MediaItem) => {
-            setForm({ ...form, [mediaField]: item.url });
+            // The API stores media by id (heroImageId, imageId, ...). We keep the
+            // url only for the preview, under a companion key that is stripped
+            // out before saving.
+            setForm({ ...form, [mediaField]: item.id, [`${mediaField}${PREVIEW_SUFFIX}`]: item.url });
             setMediaPickerOpen(false);
           }}
           onClose={() => setMediaPickerOpen(false)}

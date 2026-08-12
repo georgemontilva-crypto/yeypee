@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { asyncRouter } from "../lib/asyncRouter";
 import { eq, and, asc, desc, inArray, isNotNull, sql } from "drizzle-orm";
 import { z } from "zod";
 import {
@@ -19,7 +19,7 @@ import { recordAudit } from "../middleware/auth";
 import { welcomeClubEmail, sendEmail } from "../services/email";
 import { haversineKm, zipCoords } from "../utils";
 
-const router = Router();
+const router = asyncRouter();
 
 async function mediaById(db: Awaited<ReturnType<typeof getDb>>, id: number | null | undefined): Promise<string | null> {
   if (!id) return null;

@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { asyncRouter } from "../lib/asyncRouter";
 import {
   asc,
   desc,
@@ -39,7 +39,7 @@ import { sendEmail, shippingEmail } from "../services/email";
 import { cfg } from "../config";
 import { rowsToCsv, slugify } from "../utils";
 
-const router = Router();
+const router = asyncRouter();
 
 // All admin routes require auth + admin role
 router.use(requireAuth, requireAdmin);

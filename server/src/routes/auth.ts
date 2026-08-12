@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { asyncRouter } from "../lib/asyncRouter";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
@@ -10,7 +10,7 @@ import { cfg } from "../config";
 import { requireAuth, hashToken, type AuthedRequest } from "../middleware/auth";
 import { verificationEmail, sendEmail } from "../services/email";
 
-const router = Router();
+const router = asyncRouter();
 
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 

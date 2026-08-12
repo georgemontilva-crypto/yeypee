@@ -1,15 +1,14 @@
-import CrudPage from "./CrudPage";
+import CrudPage, { type FieldSpec } from "./CrudPage";
 
-const FIELDS = [
+const FIELDS: FieldSpec[] = [
   { key: "name", label: "Partner Name", type: "text", placeholder: "Toy Galaxy" },
   { key: "type", label: "Type", type: "select", options: [
     { value: "online", label: "Online only" },
-    { value: "physical", label: "Physical stores only" },
+    { value: "in_store", label: "Physical stores only" },
     { value: "both", label: "Online + physical" },
   ] },
-  { key: "logoUrl", label: "Logo", type: "media" },
+  { key: "logoImageId", label: "Logo", type: "media" },
   { key: "onlineUrl", label: "Online Shop URL", type: "text", placeholder: "https://..." },
-  { key: "websiteUrl", label: "Website URL", type: "text", placeholder: "https://..." },
   { key: "active", label: "Active", type: "boolean" },
 ];
 

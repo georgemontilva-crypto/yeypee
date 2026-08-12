@@ -22,9 +22,9 @@ export default function AdminCharacters() {
         { key: "bestFriend", label: "Best Friend", type: "text", placeholder: "Squishy Frog" },
         { key: "birthday", label: "Birthday", type: "text", placeholder: "June 12" },
         { key: "cardBgColor", label: "Card Background Color", type: "text", placeholder: "#FFE3EF" },
-        { key: "imageFront", label: "Image (Front)", type: "media" },
-        { key: "imageSide", label: "Image (Side)", type: "media" },
-        { key: "imageBack", label: "Image (Back)", type: "media" },
+        { key: "imageFrontId", label: "Image (Front)", type: "media" },
+        { key: "imageSideId", label: "Image (Side)", type: "media" },
+        { key: "imageBackId", label: "Image (Back)", type: "media" },
       ]);
     });
   }, []);

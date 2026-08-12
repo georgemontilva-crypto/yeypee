@@ -1,10 +1,10 @@
-import CrudPage from "./CrudPage";
+import CrudPage, { type FieldSpec } from "./CrudPage";
 
-const FIELDS = [
+const FIELDS: FieldSpec[] = [
   { key: "title", label: "Title", type: "text", placeholder: "Meet the new Tiny Friends" },
   { key: "excerpt", label: "Excerpt", type: "text", placeholder: "One-line summary for the homepage..." },
   { key: "body", label: "Body", type: "textarea", placeholder: "Full announcement..." },
-  { key: "thumbnail", label: "Thumbnail", type: "media" },
+  { key: "thumbnailImageId", label: "Thumbnail", type: "media" },
   { key: "badgeLabel", label: "Badge Label (optional)", type: "text", placeholder: "NEW!" },
   { key: "published", label: "Published", type: "boolean" },
 ];

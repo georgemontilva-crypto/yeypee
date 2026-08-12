@@ -12,7 +12,10 @@ import { cfg } from "./config";
 
 const app = express();
 
-app.set("trust proxy", true);
+// Railway puts exactly one proxy in front of the app. `true` would trust the
+// whole X-Forwarded-For chain, which lets anyone spoof their IP and bypass the
+// rate limiters (express-rate-limit raises ERR_ERL_PERMISSIVE_TRUST_PROXY).
+app.set("trust proxy", 1);
 
 app.use(
   helmet({
@@ -47,11 +50,10 @@ const leadLimiter = rateLimit({
 });
 
 app.use("/api/auth", authLimiter, authRouter);
-app.post("/api/leads", leadLimiter, (req, res, next) => {
-  const { Router } = require("express");
-  // Handled by publicRouter below; limiter applied here via wrapper
-  next();
-});
+// The lead handler itself lives in publicRouter; this only puts the limiter in
+// front of it. (The previous version used require() inside the handler, which
+// throws "require is not defined" under tsx/ESM in development.)
+app.use("/api/leads", leadLimiter);
 app.use("/api", publicRouter);
 app.use("/api/admin", adminRouter);
 
@@ -89,6 +91,26 @@ const distPath = fs.existsSync(candidate1) ? candidate1 : fs.existsSync(candidat
 app.use(express.static(distPath));
 app.get(/^(?!\/api).*/, (_req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
+});
+
+// Global error handler. Every router is an asyncRouter, so rejected promises
+// inside async handlers land here instead of killing the process.
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error("[error]", err?.stack || err);
+  if (res.headersSent) return;
+  const status = Number(err?.status || err?.statusCode) || 500;
+  res.status(status).json({
+    error: status === 500 ? "Internal server error" : String(err?.message || "Request failed"),
+    ...(cfg.nodeEnv !== "production" ? { detail: String(err?.message || err) } : {}),
+  });
+});
+
+// Last line of defence: log instead of letting Node tear the container down.
+process.on("unhandledRejection", (reason) => {
+  console.error("[unhandledRejection]", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("[uncaughtException]", err);
 });
 
 app.listen(cfg.port, "0.0.0.0", () => {

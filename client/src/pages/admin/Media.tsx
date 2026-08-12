@@ -24,7 +24,7 @@ export default function AdminMedia() {
   const load = async () => {
     setLoading(true);
     try {
-      const d = await adminApi.media({ type: filter === "all" ? undefined : filter });
+      const d = await adminApi.media(filter === "all" ? {} : { type: filter });
       setItems(d.media || []);
     } catch {
       setItems([]);
