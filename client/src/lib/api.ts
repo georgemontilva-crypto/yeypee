@@ -81,6 +81,7 @@ export const adminApi = {
   deleteLead: (id: number) => api<any>(`/api/admin/leads/${id}`, { method: "DELETE" }),
   getPresign: (body: { filename: string; mimeType: string; sizeBytes: number; folder?: string }) =>
     api<any>("/api/admin/media/presign", { method: "POST", body: JSON.stringify(body) }),
+  r2Status: () => api<any>("/api/admin/r2-status"),
   registerMedia: (body: any) => api<any>("/api/admin/media", { method: "POST", body: JSON.stringify(body) }),
   media: (params?: Record<string, string>) => {
     const q = new URLSearchParams(params).toString();

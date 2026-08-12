@@ -22,6 +22,7 @@ export default function MediaPickerModal({
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [error, setError] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -44,13 +45,14 @@ export default function MediaPickerModal({
     if (!files.length) return;
     setUploading(true);
     setProgress(0);
+    setError("");
     try {
       for (const f of files) {
         await uploadToR2(f, (pct) => setProgress(pct));
       }
       await load();
     } catch (err: any) {
-      alert(err?.message || "Upload failed");
+      setError(err?.data?.detail || err?.data?.error || err?.message || "Upload failed");
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -71,6 +73,12 @@ export default function MediaPickerModal({
           </label>
           <span className="text-[11px] text-body">Uploads go to Cloudflare R2 via presigned URL</span>
         </div>
+        {error && (
+          <div className="mx-6 mt-4 rounded-lg border border-candy-pink/40 bg-candy-pink/5 p-3">
+            <div className="kicker text-candy-pink mb-1">Upload failed</div>
+            <p className="text-[12px] text-ink">{error}</p>
+          </div>
+        )}
         <div className="flex-1 overflow-y-auto p-6">
           {loading ? (
             <div className="text-center py-12 text-body text-sm">Loading library...</div>

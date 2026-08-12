@@ -112,6 +112,19 @@ export default function ImageSlots({ onChanged }: { onChanged?: () => void }) {
   const [pickerFor, setPickerFor] = useState<SiteSlot | null>(null);
   const [saving, setSaving] = useState("");
   const [open, setOpen] = useState(true);
+  const [diag, setDiag] = useState<any>(null);
+  const [checking, setChecking] = useState(false);
+
+  const checkR2 = async () => {
+    setChecking(true);
+    try {
+      setDiag(await adminApi.r2Status());
+    } catch (e: any) {
+      setDiag({ reachable: false, error: e?.data?.error || e?.message || "Could not run the check" });
+    } finally {
+      setChecking(false);
+    }
+  };
 
   const load = () => {
     adminApi
@@ -152,10 +165,53 @@ export default function ImageSlots({ onChanged }: { onChanged?: () => void }) {
 
       {open && (
         <>
-          <p className="text-[13px] text-body mb-4 max-w-3xl">
+          <p className="text-[13px] text-body mb-3 max-w-3xl">
             Upload your files with the button above — that only puts them in the library. Then assign
             each one to its slot below.
           </p>
+
+          <div className="mb-5">
+            <button onClick={checkR2} disabled={checking} className="btn-pill btn-secondary text-[9px] px-4 py-2.5">
+              {checking ? "CHECKING..." : "CHECK R2 CONNECTION"}
+            </button>
+            {diag && (
+              <div className="mt-3 rounded-xl border border-borderc bg-white p-4 max-w-3xl">
+                <div className="flex items-center gap-2 mb-2">
+                  <span
+                    className="text-[9px] font-bold px-2 py-1 rounded-md"
+                    style={diag.reachable ? { background: "#E6F7EE", color: "#2E7D4F" } : { background: "#FDE8F0", color: "#D6336C" }}
+                  >
+                    {diag.reachable ? "STORAGE OK" : "STORAGE PROBLEM"}
+                  </span>
+                  <span className="text-[11px] text-body">
+                    {diag.reachable
+                      ? "The server can read and write the bucket. If uploads still fail, the problem is the bucket's CORS rule."
+                      : "The server itself cannot use the bucket — fix this before retrying an upload."}
+                  </span>
+                </div>
+                <dl className="text-[11px] text-body grid grid-cols-[130px_1fr] gap-y-1">
+                  <dt className="font-bold text-ink">Bucket</dt>
+                  <dd>{diag.bucket || "(empty)"}</dd>
+                  <dt className="font-bold text-ink">Endpoint</dt>
+                  <dd>{diag.endpointHost || "(empty)"}</dd>
+                  <dt className="font-bold text-ink">Public URL</dt>
+                  <dd>{diag.publicUrl || "(empty)"}</dd>
+                  {diag.missing?.length ? (
+                    <>
+                      <dt className="font-bold text-ink">Missing vars</dt>
+                      <dd className="text-candy-pink font-bold">{diag.missing.join(", ")}</dd>
+                    </>
+                  ) : null}
+                  {diag.error ? (
+                    <>
+                      <dt className="font-bold text-ink">Error</dt>
+                      <dd className="text-candy-pink">{diag.error}</dd>
+                    </>
+                  ) : null}
+                </dl>
+              </div>
+            )}
+          </div>
 
           <div className="kicker text-body mb-2">Site-wide — assign here</div>
           <div className="grid gap-3 md:grid-cols-3 mb-6">

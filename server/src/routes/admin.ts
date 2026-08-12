@@ -34,7 +34,7 @@ import {
 } from "../db/schema";
 import { getDb } from "../db/client";
 import { requireAuth, requireAdmin, recordAudit, type AuthedRequest } from "../middleware/auth";
-import { getPresignedUploadUrl, deleteObject, objectExists } from "../services/r2";
+import { getPresignedUploadUrl, deleteObject, objectExists, r2Diagnostics } from "../services/r2";
 import { sendEmail, shippingEmail } from "../services/email";
 import { cfg } from "../config";
 import { rowsToCsv, slugify } from "../utils";
@@ -396,6 +396,13 @@ router.delete("/leads/:id", async (req: AuthedRequest, res) => {
 });
 
 // ---------------- Media (R2) ----------------
+
+// Reports whether R2 is usable from the server, so upload problems can be told
+// apart from browser-side CORS problems. Never returns secret values.
+router.get("/r2-status", async (_req: AuthedRequest, res) => {
+  res.json(await r2Diagnostics());
+});
+
 const presignSchema = z.object({
   filename: z.string().min(1).max(255),
   mimeType: z.string().min(1).max(120),
