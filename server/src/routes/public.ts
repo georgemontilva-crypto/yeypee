@@ -73,6 +73,8 @@ router.get("/settings", async (_req, res) => {
   for (const row of rows) out[row.key] = row.value;
   // Resolve asset ids to URLs
   const assetIds = [
+    out.logo_header_asset_id,
+    out.logo_footer_asset_id,
     out.hero_banner_asset_id,
     out.hero_banner_mobile_asset_id,
     out.hero_video_asset_id,
@@ -83,7 +85,25 @@ router.get("/settings", async (_req, res) => {
     assetIds.push(...(out.carousel_character_ids as number[]).filter((v): v is number => typeof v === "number"));
   }
   if (out.secret_rare_character_id) assetIds.push(out.secret_rare_character_id as number);
-  res.json({ settings: out });
+
+  // Resolve those ids to public URLs (the ids alone are useless to the client).
+  const assetRows = assetIds.length
+    ? await db.select().from(mediaAssets).where(inArray(mediaAssets.id, assetIds))
+    : [];
+  const assetById = new Map(assetRows.map((a) => [a.id, a.url]));
+  const urlFor = (id: unknown) => (typeof id === "number" ? assetById.get(id) ?? null : null);
+
+  res.json({
+    settings: {
+      ...out,
+      logo_header: urlFor(out.logo_header_asset_id),
+      logo_footer: urlFor(out.logo_footer_asset_id),
+      hero_banner: urlFor(out.hero_banner_asset_id),
+      hero_banner_mobile: urlFor(out.hero_banner_mobile_asset_id),
+      hero_video: urlFor(out.hero_video_asset_id),
+      hero_poster: urlFor(out.hero_poster_asset_id),
+    },
+  });
 });
 
 // ---------- Homepage aggregator (single endpoint for the landing page) ----------
@@ -94,6 +114,8 @@ router.get("/home", async (_req, res) => {
   const settings: Record<string, any> = {};
   for (const row of settingsRows) settings[row.key] = row.value;
   const assetIds: number[] = [
+    settings.logo_header_asset_id,
+    settings.logo_footer_asset_id,
     settings.hero_banner_asset_id,
     settings.hero_banner_mobile_asset_id,
     settings.hero_video_asset_id,
@@ -148,6 +170,8 @@ router.get("/home", async (_req, res) => {
     : [];
   const assetById = new Map(allAssetRows.map((a) => [a.id, a.url]));
   const assetUrls: Record<string, string | null> = {
+    logo_header: settings.logo_header_asset_id ? (assetById.get(settings.logo_header_asset_id) ?? null) : null,
+    logo_footer: settings.logo_footer_asset_id ? (assetById.get(settings.logo_footer_asset_id) ?? null) : null,
     hero_banner: settings.hero_banner_asset_id ? (assetById.get(settings.hero_banner_asset_id) ?? null) : null,
     hero_banner_mobile: settings.hero_banner_mobile_asset_id
       ? (assetById.get(settings.hero_banner_mobile_asset_id) ?? null)

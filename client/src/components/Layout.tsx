@@ -28,6 +28,7 @@ export default function Layout() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [catalog, setCatalog] = useState<SearchItem[]>([]);
+  const [logos, setLogos] = useState<{ header: string | null; footer: string | null }>({ header: null, footer: null });
   const location = useLocation();
 
   useEffect(() => {
@@ -38,6 +39,16 @@ export default function Layout() {
   }, []);
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
+
+  // Custom logos, if the admin uploaded any.
+  useEffect(() => {
+    contentApi
+      .settings()
+      .then((d: any) =>
+        setLogos({ header: d?.settings?.logo_header ?? null, footer: d?.settings?.logo_footer ?? null })
+      )
+      .catch(() => undefined);
+  }, []);
 
   // The search index is fetched once, the first time the overlay is opened.
   useEffect(() => {
@@ -81,8 +92,12 @@ export default function Layout() {
         }`}
       >
         <div className="max-w-[1280px] mx-auto px-5 lg:px-10 flex items-center justify-between h-16 lg:h-[72px] gap-4">
-          <Link to="/" className="logo-mark text-ink text-xl lg:text-2xl shrink-0">
-            YEYPEE
+          <Link to="/" className="shrink-0 flex items-center" aria-label="YEYPEE — home">
+            {logos.header ? (
+              <img src={logos.header} alt="YEYPEE" className="h-8 lg:h-9 w-auto object-contain" />
+            ) : (
+              <span className="logo-mark text-ink text-xl lg:text-2xl">YEYPEE</span>
+            )}
           </Link>
 
           <nav className="hidden lg:flex items-center gap-9 absolute left-1/2 -translate-x-1/2">
@@ -109,9 +124,29 @@ export default function Layout() {
                 <path d="M20 20l-3.5-3.5" />
               </svg>
             </button>
+            {user ? (
+              <div className="hidden lg:flex items-center gap-6 ml-2">
+                <Link to="/account" className="nav-link btn-label text-body max-w-[160px] truncate">
+                  {user.displayName}
+                </Link>
+                {user.role === "admin" && (
+                  <Link to="/admin" className="nav-link btn-label text-candy-pink">
+                    ADMIN
+                  </Link>
+                )}
+                <button onClick={() => logout()} className="nav-link btn-label text-body">
+                  LOG OUT
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="hidden lg:inline-block nav-link btn-label text-body ml-2">
+                LOG IN
+              </Link>
+            )}
             <button
               aria-label={menuOpen ? "Close menu" : "Open menu"}
-              className="nav-icon"
+              className="nav-icon lg:hidden"
+              aria-expanded={menuOpen}
               onClick={() => setMenuOpen((v) => !v)}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
@@ -122,48 +157,66 @@ export default function Layout() {
         </div>
       </header>
 
-      {/* Menu panel — same button on every screen size, but the phone version
-          fills the screen and the desktop one drops from the bar. */}
-      {menuOpen && (
-        <>
-          <button
-            aria-label="Close menu"
-            onClick={() => setMenuOpen(false)}
-            className="fixed inset-0 z-40 bg-black/20 hidden lg:block"
-          />
-          <div className="fixed z-40 inset-x-0 top-16 lg:top-[72px] bottom-0 lg:bottom-auto bg-white lg:border-b lg:border-borderc lg:shadow-soft overflow-y-auto">
-            <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-8 lg:py-9 flex flex-col lg:flex-row lg:flex-wrap items-center lg:items-start justify-center lg:justify-start gap-6 lg:gap-x-12 lg:gap-y-4">
-              {NAV_LINKS.map((l) => (
-                <Link key={l.to} to={l.to} className="menu-link">
-                  {l.label}
-                </Link>
-              ))}
-              <Link to="/my-collection" className="menu-link">
-                MY COLLECTION
+      {/* Phone menu. It stays mounted and is animated with CSS so that closing
+          is as smooth as opening; `inert` keeps it out of the tab order when
+          hidden. */}
+      <div
+        className={`menu-panel lg:hidden ${menuOpen ? "is-open" : ""}`}
+        aria-hidden={!menuOpen}
+      >
+        <div className="px-6 py-10 flex flex-col items-center gap-7">
+          {[...NAV_LINKS, { to: "/my-collection", label: "MY COLLECTION" }].map((l, i) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              tabIndex={menuOpen ? 0 : -1}
+              className="menu-link menu-item"
+              style={{ transitionDelay: menuOpen ? `${80 + i * 55}ms` : "0ms" }}
+            >
+              {l.label}
+            </Link>
+          ))}
+          {user ? (
+            <>
+              <Link
+                to="/account"
+                tabIndex={menuOpen ? 0 : -1}
+                className="menu-link menu-item"
+                style={{ transitionDelay: menuOpen ? "300ms" : "0ms" }}
+              >
+                {user.displayName}
               </Link>
-              {user ? (
-                <>
-                  <Link to="/account" className="menu-link">
-                    {user.displayName}
-                  </Link>
-                  {user.role === "admin" && (
-                    <Link to="/admin" className="menu-link text-candy-pink">
-                      ADMIN
-                    </Link>
-                  )}
-                  <button onClick={() => logout()} className="btn-label text-body hover:text-ink">
-                    LOG OUT
-                  </button>
-                </>
-              ) : (
-                <Link to="/login" className="menu-link">
-                  LOG IN
+              {user.role === "admin" && (
+                <Link
+                  to="/admin"
+                  tabIndex={menuOpen ? 0 : -1}
+                  className="menu-link menu-item text-candy-pink"
+                  style={{ transitionDelay: menuOpen ? "355ms" : "0ms" }}
+                >
+                  ADMIN
                 </Link>
               )}
-            </div>
-          </div>
-        </>
-      )}
+              <button
+                onClick={() => logout()}
+                tabIndex={menuOpen ? 0 : -1}
+                className="btn-label text-body menu-item"
+                style={{ transitionDelay: menuOpen ? "410ms" : "0ms" }}
+              >
+                LOG OUT
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              tabIndex={menuOpen ? 0 : -1}
+              className="menu-link menu-item"
+              style={{ transitionDelay: menuOpen ? "300ms" : "0ms" }}
+            >
+              LOG IN
+            </Link>
+          )}
+        </div>
+      </div>
 
       {/* Search overlay */}
       {searchOpen && (
@@ -226,7 +279,11 @@ export default function Layout() {
       <footer className="bg-white border-t border-borderc mt-0">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-14">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-            <div className="logo-mark text-4xl text-ink">YEYPEE</div>
+            {logos.footer ? (
+              <img src={logos.footer} alt="YEYPEE" className="h-14 w-auto object-contain" />
+            ) : (
+              <div className="logo-mark text-4xl text-ink">YEYPEE</div>
+            )}
             <div className="flex items-center gap-5">
               {[
                 { label: "Instagram", path: "M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5a5 5 0 100 10 5 5 0 000-10zm5.5-.75a1 1 0 100 2 1 1 0 000-2z" },

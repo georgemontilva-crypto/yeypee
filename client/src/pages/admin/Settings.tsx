@@ -31,6 +31,22 @@ interface CharacterRow {
 
 const SETTINGS: SettingRow[] = [
   {
+    key: "logo_header_asset_id",
+    label: "Logo — top bar",
+    where: "Navigation bar, on every page. Falls back to the YEYPEE wordmark.",
+    spec: "Transparent PNG or SVG, around 600 × 160 px.",
+    hint: "",
+    media: true,
+  },
+  {
+    key: "logo_footer_asset_id",
+    label: "Logo — footer",
+    where: "Bottom of every page. Falls back to the YEYPEE wordmark.",
+    spec: "Transparent PNG or SVG, around 900 × 240 px.",
+    hint: "",
+    media: true,
+  },
+  {
     key: "hero_banner_asset_id",
     label: "Homepage hero banner",
     where: "Top of the homepage — the first thing a visitor sees.",

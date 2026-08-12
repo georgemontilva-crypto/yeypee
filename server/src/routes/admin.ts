@@ -872,6 +872,8 @@ router.get("/settings", async (req: AuthedRequest, res) => {
   // Settings that hold a media asset id are resolved to a URL so the admin can
   // show a thumbnail of what is currently selected.
   const mediaKeys = [
+    "logo_header_asset_id",
+    "logo_footer_asset_id",
     "hero_banner_asset_id",
     "hero_banner_mobile_asset_id",
     "hero_video_asset_id",

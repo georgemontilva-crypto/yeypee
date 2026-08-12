@@ -33,6 +33,20 @@ interface ContentSlot {
 const SITE_SLOTS: SiteSlot[] = [
   {
     kind: "site",
+    key: "logo_header_asset_id",
+    label: "Logo — top bar",
+    where: "Replaces the YEYPEE wordmark in the navigation bar, on every page.",
+    spec: "Transparent PNG or SVG, wide format, around 600 × 160 px. It is drawn at 32px tall.",
+  },
+  {
+    kind: "site",
+    key: "logo_footer_asset_id",
+    label: "Logo — footer",
+    where: "Replaces the big YEYPEE wordmark at the bottom of every page.",
+    spec: "Transparent PNG or SVG, around 900 × 240 px. It is drawn at 56px tall.",
+  },
+  {
+    kind: "site",
     key: "hero_banner_asset_id",
     label: "Homepage hero banner",
     where: "Very top of the homepage — the first thing a visitor sees.",
