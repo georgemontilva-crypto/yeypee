@@ -650,6 +650,38 @@ async function entityDelete(table: any, req: AuthedRequest, res: any, name: stri
 const stringish = (min = 1, max = 255) => z.string().min(min).max(max);
 
 // Collections
+// Reorder (batch sort_order).
+// MUST be declared before the per-entity "/:id" routes: Express matches in
+// order, so /collections/reorder would otherwise be read as id = "reorder".
+const REORDERABLE: Record<string, any> = {
+  collections,
+  characters,
+  products,
+  news: newsPosts,
+  "retail-partners": retailPartners,
+  // `stores` is intentionally absent: that table has no sort_order column.
+};
+
+router.patch("/:entity/reorder", async (req: AuthedRequest, res) => {
+  const entity = req.params.entity;
+  const schema = z.object({ ids: z.array(z.number().int().positive()) });
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid input" });
+    return;
+  }
+  const table = REORDERABLE[entity];
+  if (!table) {
+    res.status(404).json({ error: "This section cannot be reordered" });
+    return;
+  }
+  const db = await getDb();
+  for (let i = 0; i < parsed.data.ids.length; i++) {
+    await db.update(table).set({ sortOrder: i }).where(eq(table.id, parsed.data.ids[i]));
+  }
+  res.json({ ok: true });
+});
+
 router.get("/collections", (req, res) => entityList(collections, req, res, "collections"));
 router.get("/collections/:id", (req, res) => entityGet(collections, req, res));
 const collectionSchema = z.object({
@@ -838,35 +870,6 @@ router.post("/stores/import-csv", async (req: AuthedRequest, res) => {
   }
   await recordAudit(db, req.user?.id, "import", "stores", undefined, { count: created }, ipOf(req));
   res.json({ created });
-});
-
-// Reorder (batch sort_order)
-router.patch("/:entity/reorder", async (req: AuthedRequest, res) => {
-  const entity = req.params.entity;
-  const schema = z.object({ ids: z.array(z.number().int().positive()) });
-  const parsed = schema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: "Invalid input" });
-    return;
-  }
-  const tables: Record<string, any> = {
-    collections,
-    characters,
-    products,
-    news: newsPosts,
-    "retail-partners": retailPartners,
-    stores,
-  };
-  const table = tables[entity];
-  if (!table) {
-    res.status(404).json({ error: "Unknown entity" });
-    return;
-  }
-  const db = await getDb();
-  for (let i = 0; i < parsed.data.ids.length; i++) {
-    await db.update(table).set({ sortOrder: i }).where(eq(table.id, parsed.data.ids[i]));
-  }
-  res.json({ ok: true });
 });
 
 // Site settings

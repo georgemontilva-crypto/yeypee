@@ -180,7 +180,7 @@ export default function CrudPage({ entity, fields, labelSingular, title, emptyTe
 
   const reorderStart = useMemo(() => {
     // sort control enabled for entities whose schema has sort_order
-    return ["collections", "characters", "products", "news", "retail-partners", "stores"].includes(entity);
+    return ["collections", "characters", "products", "news", "retail-partners"].includes(entity);
   }, [entity]);
 
   const move = async (index: number, dir: -1 | 1) => {
@@ -190,9 +190,14 @@ export default function CrudPage({ entity, fields, labelSingular, title, emptyTe
     [nextRows[index], nextRows[next]] = [nextRows[next], nextRows[index]];
     setRows(nextRows);
     try {
-      await adminApi.reorder(entity, nextRows.map((r) => r.id));
-    } catch {
+      await adminApi.reorder(
+        entity,
+        nextRows.map((r) => r.id)
+      );
+    } catch (e: any) {
+      // Put the rows back the way the server still has them.
       await load(page);
+      alert(e?.data?.error || e?.message || "Could not save the new order");
     }
   };
 
