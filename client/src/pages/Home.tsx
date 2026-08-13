@@ -165,7 +165,13 @@ export default function Home() {
                 const comingSoon = c.status === "coming_soon";
                 const inner = (
                   <>
-                    <span className="world-bubble block rounded-full overflow-hidden bg-bg-soft w-[104px] h-[104px] md:w-[132px] md:h-[132px]">
+                    <span className="relative block w-[104px] h-[104px] md:w-[132px] md:h-[132px] mx-auto">
+                      {comingSoon && (
+                        <span className="absolute -top-2 left-1/2 -translate-x-1/2 z-10 whitespace-nowrap text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-ink text-white shadow-soft">
+                          Coming soon
+                        </span>
+                      )}
+                      <span className="world-bubble block rounded-full overflow-hidden bg-bg-soft w-full h-full">
                       {c.cardImage || c.heroImage ? (
                         <img
                           src={c.cardImage || c.heroImage}
@@ -177,6 +183,7 @@ export default function Home() {
                           ?
                         </span>
                       )}
+                      </span>
                     </span>
                     <span className="kicker text-ink mt-3 block text-center max-w-[140px] mx-auto">
                       {c.name}
@@ -184,7 +191,7 @@ export default function Home() {
                   </>
                 );
                 return comingSoon ? (
-                  <span key={c.id} className="shrink-0 opacity-60 cursor-default" title="Coming soon">
+                  <span key={c.id} className="shrink-0 cursor-default" title="Coming soon">
                     {inner}
                   </span>
                 ) : (
