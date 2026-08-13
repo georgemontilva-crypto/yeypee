@@ -505,8 +505,10 @@ export default function Home() {
               )}
             </div>
             {clubImage ? (
-              <div className="hidden md:block h-72 overflow-hidden rounded-card">
-                <img src={clubImage} alt="" className="w-full h-full object-cover" />
+              // Character cut-outs are portrait: show the whole figure instead
+              // of cropping it to a landscape box, and sit it on the baseline.
+              <div className="hidden md:flex h-80 lg:h-[26rem] items-end justify-center">
+                <img src={clubImage} alt="" className="max-h-full w-auto object-contain" />
               </div>
             ) : (
               <div className="hidden md:flex items-center justify-center h-72 relative overflow-hidden rounded-card bg-gradient-to-br from-candy-pink-100 to-white">

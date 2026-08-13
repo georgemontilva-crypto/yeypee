@@ -112,7 +112,7 @@ const SETTINGS: SettingRow[] = [
     key: "club_image_asset_id",
     label: "Join the club — side image",
     where: 'The picture beside the club sign-up form.',
-    spec: "Landscape, around 1200 x 900 px.",
+    spec: "Transparent PNG of the character, portrait (around 1024 x 1536 px). It is shown whole, never cropped.",
     hint: "",
     media: true,
   },
