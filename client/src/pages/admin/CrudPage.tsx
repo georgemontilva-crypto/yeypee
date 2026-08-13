@@ -48,6 +48,11 @@ interface CrudPageProps {
   title: string;
   /** Message shown when the module has no records yet. */
   emptyText?: string;
+  /**
+   * Splits the list into collapsible groups (e.g. characters by collection).
+   * `key` returns the group a row belongs to; `label` names it.
+   */
+  groupBy?: { key: (row: any) => string; label: (key: string) => string };
   /** Columns rendered in the list */
   columns: { key: string; label: string; render?: (v: any, row: any) => React.ReactNode }[];
   /** Transform db row into form state for the modal */
@@ -59,7 +64,7 @@ interface CrudPageProps {
   importable?: boolean;
 }
 
-export default function CrudPage({ entity, fields, labelSingular, title, emptyText, columns, toForm, toPayload, rowAction, importable }: CrudPageProps) {
+export default function CrudPage({ entity, fields, labelSingular, title, emptyText, groupBy, columns, toForm, toPayload, rowAction, importable }: CrudPageProps) {
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -180,6 +185,46 @@ export default function CrudPage({ entity, fields, labelSingular, title, emptyTe
     }
   };
 
+  // Rows split into groups, preserving the order the server sent them.
+  const groups = useMemo(() => {
+    if (!groupBy) return null;
+    const map = new Map<string, any[]>();
+    for (const row of rows) {
+      const k = groupBy.key(row);
+      if (!map.has(k)) map.set(k, []);
+      map.get(k)!.push(row);
+    }
+    return Array.from(map.entries());
+  }, [rows, groupBy]);
+
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const toggleGroup = (k: string) => setCollapsed((c) => ({ ...c, [k]: !c[k] }));
+
+  const renderRow = (row: any, i: number) => (
+    <tr key={row.id} className="border-b border-borderc last:border-0 hover:bg-bg-soft/50 transition-colors">
+      {reorderStart && (
+        <td className="px-2 py-2">
+          <div className="flex flex-col">
+            <button onClick={() => move(i, -1)} disabled={i === 0} className="text-[10px] text-body disabled:opacity-30">▲</button>
+            <button onClick={() => move(i, 1)} disabled={i === rows.length - 1} className="text-[10px] text-body disabled:opacity-30">▼</button>
+          </div>
+        </td>
+      )}
+      {columns.map((c) => (
+        <td key={c.key} className="py-3 px-4 whitespace-nowrap">
+          {c.render ? c.render(row[c.key], row) : row[c.key] ?? "—"}
+        </td>
+      ))}
+      <td className="py-3 px-4">
+        <div className="flex items-center gap-2 justify-end">
+          {rowAction?.(row)}
+          <button onClick={() => openEdit(row)} className="text-xs font-bold text-body hover:text-ink underline">EDIT</button>
+          <button onClick={() => del(row)} className="text-xs font-bold text-candy-pink hover:opacity-80">DELETE</button>
+        </div>
+      </td>
+    </tr>
+  );
+
   const reorderStart = useMemo(() => {
     // sort control enabled for entities whose schema has sort_order
     return ["collections", "characters", "products", "news", "retail-partners"].includes(entity);
@@ -255,30 +300,29 @@ export default function CrudPage({ entity, fields, labelSingular, title, emptyTe
               </tr>
             </thead>
             <tbody>
-              {rows.map((row: any, i: number) => (
-                <tr key={row.id} className="border-b border-borderc last:border-0 hover:bg-bg-soft/50 transition-colors">
-                  {reorderStart && (
-                    <td className="px-2 py-2">
-                      <div className="flex flex-col">
-                        <button onClick={() => move(i, -1)} disabled={i === 0} className="text-[10px] text-body disabled:opacity-30">▲</button>
-                        <button onClick={() => move(i, 1)} disabled={i === rows.length - 1} className="text-[10px] text-body disabled:opacity-30">▼</button>
-                      </div>
-                    </td>
-                  )}
-                  {columns.map((c) => (
-                    <td key={c.key} className="py-3 px-4 whitespace-nowrap">
-                      {c.render ? c.render(row[c.key], row) : row[c.key] ?? "—"}
-                    </td>
-                  ))}
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-2 justify-end">
-                      {rowAction?.(row)}
-                      <button onClick={() => openEdit(row)} className="text-xs font-bold text-body hover:text-ink underline">EDIT</button>
-                      <button onClick={() => del(row)} className="text-xs font-bold text-candy-pink hover:opacity-80">DELETE</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {groups
+                ? groups.map(([key, groupRows]) => (
+                    <React.Fragment key={key}>
+                      <tr className="bg-bg-soft border-b border-borderc">
+                        <td colSpan={columns.length + (reorderStart ? 2 : 1)} className="px-4 py-2.5">
+                          <button
+                            onClick={() => toggleGroup(key)}
+                            className="flex items-center gap-2 text-left w-full"
+                            aria-expanded={!collapsed[key]}
+                          >
+                            <span className="text-[10px] text-body w-3">{collapsed[key] ? "▶" : "▼"}</span>
+                            <span className="text-[12px] font-extrabold uppercase tracking-wide">
+                              {groupBy!.label(key)}
+                            </span>
+                            <span className="text-[11px] text-body">({groupRows.length})</span>
+                          </button>
+                        </td>
+                      </tr>
+                      {!collapsed[key] &&
+                        groupRows.map((row: any) => renderRow(row, rows.indexOf(row)))}
+                    </React.Fragment>
+                  ))
+                : rows.map((row: any, i: number) => renderRow(row, i))}
             </tbody>
           </table>
         )}

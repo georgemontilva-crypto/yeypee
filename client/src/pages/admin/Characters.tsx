@@ -12,10 +12,13 @@ const RARITY_OPTIONS = [
 export default function AdminCharacters() {
   const [fields, setFields] = useState<FieldSpec[]>([]);
   const [noCollections, setNoCollections] = useState(false);
+  const [collectionNames, setCollectionNames] = useState<Record<string, string>>({});
 
   useEffect(() => {
     adminApi.crud("collections").list({ pageSize: "100" }).then((d) => {
-      setNoCollections(((d.collections || d.rows || []) as any[]).length === 0);
+      const cols = (d.collections || d.rows || []) as any[];
+      setNoCollections(cols.length === 0);
+      setCollectionNames(Object.fromEntries(cols.map((c: any) => [String(c.id), c.name])));
       setFields([
         { key: "name", label: "Character Name", type: "text", placeholder: "Bubble Bear" },
         { key: "collectionId", label: "Collection", type: "select", options: (d.collections || d.rows || []).map((c: any) => ({ value: String(c.id), label: c.name })) },
@@ -37,7 +40,7 @@ export default function AdminCharacters() {
     { key: "rarity", label: "RARITY", render: (v: string) => (
       <span className={`text-xs font-bold px-2 py-1 rounded-md ${v === "secret_rare" ? "bg-yellow-100 text-yellow-700" : v === "rare" ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-600"}`}>{v.replace("_", " ")}</span>
     ) },
-    { key: "collectionName", label: "COLLECTION" },
+    { key: "collectionId", label: "COLLECTION", render: (v: any) => collectionNames[String(v)] || "—" },
     { key: "cardBgColor", label: "CARD COLOR", render: (v: string) => (
       <span className="inline-flex items-center gap-2"><span className="w-4 h-4 rounded-full border border-borderc inline-block" style={{ background: v }} />{v || "—"}</span>
     ) },
@@ -67,6 +70,10 @@ export default function AdminCharacters() {
       entity="characters"
       fields={fields}
       labelSingular="Character"
+      groupBy={{
+        key: (row: any) => String(row.collectionId ?? ""),
+        label: (key: string) => collectionNames[key] || "No collection",
+      }}
       title="Characters"
       columns={COLUMNS}
       toForm={toForm}
