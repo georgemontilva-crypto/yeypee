@@ -148,6 +148,9 @@ export default function Shop() {
       .finally(() => setLoading(false));
   }, []);
 
+  const lead = products[0] ?? null;
+  const rest = products.slice(1);
+
   return (
     <section className="pt-32 pb-24 md:py-[96px]">
       <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
@@ -156,15 +159,24 @@ export default function Shop() {
           <p className="text-body text-lg italic">Available Now!</p>
         </div>
 
+        {/* Lead product: the first active product from the admin, falling back
+            to generic copy while the catalogue is empty. */}
         <div className="grid md:grid-cols-2 gap-10 items-center mb-16 fade-up">
           <div className="rounded-card overflow-hidden border border-borderc bg-bg-soft aspect-square flex items-center justify-center">
-            <FigurePlaceholder color="#FF5FA2" size={260} />
+            {lead?.image ? (
+              <img src={lead.image} alt={lead.name} className="w-full h-full object-contain p-6" />
+            ) : (
+              <FigurePlaceholder color="#FF5FA2" size={260} />
+            )}
           </div>
           <div>
-            <h2 className="text-3xl md:text-4xl mb-4">BLIND BOX DISPLAY</h2>
+            <h2 className="text-3xl md:text-4xl mb-4">{lead?.name?.toUpperCase() || "BLIND BOX DISPLAY"}</h2>
+            {lead?.priceCents != null && (
+              <div className="text-2xl font-extrabold mb-4">${(lead.priceCents / 100).toFixed(2)}</div>
+            )}
             <p className="text-body mb-8 leading-relaxed">
-              Grab a blind box display case with {Math.max(products.length, 6)} to collect plus 1 secret rare.
-              Every box is a sweet surprise!
+              {lead?.description ||
+                `Grab a blind box display case with ${Math.max(products.length, 6)} to collect plus 1 secret rare. Every box is a sweet surprise!`}
             </p>
             <div className="flex flex-wrap gap-4">
               <button onClick={() => setModal("locator")} className="btn-pill btn-primary">FIND IN STORE</button>
@@ -189,11 +201,11 @@ export default function Shop() {
         </div>
 
         {/* Products if checkout enabled / active products exist */}
-        {!loading && products.length > 0 && (
+        {!loading && rest.length > 0 && (
           <div className="fade-up">
-            <h2 className="text-3xl mb-8">PRODUCTS</h2>
+            <h2 className="text-3xl mb-8">MORE PRODUCTS</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {products.map((p: any) => (
+              {rest.map((p: any) => (
                 <div key={p.id} className="rounded-card border border-borderc bg-white p-6">
                   <div className="h-40 flex items-center justify-center mb-4 bg-bg-soft rounded-smcard">
                     {p.image ? <img src={p.image} alt={p.name} className="h-full object-contain" /> : <FigurePlaceholder size={100} />}
@@ -209,6 +221,15 @@ export default function Shop() {
           </div>
         )}
       </div>
+
+      {!loading && products.length === 0 && (
+        <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
+          <EmptyState
+            title="No products published yet"
+            text="Products appear here once they are created in the admin panel with status Active."
+          />
+        </div>
+      )}
 
       {modal === "locator" && <StoreLocatorModal partners={partners} onClose={() => setModal(null)} />}
       {modal === "online" && <ShopOnlineModal partners={partners} onClose={() => setModal(null)} />}

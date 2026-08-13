@@ -76,10 +76,10 @@ function buildFields(collections: any[]): FieldSpec[] {
     ] },
     { key: "stock", label: "Stock", type: "number", placeholder: "0" },
     { key: "status", label: "Status", type: "select", options: [
-      { value: "draft", label: "Draft (hidden on the site)" },
-      { value: "active", label: "Active (visible on the site)" },
+      { value: "active", label: "Active — visible in the shop" },
+      { value: "draft", label: "Draft — hidden from the shop" },
       { value: "sold_out", label: "Sold out" },
       { value: "archived", label: "Archived" },
-    ], hint: "Only Active products show up in the public shop" },
+    ], hint: "Only Active products appear on the public Shop page" },
   ];
 }
