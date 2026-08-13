@@ -26,10 +26,10 @@ export const users = mysqlTable(
     resetExpires: datetime("reset_expires"),
     role: varchar("role", { length: 20 }).notNull().default("user"),
     deactivated: boolean("deactivated").notNull().default(false),
-    createdAt: datetime("created_at").notNull().default(new Date()),
+    createdAt: datetime("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
     updatedAt: datetime("updated_at")
     .notNull()
-    .default(new Date())
+    .default(sql`CURRENT_TIMESTAMP`)
     .$onUpdate(() => new Date()),
   },
   (table) => ({
@@ -44,7 +44,7 @@ export const sessions = mysqlTable("sessions", {
   userAgent: varchar("user_agent", { length: 512 }),
   ip: varchar("ip", { length: 64 }),
   expiresAt: datetime("expires_at").notNull(),
-  createdAt: datetime("created_at").notNull().default(new Date()),
+  createdAt: datetime("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const leads = mysqlTable(
@@ -56,7 +56,7 @@ export const leads = mysqlTable(
     consent: boolean("consent").notNull().default(true),
     ip: varchar("ip", { length: 64 }),
     userAgent: varchar("user_agent", { length: 512 }),
-    createdAt: datetime("created_at").notNull().default(new Date()),
+    createdAt: datetime("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => ({
     emailIdx: uniqueIndex("leads_email_unique").on(table.email),
@@ -74,6 +74,9 @@ export const collections = mysqlTable("collections", {
   status: varchar("status", { length: 20 }).notNull().default("active"),
   heroImageId: int("hero_image_id"),
   cardImageId: int("card_image_id"),
+  // Optional video that takes over the hero after a delay.
+  heroVideoId: int("hero_video_id"),
+  heroVideoDelayMs: int("hero_video_delay_ms").notNull().default(2000),
   accentColor: varchar("accent_color", { length: 20 }).notNull().default("#FF5FA2"),
   sortOrder: int("sort_order").notNull().default(0),
   featured: boolean("featured").notNull().default(false),
@@ -189,10 +192,10 @@ export const products = mysqlTable(
     gallery: json("gallery"),
     status: varchar("status", { length: 20 }).notNull().default("draft"),
     sortOrder: int("sort_order").notNull().default(0),
-    createdAt: datetime("created_at").notNull().default(new Date()),
+    createdAt: datetime("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
     updatedAt: datetime("updated_at")
     .notNull()
-    .default(new Date())
+    .default(sql`CURRENT_TIMESTAMP`)
     .$onUpdate(() => new Date()),
   },
   (table) => ({
@@ -220,10 +223,10 @@ export const orders = mysqlTable("orders", {
   trackingNumber: varchar("tracking_number", { length: 255 }),
   carrier: varchar("carrier", { length: 120 }),
   notes: text("notes"),
-  createdAt: datetime("created_at").notNull().default(new Date()),
+  createdAt: datetime("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: datetime("updated_at")
     .notNull()
-    .default(new Date())
+    .default(sql`CURRENT_TIMESTAMP`)
     .$onUpdate(() => new Date()),
 });
 
@@ -245,7 +248,7 @@ export const userCollectionProgress = mysqlTable(
     userId: varchar("user_id", { length: 36 }).notNull(),
     characterId: int("character_id").notNull(),
     collected: boolean("collected").notNull().default(true),
-    collectedAt: datetime("collected_at").notNull().default(new Date()),
+    collectedAt: datetime("collected_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => ({
     uniqueProgress: uniqueIndex("progress_unique").on(table.userId, table.characterId),
@@ -262,7 +265,7 @@ export const adminAuditLog = mysqlTable(
     entityId: varchar("entity_id", { length: 36 }),
     changes: json("changes"),
     ip: varchar("ip", { length: 64 }),
-    createdAt: datetime("created_at").notNull().default(new Date()),
+    createdAt: datetime("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => ({
     entityIdx: index("audit_entity_idx").on(table.entity),
@@ -277,7 +280,7 @@ export const siteSettings = mysqlTable(
     value: json("value"),
     updatedAt: datetime("updated_at")
     .notNull()
-    .default(new Date())
+    .default(sql`CURRENT_TIMESTAMP`)
     .$onUpdate(() => new Date()),
   },
   (table) => ({

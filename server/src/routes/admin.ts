@@ -694,6 +694,8 @@ const collectionSchema = z.object({
   status: z.enum(["active", "coming_soon", "archived"]).default("active"),
   heroImageId: z.number().int().nullable().optional(),
   cardImageId: z.number().int().nullable().optional(),
+  heroVideoId: z.number().int().nullable().optional(),
+  heroVideoDelayMs: z.number().int().min(0).max(60000).optional(),
   accentColor: z.string().max(20).default("#FF5FA2"),
   sortOrder: z.number().int().default(0),
   featured: z.boolean().default(false),

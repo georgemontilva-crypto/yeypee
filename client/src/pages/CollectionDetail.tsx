@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { contentApi } from "../lib/api";
 import { useFadeUp } from "../components/ScrollToTop";
@@ -9,6 +9,23 @@ export default function CollectionDetail() {
   useFadeUp();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [videoOn, setVideoOn] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Swap the still banner for the video after the delay set in the admin.
+  // Respects the reduced-motion preference and cleans up on navigation.
+  useEffect(() => {
+    const col = data?.collection;
+    setVideoOn(false);
+    if (!col?.heroVideo) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const delay = Math.max(0, Number(col.heroVideoDelayMs ?? 2000));
+    const timer = window.setTimeout(() => {
+      setVideoOn(true);
+      videoRef.current?.play().catch(() => undefined);
+    }, delay);
+    return () => window.clearTimeout(timer);
+  }, [data]);
 
   useEffect(() => {
     if (!slug) return;
@@ -43,11 +60,32 @@ export default function CollectionDetail() {
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10 pt-8">
           <div className="relative rounded-card overflow-hidden h-[300px] md:h-[420px] fade-up bg-bg-soft">
             {c.heroImage ? (
-              <img src={c.heroImage} alt={c.name} className="w-full h-full object-cover" />
-            ) : (
+              <img
+                src={c.heroImage}
+                alt={c.name}
+                className={`w-full h-full object-cover transition-opacity duration-700 ${
+                  videoOn ? "opacity-0" : "opacity-100"
+                }`}
+              />
+            ) : !c.heroVideo ? (
               <div className="w-full h-full flex items-center justify-center">
                 <FigurePlaceholder color="#F2C14E" size={240} />
               </div>
+            ) : null}
+
+            {/* The video fades in over the still after the configured delay. */}
+            {c.heroVideo && (
+              <video
+                ref={videoRef}
+                src={c.heroVideo}
+                muted
+                loop
+                playsInline
+                preload="auto"
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+                  videoOn ? "opacity-100" : "opacity-0"
+                }`}
+              />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <div className="absolute bottom-0 left-0 p-5 sm:p-8 md:p-12">
@@ -103,7 +141,15 @@ export default function CollectionDetail() {
                   <p className="text-white/80 italic">Can you find the Golden YEYPEE?</p>
                 </div>
                 <div className="gold-pulse">
-                  <FigurePlaceholder mystery size={180} />
+                  {secretRare.imageFront ? (
+                    <img
+                      src={secretRare.imageFront}
+                      alt={secretRare.name}
+                      className="h-[180px] w-auto object-contain"
+                    />
+                  ) : (
+                    <FigurePlaceholder mystery size={180} />
+                  )}
                 </div>
               </Link>
             </div>

@@ -34,6 +34,8 @@ export interface FieldSpec {
   key: string;
   label: string;
   type: "text" | "textarea" | "number" | "boolean" | "select" | "media";
+  /** For media fields: which kind of file the picker offers. Defaults to image. */
+  mediaType?: "image" | "video";
   options?: { value: string; label: string }[];
   placeholder?: string;
   hint?: string;
@@ -335,7 +337,15 @@ export default function CrudPage({ entity, fields, labelSingular, title, emptyTe
                       {form[f.key] ? (
                         <div className="flex items-center gap-2">
                           {form[`${f.key}${PREVIEW_SUFFIX}`] || mediaUrls[form[f.key]] ? (
+                            f.mediaType === "video" ? (
+                              <video
+                                src={form[`${f.key}${PREVIEW_SUFFIX}`] || mediaUrls[form[f.key]]}
+                                muted
+                                className="h-12 rounded-lg border border-borderc object-cover"
+                              />
+                            ) : (
                             <img src={form[`${f.key}${PREVIEW_SUFFIX}`] || mediaUrls[form[f.key]]} alt="" className="h-12 rounded-lg border border-borderc object-cover" />
+                            )
                           ) : (
                             <span className="text-[11px] font-bold text-body bg-bg-soft border border-borderc rounded-lg px-2 py-1">
                               Media #{form[f.key]}
@@ -381,7 +391,7 @@ export default function CrudPage({ entity, fields, labelSingular, title, emptyTe
             setMediaPickerOpen(false);
           }}
           onClose={() => setMediaPickerOpen(false)}
-          typeFilter="image"
+          typeFilter={fields.find((f) => f.key === mediaField)?.mediaType || "image"}
         />
       )}
     </div>

@@ -272,6 +272,7 @@ router.get("/collections/:slug", async (req, res) => {
       ...c,
       heroImage: await mediaById(db, c.heroImageId),
       cardImage: await mediaById(db, c.cardImageId),
+      heroVideo: await mediaById(db, c.heroVideoId),
     },
     characters: out,
   });

@@ -13,6 +13,20 @@ const FIELDS: FieldSpec[] = [
   ] },
   { key: "heroImageId", label: "Hero Image", type: "media" },
   { key: "cardImageId", label: "Card Image", type: "media" },
+  {
+    key: "heroVideoId",
+    label: "Hero Video (optional)",
+    type: "media",
+    mediaType: "video",
+    hint: "Plays over the banner after the delay below. Leave empty for a still banner.",
+  },
+  {
+    key: "heroVideoDelayMs",
+    label: "Seconds before the video starts",
+    type: "number",
+    placeholder: "2",
+    hint: "0 starts immediately",
+  },
   { key: "featured", label: "Featured (homepage hero)", type: "boolean" },
 ];
 
@@ -28,12 +42,20 @@ const COLUMNS = [
 export default function AdminCollections() {
   return (
     <CrudPage
+      toForm={(row: any) => ({
+        ...row,
+        featured: !!row.featured,
+        heroVideoDelayMs: row.heroVideoDelayMs != null ? row.heroVideoDelayMs / 1000 : 2,
+      })}
+      toPayload={(form) => ({
+        ...form,
+        heroVideoDelayMs: Math.round(Number(form.heroVideoDelayMs || 0) * 1000),
+      })}
       entity="collections"
       fields={FIELDS}
       labelSingular="Collection"
       title="Collections"
       columns={COLUMNS}
-      toForm={(row: any) => ({ ...row, featured: !!row.featured })}
     />
   );
 }
