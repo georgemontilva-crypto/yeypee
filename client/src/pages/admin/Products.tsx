@@ -1,26 +1,6 @@
+import { useEffect, useState } from "react";
 import CrudPage, { type FieldSpec } from "./CrudPage";
-
-const FIELDS: FieldSpec[] = [
-  { key: "name", label: "Product Name", type: "text", placeholder: "Blind Box Display Case" },
-  { key: "sku", label: "SKU", type: "text", placeholder: "YEY-DISPLAY-01" },
-  { key: "priceCents", label: "Price (USD cents)", type: "number", placeholder: "2499", hint: "2499 = $24.99" },
-  { key: "collectionId", label: "Collection (optional)", type: "text", placeholder: "Collection ID number" },
-  { key: "description", label: "Description", type: "textarea", placeholder: "What's inside..." },
-  { key: "imageId", label: "Product Image", type: "media" },
-  { key: "type", label: "Type", type: "select", options: [
-    { value: "blind_box", label: "Blind Box" },
-    { value: "display_case", label: "Display Case" },
-    { value: "bundle", label: "Bundle" },
-    { value: "accessory", label: "Accessory" },
-  ] },
-  { key: "stock", label: "Stock", type: "number", placeholder: "0" },
-  { key: "status", label: "Status", type: "select", options: [
-    { value: "draft", label: "Draft (hidden on the site)" },
-    { value: "active", label: "Active (visible on the site)" },
-    { value: "sold_out", label: "Sold out" },
-    { value: "archived", label: "Archived" },
-  ], hint: "Only Active products show up in the public shop" },
-];
+import { adminApi } from "../../lib/api";
 
 const COLUMNS = [
   { key: "name", label: "NAME" },
@@ -32,15 +12,74 @@ const COLUMNS = [
 ];
 
 export default function AdminProducts() {
+  // The collection list is fetched so the form can offer real names instead of
+  // asking the user to type an id.
+  const [fields, setFields] = useState<FieldSpec[]>([]);
+
+  useEffect(() => {
+    adminApi
+      .crud("collections")
+      .list({ pageSize: "100" })
+      .then((d) => {
+        const collections = (d.collections || d.rows || []) as any[];
+        setFields(buildFields(collections));
+      })
+      .catch(() => setFields(buildFields([])));
+  }, []);
+
+  if (fields.length === 0) return <div className="p-10 text-center text-body text-sm">Loading...</div>;
+
   return (
     <CrudPage
       entity="products"
-      fields={FIELDS}
+      fields={fields}
       labelSingular="Product"
       title="Products"
       columns={COLUMNS}
-      toForm={(row: any) => ({ ...row, priceCents: row.priceCents ?? "", stock: row.stock ?? 0 })}
-      toPayload={(form) => ({ ...form, priceCents: form.priceCents === "" ? 0 : Number(form.priceCents), stock: form.stock === "" ? 0 : Number(form.stock) })}
+      toForm={(row: any) => ({
+        ...row,
+        priceCents: row.priceCents ?? "",
+        stock: row.stock ?? 0,
+        collectionId: row.collectionId ?? "",
+      })}
+      toPayload={(form) => ({
+        ...form,
+        priceCents: form.priceCents === "" ? 0 : Number(form.priceCents),
+        stock: form.stock === "" ? 0 : Number(form.stock),
+      })}
     />
   );
+}
+
+function buildFields(collections: any[]): FieldSpec[] {
+  return [
+    { key: "name", label: "Product Name", type: "text", placeholder: "Blind Box Display Case" },
+    { key: "sku", label: "SKU", type: "text", placeholder: "YEY-DISPLAY-01" },
+    { key: "priceCents", label: "Price (USD cents)", type: "number", placeholder: "2499", hint: "2499 = $24.99" },
+    {
+      key: "collectionId",
+      label: "Collection (optional)",
+      type: "select",
+      options: [
+        { value: "", label: collections.length ? "— None —" : "No collections yet" },
+        ...collections.map((c: any) => ({ value: String(c.id), label: c.name })),
+      ],
+      hint: "Links the product to a collection page",
+    },
+    { key: "description", label: "Description", type: "textarea", placeholder: "What's inside..." },
+    { key: "imageId", label: "Product Image", type: "media" },
+    { key: "type", label: "Type", type: "select", options: [
+      { value: "blind_box", label: "Blind Box" },
+      { value: "display_case", label: "Display Case" },
+      { value: "bundle", label: "Bundle" },
+      { value: "accessory", label: "Accessory" },
+    ] },
+    { key: "stock", label: "Stock", type: "number", placeholder: "0" },
+    { key: "status", label: "Status", type: "select", options: [
+      { value: "draft", label: "Draft (hidden on the site)" },
+      { value: "active", label: "Active (visible on the site)" },
+      { value: "sold_out", label: "Sold out" },
+      { value: "archived", label: "Archived" },
+    ], hint: "Only Active products show up in the public shop" },
+  ];
 }
