@@ -44,6 +44,8 @@ interface CrudPageProps {
   fields: FieldSpec[];
   labelSingular: string;
   title: string;
+  /** Message shown when the module has no records yet. */
+  emptyText?: string;
   /** Columns rendered in the list */
   columns: { key: string; label: string; render?: (v: any, row: any) => React.ReactNode }[];
   /** Transform db row into form state for the modal */
@@ -55,7 +57,7 @@ interface CrudPageProps {
   importable?: boolean;
 }
 
-export default function CrudPage({ entity, fields, labelSingular, title, columns, toForm, toPayload, rowAction, importable }: CrudPageProps) {
+export default function CrudPage({ entity, fields, labelSingular, title, emptyText, columns, toForm, toPayload, rowAction, importable }: CrudPageProps) {
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -232,7 +234,7 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
           <div className="p-10 text-center text-body text-sm">Loading...</div>
         ) : rows.length === 0 ? (
           <div className="p-10 text-center text-body text-sm">
-            No {entity.replace("-", " ")} yet. Create the first one with the button above.
+            {emptyText || `No ${entity.replace("-", " ")} yet. Create the first one with the button above.`}
           </div>
         ) : (
           <table className="w-full text-sm">

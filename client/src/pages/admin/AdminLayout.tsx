@@ -11,7 +11,7 @@ const NAV = [
   { to: "/admin/collections", label: "Collections", icon: "🌍" },
   { to: "/admin/characters", label: "Characters", icon: "★" },
   { to: "/admin/products", label: "Products", icon: "$" },
-  { to: "/admin/news", label: "News", icon: "📰" },
+  { to: "/admin/news", label: "News & Coming Next", icon: "📰" },
   { to: "/admin/partners", label: "Retail Partners", icon: "🤝" },
   { to: "/admin/stores", label: "Stores", icon: "📍" },
   { to: "/admin/settings", label: "Settings", icon: "⚙" },

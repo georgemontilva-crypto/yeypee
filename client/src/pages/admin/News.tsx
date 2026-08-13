@@ -21,7 +21,8 @@ export default function AdminNews() {
       entity="news"
       fields={FIELDS}
       labelSingular="News"
-      title="News"
+      emptyText={'Nothing here yet. Anything you publish appears in the "What\'s coming next?" section of the homepage.'}
+      title={'News — "What\'s coming next?"'}
       columns={COLUMNS}
       toForm={(row: any) => ({ ...row, published: !!row.published })}
     />
