@@ -72,10 +72,10 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
 
   const pageSize = 25;
 
-  // API response key for this entity (e.g. "retail-partners" → "retailPartners")
+  // Key the API wraps the list in. It does not always match the route name:
+  // /retail-partners answers with { partners: [...] }.
   const responseKey = useMemo(() => {
-    if (entity === "retail-partners") return "retailPartners";
-    if (entity === "news") return "newsPosts";
+    if (entity === "retail-partners") return "partners";
     return entity;
   }, [entity]);
 
@@ -86,7 +86,12 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
       if (search) params.search = search;
       if (status) params.status = status;
       const d = await adminApi.crud(entity).list(params);
-      const list = (d && (d[responseKey] ?? d.rows)) || [];
+      // Fall back to the first array in the payload so a renamed key can never
+      // make the whole module look empty again.
+      const list =
+        (d && (d[responseKey] ?? d.rows)) ||
+        (d ? Object.values(d).find((v) => Array.isArray(v)) : null) ||
+        [];
       setRows(list);
       setPage(p);
       setTotalPages(Math.max(1, Math.ceil((d?.total ?? list.length) / pageSize)));

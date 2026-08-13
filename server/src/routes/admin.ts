@@ -597,7 +597,10 @@ router.delete("/media/:id", async (req: AuthedRequest, res) => {
 // ---------------- Generic entity CRUD ----------------
 async function entityList(table: any, req: AuthedRequest, res: any, name: string) {
   const db = await getDb();
-  const rows = await db.select().from(table).orderBy(asc(table.sortOrder), asc(table.id));
+  // Not every table has a sortOrder column (stores does not), and ordering by a
+  // missing column produces invalid SQL.
+  const order = table.sortOrder ? [asc(table.sortOrder), asc(table.id)] : [asc(table.id)];
+  const rows = await db.select().from(table).orderBy(...order);
   res.json({ [name]: rows });
 }
 
