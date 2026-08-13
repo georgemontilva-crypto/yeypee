@@ -6,7 +6,7 @@ const FIELDS: FieldSpec[] = [
   { key: "body", label: "Body", type: "textarea", placeholder: "Full announcement..." },
   { key: "thumbnailImageId", label: "Thumbnail", type: "media" },
   { key: "badgeLabel", label: "Badge Label (optional)", type: "text", placeholder: "NEW!" },
-  { key: "published", label: "Published", type: "boolean" },
+  { key: "published", label: "Published", type: "boolean", defaultValue: true, hint: "Only published posts appear in \"What's coming next?\" on the homepage" },
 ];
 
 const COLUMNS = [

@@ -15,6 +15,9 @@ export default function Home() {
   const mobileBannerAsset = data?.settings?.hero_banner_mobile ?? null;
   const secretBanner = data?.settings?.secret_rare_banner ?? null;
   const secretCard = data?.settings?.secret_rare_card ?? null;
+  const partnersBg = data?.settings?.partners_bg ?? null;
+  const clubBg = data?.settings?.club_bg ?? null;
+  const clubImage = data?.settings?.club_image ?? null;
   const videoAsset = data?.settings?.hero_video ?? null;
   const posterAsset = data?.settings?.hero_poster ?? null;
   const prefersReducedMotion =
@@ -397,8 +400,13 @@ export default function Home() {
       </section>
 
       {/* 6. Retail partners */}
-      <section className="py-14 md:py-[96px] bg-bg-soft">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-10 text-center">
+      <section
+        className={`relative py-14 md:py-[96px] ${partnersBg ? "" : "bg-bg-soft"}`}
+        style={partnersBg ? { backgroundImage: `url(${partnersBg})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+      >
+        {/* Veil so the title and logos stay readable over any photo. */}
+        {partnersBg && <div className="absolute inset-0 bg-white/70" />}
+        <div className="relative max-w-[1280px] mx-auto px-6 lg:px-10 text-center">
           <h2 className="text-[30px] sm:text-4xl md:text-[56px] mb-10 fade-up">WHERE TO FIND YEYPEE</h2>
           <div className="flex flex-wrap items-center justify-center gap-8 md:gap-14 mb-10 fade-up">
             {data?.partners?.length ? (
@@ -458,8 +466,12 @@ export default function Home() {
       </section>
 
       {/* 8. Collector club */}
-      <section className="py-14 md:py-[96px] bg-bg-soft">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
+      <section
+        className={`relative py-14 md:py-[96px] ${clubBg ? "" : "bg-bg-soft"}`}
+        style={clubBg ? { backgroundImage: `url(${clubBg})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+      >
+        {clubBg && <div className="absolute inset-0 bg-white/70" />}
+        <div className="relative max-w-[1280px] mx-auto px-6 lg:px-10">
           <div className="grid md:grid-cols-2 gap-10 items-center fade-up">
             <div>
               <h2 className="text-[30px] sm:text-4xl md:text-[56px] mb-4">JOIN THE YEYPEE CLUB!</h2>
@@ -492,13 +504,19 @@ export default function Home() {
                 <p className="text-candy-pink text-sm mt-3">Please enter a valid email address.</p>
               )}
             </div>
-            <div className="hidden md:flex items-center justify-center h-72 relative overflow-hidden rounded-card bg-gradient-to-br from-candy-pink-100 to-white">
-              <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 20% 30%, #FF5FA2 2px, transparent 3px), radial-gradient(circle at 70% 60%, #9B84E8 2px, transparent 3px), radial-gradient(circle at 50% 80%, #F2C14E 2px, transparent 3px)" }} />
-              <div className="flex gap-4">
-                <FigurePlaceholder color="#FF5FA2" size={120} />
-                <FigurePlaceholder color="#9B84E8" size={120} />
+            {clubImage ? (
+              <div className="hidden md:block h-72 overflow-hidden rounded-card">
+                <img src={clubImage} alt="" className="w-full h-full object-cover" />
               </div>
-            </div>
+            ) : (
+              <div className="hidden md:flex items-center justify-center h-72 relative overflow-hidden rounded-card bg-gradient-to-br from-candy-pink-100 to-white">
+                <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 20% 30%, #FF5FA2 2px, transparent 3px), radial-gradient(circle at 70% 60%, #9B84E8 2px, transparent 3px), radial-gradient(circle at 50% 80%, #F2C14E 2px, transparent 3px)" }} />
+                <div className="flex gap-4">
+                  <FigurePlaceholder color="#FF5FA2" size={120} />
+                  <FigurePlaceholder color="#9B84E8" size={120} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -29,6 +29,8 @@ function normalizePayload(form: Record<string, any>): Record<string, any> {
 }
 
 export interface FieldSpec {
+  /** Value used when creating a new record (overrides the empty default). */
+  defaultValue?: any;
   key: string;
   label: string;
   type: "text" | "textarea" | "number" | "boolean" | "select" | "media";
@@ -116,7 +118,8 @@ export default function CrudPage({ entity, fields, labelSingular, title, columns
     setEditing(null);
     const initial: Record<string, any> = {};
     fields.forEach((f) => {
-      if (f.type === "boolean") initial[f.key] = false;
+      if (f.defaultValue !== undefined) initial[f.key] = f.defaultValue;
+      else if (f.type === "boolean") initial[f.key] = false;
       else if (f.type === "number") initial[f.key] = "";
       else if (f.type === "select" && f.options?.length) initial[f.key] = f.options[0].value;
       else initial[f.key] = "";

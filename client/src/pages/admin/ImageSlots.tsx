@@ -75,6 +75,27 @@ const SITE_SLOTS: SiteSlot[] = [
   },
   {
     kind: "site",
+    key: "partners_bg_asset_id",
+    label: "Where to find YEYPEE — background",
+    where: 'Background of the "Where to find YEYPEE" strip on the homepage.',
+    spec: "Wide image, around 2400 x 900 px. Keep it calm: the title and logos sit on top.",
+  },
+  {
+    kind: "site",
+    key: "club_bg_asset_id",
+    label: "Join the club — background",
+    where: 'Background of the "Join the YEYPEE Club" section.',
+    spec: "Wide image, around 2400 x 900 px. Something soft works best behind the form.",
+  },
+  {
+    kind: "site",
+    key: "club_image_asset_id",
+    label: "Join the club — side image",
+    where: 'The picture beside the club sign-up form.',
+    spec: "Landscape, around 1200 x 900 px.",
+  },
+  {
+    kind: "site",
     key: "hero_video_asset_id",
     label: "Homepage hero video (optional)",
     where: "Replaces the banner only if no banner is set.",
