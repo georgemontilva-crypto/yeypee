@@ -115,11 +115,11 @@ export default function CollectionDetail() {
             <h2 className="text-[26px] sm:text-3xl md:text-5xl mb-3">MEET THE COLLECTION</h2>
             <p className="text-body italic">{chars.length > 1 ? `${chars.length} to collect + 1 secret rare!` : "Collect them all!"}</p>
           </div>
-          {regulars.length ? (
+          {regulars.length || secretRare ? (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               {regulars.map((ch: any) => (
                 <Link key={ch.id} to={`/characters/${ch.slug}`} className="fade-up rounded-card border border-borderc shadow-soft overflow-hidden transition-transform hover:-translate-y-1" style={{ background: ch.cardBgColor || "#FFE3EF" }}>
-                  <div className="flex items-center justify-center p-8 h-56">
+                  <div className="flex items-center justify-center p-5 sm:p-6 h-56 md:h-64">
                     {ch.imageFront ? <img src={ch.imageFront} alt={ch.name} className="h-full object-contain" /> : <FigurePlaceholder color={ch.cardBgColor} size={170} />}
                   </div>
                   <div className="text-center py-4 bg-white">
@@ -127,32 +127,31 @@ export default function CollectionDetail() {
                   </div>
                 </Link>
               ))}
+
+              {/* The secret rare closes the grid as one more card, in the same
+                  shape as the rest but in the dark gold treatment. */}
+              {secretRare && (
+                <Link
+                  to={`/characters/${secretRare.slug}`}
+                  className="fade-up rounded-card border border-borderc shadow-soft overflow-hidden transition-transform hover:-translate-y-1"
+                  style={{ background: "radial-gradient(ellipse at 50% 40%, rgba(242,193,78,0.35) 0%, #0F0F0F 62%)" }}
+                >
+                  <div className="flex items-center justify-center p-5 sm:p-6 h-56 md:h-64 gold-pulse">
+                    {secretRare.imageFront ? (
+                      <img src={secretRare.imageFront} alt={secretRare.name} className="h-full object-contain" />
+                    ) : (
+                      <FigurePlaceholder mystery size={170} />
+                    )}
+                  </div>
+                  <div className="text-center py-4 bg-ink">
+                    <div className="kicker text-gold mb-1">SECRET RARE</div>
+                    <div className="font-extrabold uppercase tracking-tight text-xl text-white">{secretRare.name}</div>
+                  </div>
+                </Link>
+              )}
             </div>
           ) : (
             <EmptyState title="No characters yet" text="Characters will appear here once added in the admin panel." />
-          )}
-          {/* Secret rare band */}
-          {secretRare && (
-            <div className="mt-10 fade-up">
-              <Link to={`/characters/${secretRare.slug}`} className="rounded-card relative overflow-hidden block px-6 sm:px-8 md:px-16 py-10 sm:py-14 md:py-16 flex flex-col md:flex-row items-center justify-between gap-8" style={{ background: "radial-gradient(ellipse at 70% 30%, rgba(242,193,78,0.35) 0%, #0F0F0F 60%)" }}>
-                <div className="text-center md:text-left">
-                  <div className="kicker text-gold mb-3">SECRET RARE</div>
-                  <h3 className="text-[26px] sm:text-3xl md:text-5xl text-white mb-2">{secretRare.name}</h3>
-                  <p className="text-white/80 italic">Can you find the Golden YEYPEE?</p>
-                </div>
-                <div className="gold-pulse">
-                  {secretRare.imageFront ? (
-                    <img
-                      src={secretRare.imageFront}
-                      alt={secretRare.name}
-                      className="h-[180px] w-auto object-contain"
-                    />
-                  ) : (
-                    <FigurePlaceholder mystery size={180} />
-                  )}
-                </div>
-              </Link>
-            </div>
           )}
         </div>
       </section>
