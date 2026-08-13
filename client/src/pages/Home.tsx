@@ -472,8 +472,8 @@ export default function Home() {
       >
         {clubBg && <div className="absolute inset-0 bg-white/70" />}
         <div className="relative max-w-[1280px] mx-auto px-6 lg:px-10">
-          <div className="grid md:grid-cols-2 gap-10 items-center fade-up">
-            <div>
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-10 items-end fade-up">
+            <div className="pb-2 md:pb-8">
               <h2 className="text-[30px] sm:text-4xl md:text-[56px] mb-4">JOIN THE YEYPEE CLUB!</h2>
               <p className="text-body text-lg mb-8">Get special updates, collector tips, and early access!</p>
               {leadStatus === "done" ? (
@@ -505,10 +505,14 @@ export default function Home() {
               )}
             </div>
             {clubImage ? (
-              // Character cut-outs are portrait: show the whole figure instead
-              // of cropping it to a landscape box, and sit it on the baseline.
-              <div className="hidden md:flex h-80 lg:h-[26rem] items-end justify-center">
-                <img src={clubImage} alt="" className="max-h-full w-auto object-contain" />
+              // Shown whole (never cropped), sitting on the same baseline as the
+              // text column and using the full width of its half.
+              <div className="hidden md:flex h-[22rem] lg:h-[30rem] items-end justify-center lg:justify-end">
+                <img
+                  src={clubImage}
+                  alt=""
+                  className="h-full w-full object-contain object-bottom"
+                />
               </div>
             ) : (
               <div className="hidden md:flex items-center justify-center h-72 relative overflow-hidden rounded-card bg-gradient-to-br from-candy-pink-100 to-white">
