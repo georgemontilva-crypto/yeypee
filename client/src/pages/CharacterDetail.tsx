@@ -27,7 +27,14 @@ export default function CharacterDetail() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  if (loading) return <div className="min-h-[60vh]" />;
+  if (loading)
+    return (
+      <div className="max-w-[1280px] mx-auto px-6 lg:px-10 pt-6 md:pt-10 animate-pulse">
+        <div className="h-3 w-32 rounded bg-bg-soft mb-6" />
+        <div className="rounded-card bg-bg-soft h-[300px] md:h-[420px]" />
+        <div className="h-6 w-72 rounded-lg bg-bg-soft mt-8" />
+      </div>
+    );
   if (!data?.character) {
     return (
       <>

@@ -73,7 +73,24 @@ export default function Home() {
   };
 
   if (loading) {
-    return <div className="min-h-[60vh] flex items-center justify-center" />;
+    // A skeleton of the real layout: an empty box made the footer jump up and
+    // left a blank strip on every reload.
+    return (
+      <div className="animate-pulse">
+        <div className="w-full aspect-[4/5] lg:aspect-[21/9] bg-bg-soft" />
+        <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-14 md:py-20">
+          <div className="h-7 w-64 rounded-lg bg-bg-soft mb-8" />
+          <div className="flex gap-6 md:gap-10">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="shrink-0">
+                <div className="rounded-full bg-bg-soft w-[104px] h-[104px] md:w-[132px] md:h-[132px]" />
+                <div className="h-3 w-20 rounded bg-bg-soft mt-3 mx-auto" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
