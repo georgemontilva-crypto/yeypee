@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { contentApi } from "../lib/api";
 import { useFadeUp } from "../components/ScrollToTop";
-import { BackLink, EmptyState, FigurePlaceholder } from "../components/Shared";
+import { BackLink, EmptyState, FigurePlaceholder, SECRET_FIGURE_IMAGE } from "../components/Shared";
 
 export default function CollectionDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -147,7 +147,7 @@ export default function CollectionDetail() {
                     {secretRare.imageFront ? (
                       <img src={secretRare.imageFront} alt={secretRare.name} className="h-full object-contain" />
                     ) : (
-                      <FigurePlaceholder mystery size={170} />
+                      <img src={SECRET_FIGURE_IMAGE} alt="Secret rare" className="h-full object-contain" />
                     )}
                   </div>
                   <div className="text-center py-4 bg-ink">

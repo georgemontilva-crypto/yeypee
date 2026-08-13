@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { contentApi } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useFadeUp } from "../components/ScrollToTop";
-import { EmptyState, FigurePlaceholder } from "../components/Shared";
+import { EmptyState, FigurePlaceholder, SECRET_FIGURE_IMAGE } from "../components/Shared";
 
 export default function MyCollection() {
   useFadeUp();
@@ -51,7 +51,7 @@ export default function MyCollection() {
     <section className="pt-32 pb-24 md:py-[96px]">
       <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
         <div className="mb-10 fade-up">
-          <h1 className="text-4xl md:text-[56px] mb-3">YOUR COLLECTION</h1>
+          <h1 className="text-[30px] sm:text-4xl md:text-[56px] mb-3">YOUR COLLECTION</h1>
           <p className="text-body text-lg italic">Track your progress!</p>
         </div>
         {!user && (
@@ -88,7 +88,12 @@ export default function MyCollection() {
                           <Link key={ch.id} to={`/characters/${ch.slug}`} className={`rounded-smcard border overflow-hidden transition-all ${done ? "border-jungle bg-jungle/5" : isSecret ? "border-gold/50 bg-black/5" : "border-borderc opacity-60"}`}>
                             <div className="flex items-center justify-center p-4 h-36" style={{ background: isSecret ? undefined : (done ? undefined : ch.cardBgColor) }}>
                               {isSecret ? (
-                                <FigurePlaceholder mystery size={90} />
+                                // Transparent PNG: no background box behind it.
+                                <img
+                                  src={SECRET_FIGURE_IMAGE}
+                                  alt="Secret rare"
+                                  className="h-full object-contain"
+                                />
                               ) : done ? (
                                 <img src={ch.imageFront || undefined} alt={ch.name} className="h-full object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                               ) : (

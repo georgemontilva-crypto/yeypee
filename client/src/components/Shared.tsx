@@ -41,6 +41,13 @@ export function Badge({ label = "COMMON", rarity }: { label?: string; rarity?: s
   );
 }
 
+/**
+ * Artwork used for any character kept secret from the visitor (the silhouette
+ * with the question mark). Living here means every page shows the same image.
+ */
+export const SECRET_FIGURE_IMAGE =
+  "https://pub-b90059454f4a45979b7b085a5fa8fd11.r2.dev/other/1786574575963-67a89729.png";
+
 /** Elegant clean placeholder figure: a bear silhouette rendered as SVG */
 export function FigurePlaceholder({
   color = "#FF5FA2",

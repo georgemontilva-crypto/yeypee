@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { contentApi } from "../lib/api";
 import { useFadeUp } from "../components/ScrollToTop";
-import { EmptyState, FigurePlaceholder } from "../components/Shared";
+import { EmptyState, FigurePlaceholder, SECRET_FIGURE_IMAGE } from "../components/Shared";
 
 export default function Home() {
   useFadeUp();
@@ -337,7 +337,7 @@ export default function Home() {
                         className="h-full object-contain"
                       />
                     ) : (
-                      <FigurePlaceholder mystery size={150} />
+                      <img src={SECRET_FIGURE_IMAGE} alt="Secret rare" className="h-full object-contain" />
                     )}
                   </div>
                   <div className="text-center py-4">
@@ -415,7 +415,7 @@ export default function Home() {
                     className="w-[180px] h-[180px] md:w-[260px] md:h-[260px] object-contain"
                   />
                 ) : (
-                  <FigurePlaceholder mystery size={200} />
+                  <img src={SECRET_FIGURE_IMAGE} alt="Secret rare" className="h-[200px] w-auto object-contain" />
                 )}
               </div>
             </div>
