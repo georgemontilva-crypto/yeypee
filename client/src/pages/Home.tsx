@@ -8,11 +8,33 @@ export default function Home() {
   useFadeUp();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [slideIndex, setSlideIndex] = useState(0);
   const [leadEmail, setLeadEmail] = useState("");
   const [leadStatus, setLeadStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const videoRef = useRef<HTMLVideoElement>(null);
-  const bannerAsset = data?.settings?.hero_banner ?? null;
-  const mobileBannerAsset = data?.settings?.hero_banner_mobile ?? null;
+  // Slider slides, falling back to the single-banner settings.
+  const desktopSlides: string[] = (() => {
+    const list = data?.settings?.hero_banners;
+    if (Array.isArray(list) && list.length) return list;
+    return data?.settings?.hero_banner ? [data.settings.hero_banner] : [];
+  })();
+  const mobileSlides: string[] = (() => {
+    const list = data?.settings?.hero_banners_mobile;
+    if (Array.isArray(list) && list.length) return list;
+    return data?.settings?.hero_banner_mobile ? [data.settings.hero_banner_mobile] : [];
+  })();
+  const bannerAsset = desktopSlides[0] ?? null;
+  const mobileBannerAsset = mobileSlides[0] ?? null;
+
+  // One entry per slide, pairing the desktop and phone artwork by position so a
+  // site can define either list (or both).
+  const slides = Array.from(
+    { length: Math.max(desktopSlides.length, mobileSlides.length) },
+    (_, i) => ({
+      desktop: desktopSlides[i] ?? desktopSlides[desktopSlides.length - 1] ?? null,
+      mobile: mobileSlides[i] ?? mobileSlides[mobileSlides.length - 1] ?? null,
+    })
+  );
   const secretBanner = data?.settings?.secret_rare_banner ?? null;
   const secretCard = data?.settings?.secret_rare_card ?? null;
   const partnersBg = data?.settings?.partners_bg ?? null;
@@ -72,6 +94,17 @@ export default function Home() {
     el.scrollBy({ left: dir * 320, behavior: "smooth" });
   };
 
+  // Auto-advance the hero slider.
+  useEffect(() => {
+    if (slides.length < 2) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(
+      () => setSlideIndex((i) => (i + 1) % slides.length),
+      6000
+    );
+    return () => window.clearInterval(timer);
+  }, [slides.length]);
+
   if (loading) {
     // A skeleton of the real layout: an empty box made the footer jump up and
     // left a blank strip on every reload.
@@ -101,16 +134,38 @@ export default function Home() {
           the top, leaving the lower half of the frame free for the figures. */}
       <section className="relative overflow-hidden bg-white">
         {bannerAsset || mobileBannerAsset ? (
-          <picture>
-            {mobileBannerAsset && (
-              <source media="(max-width: 1023px)" srcSet={mobileBannerAsset} />
+          <div className="relative">
+            {/* The first slide is in normal flow so it sets the section height;
+                the rest are stacked on top and cross-fade over it. */}
+            {slides.map((slide, i) => (
+              <picture key={slide.desktop || slide.mobile || i}>
+                {slide.mobile && <source media="(max-width: 1023px)" srcSet={slide.mobile} />}
+                <img
+                  src={slide.desktop || slide.mobile}
+                  alt=""
+                  className={`w-full h-auto max-h-[86vh] object-cover object-bottom lg:max-h-none lg:object-contain transition-opacity duration-1000 ${
+                    i === 0 ? "block" : "absolute inset-0 h-full"
+                  } ${i === slideIndex ? "opacity-100" : "opacity-0"}`}
+                />
+              </picture>
+            ))}
+
+            {slides.length > 1 && (
+              <div className="absolute bottom-3 md:bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSlideIndex(i)}
+                    aria-label={`Slide ${i + 1}`}
+                    aria-current={i === slideIndex}
+                    className={`h-2.5 rounded-full transition-all ${
+                      i === slideIndex ? "w-7 bg-ink" : "w-2.5 bg-ink/30 hover:bg-ink/60"
+                    }`}
+                  />
+                ))}
+              </div>
             )}
-            <img
-              src={bannerAsset || mobileBannerAsset}
-              alt=""
-              className="block w-full h-auto max-h-[86vh] object-cover object-bottom lg:max-h-none lg:object-contain"
-            />
-          </picture>
+          </div>
         ) : !prefersReducedMotion && videoAsset ? (
           <video
             ref={videoRef}

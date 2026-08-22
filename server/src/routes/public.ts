@@ -86,6 +86,11 @@ router.get("/settings", async (_req, res) => {
     out.hero_poster_asset_id,
     out.featured_collection_id,
   ].filter((v): v is number => typeof v === "number");
+  // Slider slides: a list of media ids per breakpoint. Falls back to the single
+  // banner keys so existing sites keep working with no changes.
+  const idList = (v: unknown): number[] =>
+    Array.isArray(v) ? v.filter((x): x is number => typeof x === "number") : [];
+  assetIds.push(...idList(out.hero_banner_ids), ...idList(out.hero_banner_mobile_ids));
   if (out.carousel_character_ids && Array.isArray(out.carousel_character_ids)) {
     assetIds.push(...(out.carousel_character_ids as number[]).filter((v): v is number => typeof v === "number"));
   }
@@ -105,6 +110,12 @@ router.get("/settings", async (_req, res) => {
       logo_footer: urlFor(out.logo_footer_asset_id),
       hero_banner: urlFor(out.hero_banner_asset_id),
       hero_banner_mobile: urlFor(out.hero_banner_mobile_asset_id),
+      hero_banners: idList(out.hero_banner_ids)
+        .map((id) => urlFor(id))
+        .filter((u): u is string => !!u),
+      hero_banners_mobile: idList(out.hero_banner_mobile_ids)
+        .map((id) => urlFor(id))
+        .filter((u): u is string => !!u),
       secret_rare_banner: urlFor(out.secret_rare_banner_asset_id),
       secret_rare_card: urlFor(out.secret_rare_card_asset_id),
       partners_bg: urlFor(out.partners_bg_asset_id),
@@ -137,6 +148,12 @@ router.get("/home", async (_req, res) => {
     settings.hero_poster_asset_id,
     settings.featured_collection_id,
   ].filter((v): v is number => typeof v === "number");
+  const heroSlideIds = (v: unknown): number[] =>
+    Array.isArray(v) ? v.filter((x): x is number => typeof x === "number") : [];
+  assetIds.push(
+    ...heroSlideIds(settings.hero_banner_ids),
+    ...heroSlideIds(settings.hero_banner_mobile_ids)
+  );
   if (settings.carousel_character_ids && Array.isArray(settings.carousel_character_ids)) {
     assetIds.push(...(settings.carousel_character_ids as number[]).filter((v): v is number => typeof v === "number"));
   }
@@ -184,13 +201,19 @@ router.get("/home", async (_req, res) => {
     ? await db.select().from(mediaAssets).where(inArray(mediaAssets.id, assetIds))
     : [];
   const assetById = new Map(allAssetRows.map((a) => [a.id, a.url]));
-  const assetUrls: Record<string, string | null> = {
+  const assetUrls: Record<string, string | string[] | null> = {
     logo_header: settings.logo_header_asset_id ? (assetById.get(settings.logo_header_asset_id) ?? null) : null,
     logo_footer: settings.logo_footer_asset_id ? (assetById.get(settings.logo_footer_asset_id) ?? null) : null,
     hero_banner: settings.hero_banner_asset_id ? (assetById.get(settings.hero_banner_asset_id) ?? null) : null,
     hero_banner_mobile: settings.hero_banner_mobile_asset_id
       ? (assetById.get(settings.hero_banner_mobile_asset_id) ?? null)
       : null,
+    hero_banners: heroSlideIds(settings.hero_banner_ids)
+      .map((id) => assetById.get(id))
+      .filter((u): u is string => !!u),
+    hero_banners_mobile: heroSlideIds(settings.hero_banner_mobile_ids)
+      .map((id) => assetById.get(id))
+      .filter((u): u is string => !!u),
     secret_rare_banner: settings.secret_rare_banner_asset_id
       ? (assetById.get(settings.secret_rare_banner_asset_id) ?? null)
       : null,

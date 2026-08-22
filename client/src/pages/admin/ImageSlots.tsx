@@ -21,6 +21,14 @@ interface SiteSlot {
   type?: "image" | "video";
 }
 
+interface ListSlot {
+  kind: "list";
+  key: string;
+  label: string;
+  where: string;
+  spec: string;
+}
+
 interface ContentSlot {
   kind: "content";
   label: string;
@@ -29,6 +37,24 @@ interface ContentSlot {
   to: string;
   module: string;
 }
+
+/** Hero slider: several images per breakpoint, stored as arrays of media ids. */
+const LIST_SLOTS: ListSlot[] = [
+  {
+    kind: "list",
+    key: "hero_banner_ids",
+    label: "Homepage hero slider — desktop",
+    where: "Very top of the homepage. With two or more images it becomes a slider.",
+    spec: "Horizontal, 2400 x 1000 px or wider. Keep the LEFT side free: the headline and button sit there on every slide.",
+  },
+  {
+    kind: "list",
+    key: "hero_banner_mobile_ids",
+    label: "Homepage hero slider — phone & tablet",
+    where: "Used instead of the wide slider on screens under 1024px.",
+    spec: "Vertical or square, around 1200 x 1600 px, with the characters in the LOWER half.",
+  },
+];
 
 const SITE_SLOTS: SiteSlot[] = [
   {
@@ -166,6 +192,10 @@ export default function ImageSlots({ onChanged }: { onChanged?: () => void }) {
   const [values, setValues] = useState<Record<string, any>>({});
   const [previews, setPreviews] = useState<Record<string, string>>({});
   const [pickerFor, setPickerFor] = useState<SiteSlot | null>(null);
+  // key -> ordered media ids, and a companion id -> url map for the thumbnails
+  const [lists, setLists] = useState<Record<string, number[]>>({});
+  const [listUrls, setListUrls] = useState<Record<number, string>>({});
+  const [listPickerFor, setListPickerFor] = useState<ListSlot | null>(null);
   const [saving, setSaving] = useState("");
   const [open, setOpen] = useState(true);
   const [diag, setDiag] = useState<any>(null);
@@ -188,11 +218,51 @@ export default function ImageSlots({ onChanged }: { onChanged?: () => void }) {
       .then((d) => {
         setValues(d.settings || {});
         setPreviews(d.previews || {});
+        const next: Record<string, number[]> = {};
+        for (const l of LIST_SLOTS) {
+          const raw = (d.settings || {})[l.key];
+          next[l.key] = Array.isArray(raw) ? raw.filter((x: any) => typeof x === "number") : [];
+        }
+        setLists(next);
       })
       .catch(() => undefined);
   };
 
   useEffect(load, []);
+
+  // Thumbnails for the slider lists come from the media library.
+  useEffect(() => {
+    adminApi
+      .media({ pageSize: "200" })
+      .then((d) => {
+        const map: Record<number, string> = {};
+        for (const m of d.assets || d.media || []) map[m.id] = m.url;
+        setListUrls(map);
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const saveList = async (slot: ListSlot, ids: number[]) => {
+    setLists((l) => ({ ...l, [slot.key]: ids }));
+    setSaving(slot.key);
+    try {
+      await adminApi.patchSettings({ [slot.key]: ids });
+      onChanged?.();
+    } catch (e: any) {
+      alert(e?.data?.error || e?.message || "Could not save");
+      load();
+    } finally {
+      setSaving("");
+    }
+  };
+
+  const moveInList = (slot: ListSlot, index: number, dir: -1 | 1) => {
+    const ids = [...(lists[slot.key] || [])];
+    const target = index + dir;
+    if (target < 0 || target >= ids.length) return;
+    [ids[index], ids[target]] = [ids[target], ids[index]];
+    saveList(slot, ids);
+  };
 
   const assign = async (slot: SiteSlot, item: MediaItem | null) => {
     setSaving(slot.key);
@@ -269,6 +339,84 @@ export default function ImageSlots({ onChanged }: { onChanged?: () => void }) {
             )}
           </div>
 
+          {/* Hero slider lists */}
+          <div className="kicker text-body mb-2">Homepage slider — add as many images as you want</div>
+          <div className="grid gap-3 md:grid-cols-2 mb-6">
+            {LIST_SLOTS.map((slot) => {
+              const ids = lists[slot.key] || [];
+              return (
+                <div key={slot.key} className="bg-white rounded-xl border border-borderc p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="text-[13px] font-extrabold leading-tight">{slot.label}</div>
+                    <span
+                      className="text-[9px] font-bold px-2 py-1 rounded-md shrink-0"
+                      style={
+                        ids.length
+                          ? { background: "#E6F7EE", color: "#2E7D4F" }
+                          : { background: "#F3F3F3", color: "#8A8A8A" }
+                      }
+                    >
+                      {ids.length ? `${ids.length} SLIDE${ids.length > 1 ? "S" : ""}` : "EMPTY"}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-body mt-1.5">{slot.where}</p>
+                  <p className="text-[11px] text-body mt-1 italic">{slot.spec}</p>
+
+                  {ids.length === 0 ? (
+                    <div className="mt-3 rounded-lg bg-bg-soft border border-borderc h-24 flex items-center justify-center">
+                      <span className="text-[11px] text-body">No slides yet</span>
+                    </div>
+                  ) : (
+                    <ul className="mt-3 space-y-2">
+                      {ids.map((id, i) => (
+                        <li key={`${id}-${i}`} className="flex items-center gap-2">
+                          <span className="text-[11px] text-body w-4 text-right">{i + 1}</span>
+                          {listUrls[id] ? (
+                            <img src={listUrls[id]} alt="" className="h-12 w-20 object-cover rounded-lg border border-borderc" />
+                          ) : (
+                            <span className="h-12 w-20 rounded-lg border border-borderc bg-bg-soft" />
+                          )}
+                          <div className="flex flex-col">
+                            <button
+                              onClick={() => moveInList(slot, i, -1)}
+                              disabled={i === 0}
+                              aria-label="Move up"
+                              className="text-[10px] text-body disabled:opacity-30"
+                            >
+                              ▲
+                            </button>
+                            <button
+                              onClick={() => moveInList(slot, i, 1)}
+                              disabled={i === ids.length - 1}
+                              aria-label="Move down"
+                              className="text-[10px] text-body disabled:opacity-30"
+                            >
+                              ▼
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => saveList(slot, ids.filter((_, j) => j !== i))}
+                            className="ml-auto text-[10px] font-bold uppercase text-candy-pink"
+                          >
+                            Remove
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <button
+                    onClick={() => setListPickerFor(slot)}
+                    disabled={saving === slot.key}
+                    className="btn-pill btn-secondary text-[9px] px-4 py-2.5 mt-3 w-full"
+                  >
+                    {saving === slot.key ? "SAVING..." : "+ ADD SLIDE"}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
           <div className="kicker text-body mb-2">Site-wide — assign here</div>
           <div className="grid gap-3 md:grid-cols-3 mb-6">
             {SITE_SLOTS.map((s) => {
@@ -337,6 +485,18 @@ export default function ImageSlots({ onChanged }: { onChanged?: () => void }) {
             ))}
           </div>
         </>
+      )}
+
+      {listPickerFor && (
+        <MediaPickerModal
+          typeFilter="image"
+          onPick={(item) => {
+            const slot = listPickerFor;
+            saveList(slot, [...(lists[slot.key] || []), item.id]);
+            setListPickerFor(null);
+          }}
+          onClose={() => setListPickerFor(null)}
+        />
       )}
 
       {pickerFor && (
