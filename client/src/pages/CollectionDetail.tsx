@@ -65,17 +65,19 @@ export default function CollectionDetail() {
       <section className="pb-24 md:pb-[96px]">
         {/* Hero */}
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10 pt-8">
-          <div className="relative rounded-card overflow-hidden h-[300px] md:h-[420px] fade-up bg-bg-soft">
+          <div className="relative rounded-card overflow-hidden fade-up bg-bg-soft">
             {c.heroImage ? (
+              // The banner sets the height: no cropping, so a wide strip with
+              // the character on one side is shown exactly as uploaded.
               <img
                 src={c.heroImage}
                 alt={c.name}
-                className={`w-full h-full object-cover transition-opacity duration-700 ${
+                className={`block w-full h-auto transition-opacity duration-700 ${
                   videoOn ? "opacity-0" : "opacity-100"
                 }`}
               />
             ) : !c.heroVideo ? (
-              <div className="w-full h-full flex items-center justify-center">
+              <div className="w-full aspect-[21/9] flex items-center justify-center">
                 <FigurePlaceholder color="#F2C14E" size={240} />
               </div>
             ) : null}
@@ -94,7 +96,7 @@ export default function CollectionDetail() {
                 }`}
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
             <div className="absolute bottom-0 left-0 p-5 sm:p-8 md:p-12">
               <h1 className="text-white text-[30px] sm:text-4xl md:text-6xl mb-3">{c.name}</h1>
               <p className="text-white/85 italic text-base md:text-lg mb-6 max-w-xl">{c.description || c.tagline}</p>
@@ -104,9 +106,12 @@ export default function CollectionDetail() {
           {/* Stats */}
           <div className="mt-8 border-t border-borderc grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-borderc fade-up">
             {[
-              { big: `${chars.length}+1`, small: "CHARACTERS + 1 SECRET RARE" },
-              { big: c.seriesLabel || "SERIES 1", small: c.name.toUpperCase() },
-              { big: c.releaseYear || "2024", small: "RELEASED" },
+              {
+                big: c.statCountValue || `${chars.length}${secretRare ? "+1" : ""}`,
+                small: c.statCountLabel || (secretRare ? "CHARACTERS + 1 SECRET RARE" : "CHARACTERS"),
+              },
+              { big: c.seriesLabel || "SERIES 1", small: c.statSeriesLabel || c.name.toUpperCase() },
+              { big: c.releaseYear || "2024", small: c.statYearLabel || "RELEASED" },
             ].map((s, i) => (
               <div key={i} className="py-6 text-center">
                 <div className="text-3xl md:text-4xl font-extrabold">{s.big}</div>

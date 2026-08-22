@@ -71,6 +71,12 @@ export const collections = mysqlTable("collections", {
   description: text("description"),
   seriesLabel: varchar("series_label", { length: 120 }),
   releaseYear: varchar("release_year", { length: 16 }),
+  // Captions of the three-figure stats bar, so each collection can word it its
+  // own way ("7 GUARDIANS", "6 CHARACTERS + 2 SECRET RARES", ...).
+  statCountValue: varchar("stat_count_value", { length: 40 }),
+  statCountLabel: varchar("stat_count_label", { length: 120 }),
+  statSeriesLabel: varchar("stat_series_label", { length: 120 }),
+  statYearLabel: varchar("stat_year_label", { length: 120 }),
   status: varchar("status", { length: 20 }).notNull().default("active"),
   heroImageId: int("hero_image_id"),
   cardImageId: int("card_image_id"),

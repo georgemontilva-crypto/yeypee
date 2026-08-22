@@ -58,6 +58,10 @@ export default function Home() {
     data?.collections?.find((c: any) => (featuredId ? c.id === Number(featuredId) : c.featured)) ??
     data?.collections?.[0] ??
     null;
+  // Characters that belong to the featured collection, for its stats bar.
+  const featuredCharacters = (data?.characters ?? []).filter(
+    (ch: any) => featured && ch.collectionId === featured.id
+  );
   const carouselIds = data?.settings?.carousel_character_ids ?? null;
   const secretRareId = data?.settings?.secret_rare_character_id ?? null;
   const carousel = carouselIds
@@ -313,9 +317,15 @@ export default function Home() {
               {/* Stats bar */}
               <div className="mt-10 md:mt-12 border-t border-borderc grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-borderc fade-up">
                 {[
-                  { big: "7", small: "CHARACTERS + 1 SECRET RARE" },
-                  { big: featured.seriesLabel || "SERIES 1", small: (featured.name || "").toUpperCase() },
-                  { big: featured.releaseYear || "2024", small: "RELEASED" },
+                  {
+                    big: featured.statCountValue || String(featuredCharacters.length || ""),
+                    small: featured.statCountLabel || "CHARACTERS",
+                  },
+                  {
+                    big: featured.seriesLabel || "SERIES 1",
+                    small: featured.statSeriesLabel || (featured.name || "").toUpperCase(),
+                  },
+                  { big: featured.releaseYear || "2024", small: featured.statYearLabel || "RELEASED" },
                 ].map((s, i) => (
                   <div key={i} className="py-5 md:py-6 px-3 text-center">
                     <div className="text-2xl md:text-4xl font-extrabold text-ink break-words">{s.big}</div>

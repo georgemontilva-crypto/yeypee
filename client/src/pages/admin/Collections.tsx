@@ -6,6 +6,16 @@ const FIELDS: FieldSpec[] = [
   { key: "description", label: "Description", type: "textarea", placeholder: "Full description of this world..." },
   { key: "seriesLabel", label: "Series Label", type: "text", placeholder: "Series 1" },
   { key: "releaseYear", label: "Release Year", type: "text", placeholder: "2024" },
+  {
+    key: "statCountValue",
+    label: "Stats — first figure",
+    type: "text",
+    placeholder: "leave empty to count characters",
+    hint: "Big number on the left of the stats bar. Empty = counted automatically",
+  },
+  { key: "statCountLabel", label: "Stats — first caption", type: "text", placeholder: "CHARACTERS + 1 SECRET RARE" },
+  { key: "statSeriesLabel", label: "Stats — middle caption", type: "text", placeholder: "leave empty to use the collection name" },
+  { key: "statYearLabel", label: "Stats — right caption", type: "text", placeholder: "RELEASED" },
   { key: "status", label: "Status", type: "select", options: [
     { value: "active", label: "Live" },
     { value: "coming_soon", label: "Coming Soon" },

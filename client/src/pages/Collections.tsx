@@ -31,7 +31,7 @@ export default function Collections() {
               const active = c.status !== "coming_soon";
               return (
                 <div key={c.id} className="zoom-parent relative rounded-card overflow-hidden h-[220px] md:h-[240px] fade-up bg-bg-soft">
-                  {c.cardImage && <img src={c.cardImage} alt={c.name} className="zoom-img absolute inset-0 w-full h-full object-cover" />}
+                  {c.cardImage && <img src={c.cardImage} alt={c.name} className="zoom-img absolute inset-0 w-full h-full object-cover object-right" />}
                   {/* Only a soft scrim on the text side, so the artwork keeps its own colours. */}
                   <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
                   <div className="relative z-10 h-full flex items-center justify-between px-5 sm:px-8 md:px-12">
