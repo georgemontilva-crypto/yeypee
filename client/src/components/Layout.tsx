@@ -142,8 +142,8 @@ export default function Layout() {
             </button>
             {user ? (
               <div className="hidden lg:flex items-center gap-6 ml-2">
-                <Link to="/account" className="nav-link btn-label text-body max-w-[160px] truncate">
-                  {user.displayName}
+                <Link to="/account" className="nav-link btn-label text-body">
+                  MY ACCOUNT
                 </Link>
                 {user.role === "admin" && (
                   <Link to="/admin" className="nav-link btn-label text-candy-pink">
@@ -200,7 +200,7 @@ export default function Layout() {
                 className="menu-link menu-item"
                 style={{ transitionDelay: menuOpen ? "300ms" : "0ms" }}
               >
-                {user.displayName}
+                MY ACCOUNT
               </Link>
               {user.role === "admin" && (
                 <Link
