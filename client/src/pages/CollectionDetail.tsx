@@ -65,16 +65,23 @@ export default function CollectionDetail() {
       <section className="pb-24 md:pb-[96px]">
         {/* Hero */}
         <div className="max-w-[1280px] mx-auto px-6 lg:px-10 pt-8">
-          <div className="relative rounded-card overflow-hidden fade-up bg-bg-soft">
+          <div
+            // With a video the banner keeps the old fixed height (the video is
+            // absolutely positioned and needs a box to fill). Without one, the
+            // image sets the height so nothing gets cropped.
+            className={`relative rounded-card overflow-hidden fade-up bg-bg-soft ${
+              c.heroVideo ? "h-[300px] md:h-[420px]" : ""
+            }`}
+          >
             {c.heroImage ? (
               // The banner sets the height: no cropping, so a wide strip with
               // the character on one side is shown exactly as uploaded.
               <img
                 src={c.heroImage}
                 alt={c.name}
-                className={`block w-full h-auto transition-opacity duration-700 ${
-                  videoOn ? "opacity-0" : "opacity-100"
-                }`}
+                className={`block w-full transition-opacity duration-700 ${
+                  c.heroVideo ? "h-full object-cover" : "h-auto"
+                } ${videoOn ? "opacity-0" : "opacity-100"}`}
               />
             ) : !c.heroVideo ? (
               <div className="w-full aspect-[21/9] flex items-center justify-center">
