@@ -9,6 +9,7 @@ export default function Home() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [secretIndex, setSecretIndex] = useState(0);
   const [leadEmail, setLeadEmail] = useState("");
   const [leadStatus, setLeadStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -36,6 +37,13 @@ export default function Home() {
     })
   );
   const secretBanner = data?.settings?.secret_rare_banner ?? null;
+  // Every secret rare across all collections, newest collection last.
+  const secretSlides = (data?.characters ?? [])
+    .filter((ch: any) => ch.rarity === "secret_rare")
+    .map((ch: any) => {
+      const coll = (data?.collections ?? []).find((c: any) => c.id === ch.collectionId);
+      return { ...ch, collectionName: coll?.name ?? "", collectionSlug: coll?.slug ?? "" };
+    });
   const secretCard = data?.settings?.secret_rare_card ?? null;
   const partnersBg = data?.settings?.partners_bg ?? null;
   const clubBg = data?.settings?.club_bg ?? null;
@@ -110,6 +118,17 @@ export default function Home() {
     );
     return () => window.clearInterval(timer);
   }, [slides.length]);
+
+  // Rotate the secret rares.
+  useEffect(() => {
+    if (secretSlides.length < 2) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(
+      () => setSecretIndex((i) => (i + 1) % secretSlides.length),
+      7000
+    );
+    return () => window.clearInterval(timer);
+  }, [secretSlides.length]);
 
   if (loading) {
     // A skeleton of the real layout: an empty box made the footer jump up and
@@ -446,75 +465,73 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. Secret rare. A banner uploaded in the admin fills the strip; if
-          none is set it falls back to the gold glow plus the character art. */}
-      <section className="py-10 md:py-16">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-10 fade-up">
-          {secretBanner ? (
-            <div className="rounded-card relative overflow-hidden bg-ink">
-              <img src={secretBanner} alt="" className="block w-full h-auto" />
-              {/* On phones the copy sits under the image so nothing gets clipped;
-                  from lg it overlays the left half as designed. */}
-              <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
-              <div className="lg:absolute lg:inset-0 flex items-center">
-                <div className="px-6 sm:px-8 lg:px-16 py-8 lg:py-0 w-full lg:w-auto lg:max-w-[60%]">
-                  <div className="kicker text-gold mb-2 md:mb-3">SECRET RARE</div>
-                  <h2
-                    className="text-white mb-2 md:mb-3"
-                    style={{ fontSize: "clamp(28px, 4.6vw, 56px)", lineHeight: 1.08 }}
-                  >
-                    {secretRare?.name || "THE GOLDEN ONE"}
-                  </h2>
-                  <p
-                    className="text-white/80 italic mb-4 md:mb-6"
-                    style={{ fontSize: "clamp(14px, 1.7vw, 18px)" }}
-                  >
-                    {secretRare?.description || "Can you find the Golden YEYPEE?"}
-                  </p>
-                  <Link
-                    to={secretRare?.slug ? `/characters/${secretRare.slug}` : "/characters"}
-                    className="btn-pill btn-outline-gold"
-                  >
-                    LEARN MORE
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ) : (
+      {/* 5. Secret rares — one slide per secret character across all
+          collections, on a shared gold-glow background. The banner uploaded in
+          the admin, if any, is used as the backdrop instead of the gradient. */}
+      {secretSlides.length > 0 && (
+        <section className="py-10 md:py-16">
+          <div className="max-w-[1280px] mx-auto px-6 lg:px-10 fade-up">
             <div
-              className="rounded-card relative overflow-hidden px-6 sm:px-8 md:px-16 py-10 sm:py-14 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8"
-              style={{ background: "radial-gradient(ellipse at 70% 30%, rgba(242,193,78,0.35) 0%, #0F0F0F 60%)" }}
+              className="rounded-card relative overflow-hidden"
+              style={
+                secretBanner
+                  ? { backgroundImage: `url(${secretBanner})`, backgroundSize: "cover", backgroundPosition: "center" }
+                  : { background: "radial-gradient(ellipse at 70% 40%, rgba(242,193,78,0.38) 0%, #0F0F0F 62%)" }
+              }
             >
-              <div className="text-center md:text-left">
-                <div className="kicker text-gold mb-3">SECRET RARE</div>
-                <h2 className="text-[30px] sm:text-4xl md:text-[56px] text-white mb-3">
-                  {secretRare?.name || "THE GOLDEN ONE"}
-                </h2>
-                <p className="text-white/80 text-lg italic mb-6">
-                  {secretRare?.description || "Can you find the Golden YEYPEE?"}
-                </p>
-                <Link
-                  to={secretRare?.slug ? `/characters/${secretRare.slug}` : "/characters"}
-                  className="btn-pill btn-outline-gold"
+              {secretBanner && <div className="absolute inset-0 bg-black/45" />}
+
+              {secretSlides.map((sr: any, i: number) => (
+                <div
+                  key={sr.id}
+                  className={`transition-opacity duration-700 ${
+                    i === secretIndex ? "opacity-100" : "opacity-0 absolute inset-0 pointer-events-none"
+                  }`}
                 >
-                  LEARN MORE
-                </Link>
-              </div>
-              <div className="gold-pulse shrink-0">
-                {secretRare?.imageFront ? (
-                  <img
-                    src={secretRare.imageFront}
-                    alt={secretRare.name}
-                    className="w-[180px] h-[180px] md:w-[260px] md:h-[260px] object-contain"
-                  />
-                ) : (
-                  <img src={SECRET_FIGURE_IMAGE} alt="Secret rare" className="h-[200px] w-auto object-contain" />
-                )}
-              </div>
+                  <div className="relative px-6 sm:px-8 md:px-16 py-10 sm:py-14 md:py-16 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="text-center md:text-left md:max-w-[55%]">
+                      <div className="kicker text-gold mb-3">SECRET RARE</div>
+                      <h2 className="text-[30px] sm:text-4xl md:text-[56px] text-white mb-3">{sr.name}</h2>
+                      <p className="text-white/80 text-base md:text-lg italic mb-6">
+                        {sr.description || `Hidden somewhere in ${sr.collectionName}.`}
+                      </p>
+                      <Link
+                        to={sr.collectionSlug ? `/collections/${sr.collectionSlug}` : "/collections"}
+                        className="btn-pill btn-outline-gold"
+                      >
+                        {sr.collectionName ? `EXPLORE ${sr.collectionName.toUpperCase()}` : "EXPLORE"}
+                      </Link>
+                    </div>
+                    <div className="gold-pulse shrink-0">
+                      <img
+                        src={sr.imageFront || SECRET_FIGURE_IMAGE}
+                        alt={sr.name}
+                        className="w-[180px] h-[180px] md:w-[260px] md:h-[260px] object-contain"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {secretSlides.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                  {secretSlides.map((_: any, i: number) => (
+                    <button
+                      key={i}
+                      onClick={() => setSecretIndex(i)}
+                      aria-label={`Secret rare ${i + 1}`}
+                      aria-current={i === secretIndex}
+                      className={`h-2.5 rounded-full transition-all ${
+                        i === secretIndex ? "w-7 bg-gold" : "w-2.5 bg-white/40 hover:bg-white/70"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* 6. Retail partners */}
       <section
