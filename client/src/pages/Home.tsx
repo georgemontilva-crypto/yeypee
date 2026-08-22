@@ -248,9 +248,11 @@ export default function Home() {
                         </span>
                       )}
                       <span className="world-bubble block rounded-full overflow-hidden bg-bg-soft w-full h-full">
-                      {c.cardImage || c.heroImage ? (
+                      {c.heroImage || c.cardImage ? (
+                        // Hero Image holds the square character art; Card Image
+                        // is the wide strip used for the /collections banners.
                         <img
-                          src={c.cardImage || c.heroImage}
+                          src={c.heroImage || c.cardImage}
                           alt={c.name}
                           className="w-full h-full object-cover"
                         />

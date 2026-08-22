@@ -21,8 +21,8 @@ const FIELDS: FieldSpec[] = [
     { value: "coming_soon", label: "Coming Soon" },
     { value: "archived", label: "Archived" },
   ] },
-  { key: "heroImageId", label: "Hero Image", type: "media" },
-  { key: "cardImageId", label: "Card Image", type: "media" },
+  { key: "heroImageId", label: "Hero Image", type: "media", hint: "Collection page banner + the round shortcut on the homepage (keep the character centred)" },
+  { key: "cardImageId", label: "Card Image", type: "media", hint: "Wide banner in the /collections list, around 2400 x 480 px" },
   {
     key: "heroVideoId",
     label: "Hero Video (optional)",
