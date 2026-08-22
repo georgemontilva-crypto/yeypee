@@ -318,6 +318,22 @@ export default function AdminSettingsPage() {
         </div>
 
         <div className="p-5">
+          <div className="kicker text-body mb-1.5">Shop</div>
+          <label className="flex items-center gap-3 mt-2">
+            <input
+              type="checkbox"
+              checked={String(values.show_prices) !== "false"}
+              onChange={(e) => setValues({ ...values, show_prices: e.target.checked ? "true" : "false" })}
+              className="w-4 h-4"
+            />
+            <span className="text-[13px] font-bold">Show prices on the Shop page</span>
+          </label>
+          <p className="text-[11px] text-body mt-1.5">
+            Turn it off while the shop only points people to retailers.
+          </p>
+        </div>
+
+        <div className="p-5">
           <div className="kicker text-body mb-1.5">Rarity label colours</div>
           <p className="text-[11px] text-body mb-4">
             The little badge shown on character cards and detail pages.

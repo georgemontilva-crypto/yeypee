@@ -132,6 +132,16 @@ export default function Shop() {
   const [products, setProducts] = useState<any[]>([]);
   const [modal, setModal] = useState<null | "locator" | "online">(null);
   const [loading, setLoading] = useState(true);
+  const [showPrices, setShowPrices] = useState(true);
+
+  useEffect(() => {
+    // Prices can be hidden site-wide from the admin (useful while the shop is
+    // only pointing at retailers).
+    contentApi
+      .settings()
+      .then((d) => setShowPrices(String(d?.settings?.show_prices) !== "false"))
+      .catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -171,7 +181,7 @@ export default function Shop() {
           </div>
           <div>
             <h2 className="text-3xl md:text-4xl mb-4">{lead?.name?.toUpperCase() || "BLIND BOX DISPLAY"}</h2>
-            {lead?.priceCents != null && (
+            {showPrices && lead?.priceCents != null && lead.priceCents > 0 && (
               <div className="text-2xl font-extrabold mb-4">${(lead.priceCents / 100).toFixed(2)}</div>
             )}
             <p className="text-body mb-8 leading-relaxed">
@@ -211,7 +221,9 @@ export default function Shop() {
                     {p.image ? <img src={p.image} alt={p.name} className="h-full object-contain" /> : <FigurePlaceholder size={100} />}
                   </div>
                   <div className="font-extrabold uppercase text-sm">{p.name}</div>
-                  <div className="text-body text-sm mt-1">${(p.priceCents / 100).toFixed(2)}</div>
+                  {showPrices && p.priceCents > 0 && (
+                    <div className="text-body text-sm mt-1">${(p.priceCents / 100).toFixed(2)}</div>
+                  )}
                   <div className="mt-3">
                     <button onClick={() => setModal("online")} className="btn-pill btn-secondary w-full text-[10px] py-3">BUY NOW</button>
                   </div>
