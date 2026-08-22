@@ -14,6 +14,7 @@ const NAV = [
   { to: "/admin/news", label: "News & Coming Next", icon: "📰" },
   { to: "/admin/partners", label: "Retail Partners", icon: "🤝" },
   { to: "/admin/stores", label: "Stores", icon: "📍" },
+  { to: "/admin/pages", label: "Pages & Popup", icon: "📄" },
   { to: "/admin/settings", label: "Settings", icon: "⚙" },
 ];
 

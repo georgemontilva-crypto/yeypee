@@ -12,6 +12,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Account from "./pages/Account";
 import ResetPassword from "./pages/ResetPassword";
+import ContentPage from "./pages/ContentPage";
+import { FOOTER_PAGES } from "./lib/footerPages";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -22,6 +24,7 @@ import AdminUserDetail from "./pages/admin/UserDetail";
 import AdminLeads from "./pages/admin/Leads";
 import AdminMedia from "./pages/admin/Media";
 import AdminCollections from "./pages/admin/Collections";
+import AdminPages from "./pages/admin/Pages";
 import AdminCharacters from "./pages/admin/Characters";
 import AdminProducts from "./pages/admin/Products";
 import AdminNews from "./pages/admin/News";
@@ -62,6 +65,13 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/account" element={<RequireLogin><Account /></RequireLogin>} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          {FOOTER_PAGES.map((p) => (
+            <Route
+              key={p.slug}
+              path={`/${p.slug}`}
+              element={<ContentPage slug={p.slug} fallbackTitle={p.fallbackTitle} fallbackBody={p.fallbackBody} />}
+            />
+          ))}
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
@@ -78,6 +88,7 @@ export default function App() {
           <Route path="news" element={<AdminNews />} />
           <Route path="partners" element={<AdminPartners />} />
           <Route path="stores" element={<AdminStores />} />
+          <Route path="pages" element={<AdminPages />} />
           <Route path="settings" element={<AdminSettingsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

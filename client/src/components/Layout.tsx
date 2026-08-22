@@ -3,6 +3,8 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { contentApi } from "../lib/api";
 import CursorHaze from "./CursorHaze";
+import { FOOTER_PAGES } from "../lib/footerPages";
+import SitePopup from "./SitePopup";
 
 interface SearchItem {
   kind: string;
@@ -30,6 +32,7 @@ export default function Layout() {
   const [query, setQuery] = useState("");
   const [catalog, setCatalog] = useState<SearchItem[]>([]);
   const [logos, setLogos] = useState<{ header: string | null; footer: string | null }>({ header: null, footer: null });
+  const [siteSettings, setSiteSettings] = useState<Record<string, any>>({});
   const location = useLocation();
 
   useEffect(() => {
@@ -49,6 +52,7 @@ export default function Layout() {
         {
           const st = d?.settings ?? {};
           setLogos({ header: st.logo_header ?? null, footer: st.logo_footer ?? null });
+          setSiteSettings(st);
           // Rarity badge colours, applied site-wide as CSS variables.
           const root = document.documentElement;
           for (const r of ["common", "rare", "secret_rare"]) {
@@ -96,6 +100,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen flex flex-col bg-white relative">
       <CursorHaze />
+      <SitePopup settings={siteSettings} />
       {/* Navigation */}
       <header
         className={`fixed top-0 inset-x-0 z-50 bg-white border-b border-borderc transition-shadow duration-300 ${
@@ -306,16 +311,16 @@ export default function Layout() {
                 </a>
               ))}
             </div>
-            <nav className="flex items-center gap-6">
-              {["ABOUT US", "CONTACT", "FAQ", "PRIVACY"].map((l) => (
-                <a key={l} href="#" className="btn-label text-body hover:text-ink">
-                  {l}
-                </a>
+            <nav className="flex items-center flex-wrap justify-center gap-x-6 gap-y-2">
+              {FOOTER_PAGES.map((p) => (
+                <Link key={p.slug} to={`/${p.slug}`} className="nav-link btn-label text-body">
+                  {p.label.toUpperCase()}
+                </Link>
               ))}
             </nav>
           </div>
           <div className="mt-10 pt-6 border-t border-borderc text-sm text-body">
-            © 2024 YEYPEE. All rights reserved.
+            © {new Date().getFullYear()} YEYPEE. All rights reserved.
           </div>
         </div>
       </footer>
