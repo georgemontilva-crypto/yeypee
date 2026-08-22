@@ -355,6 +355,7 @@ router.get("/characters/:slug", async (req, res) => {
       ...ch,
       collectionName: coll?.name ?? "",
       collectionSlug: coll?.slug ?? "",
+      favoriteLabel: coll?.favoriteLabel ?? "",
       imageFront: await mediaById(db, ch.imageFrontId),
       imageSide: await mediaById(db, ch.imageSideId),
       imageBack: await mediaById(db, ch.imageBackId),

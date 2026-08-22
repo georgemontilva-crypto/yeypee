@@ -77,6 +77,9 @@ export const collections = mysqlTable("collections", {
   statCountLabel: varchar("stat_count_label", { length: 120 }),
   statSeriesLabel: varchar("stat_series_label", { length: 120 }),
   statYearLabel: varchar("stat_year_label", { length: 120 }),
+  // Some worlds do not run on candy: this renames the "Favorite Candy" row on
+  // every character of the collection.
+  favoriteLabel: varchar("favorite_label", { length: 120 }),
   status: varchar("status", { length: 20 }).notNull().default("active"),
   heroImageId: int("hero_image_id"),
   cardImageId: int("card_image_id"),

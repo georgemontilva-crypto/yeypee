@@ -698,6 +698,7 @@ const collectionSchema = z.object({
   statCountLabel: z.string().max(120).nullable().optional(),
   statSeriesLabel: z.string().max(120).nullable().optional(),
   statYearLabel: z.string().max(120).nullable().optional(),
+  favoriteLabel: z.string().max(120).nullable().optional(),
   heroVideoId: z.number().int().nullable().optional(),
   heroVideoDelayMs: z.number().int().min(0).max(60000).optional(),
   accentColor: z.string().max(20).default("#FF5FA2"),

@@ -16,6 +16,13 @@ const FIELDS: FieldSpec[] = [
   { key: "statCountLabel", label: "Stats — first caption", type: "text", placeholder: "CHARACTERS + 1 SECRET RARE" },
   { key: "statSeriesLabel", label: "Stats — middle caption", type: "text", placeholder: "leave empty to use the collection name" },
   { key: "statYearLabel", label: "Stats — right caption", type: "text", placeholder: "RELEASED" },
+  {
+    key: "favoriteLabel",
+    label: "\"Favorite candy\" row label",
+    type: "text",
+    placeholder: "Favorite Candy",
+    hint: "Renames that row on every character of this collection (e.g. Favorite Food)",
+  },
   { key: "status", label: "Status", type: "select", options: [
     { value: "active", label: "Live" },
     { value: "coming_soon", label: "Coming Soon" },

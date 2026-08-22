@@ -506,7 +506,7 @@ export default function Home() {
                       <img
                         src={sr.imageFront || SECRET_FIGURE_IMAGE}
                         alt={sr.name}
-                        className="w-[180px] h-[180px] md:w-[260px] md:h-[260px] object-contain"
+                        className="w-[220px] h-[220px] md:w-[340px] md:h-[340px] object-contain"
                       />
                     </div>
                   </div>

@@ -48,7 +48,7 @@ export default function CharacterDetail() {
   const ch = data.character;
   const related = data.related || [];
   const attrs = [
-    { icon: "🍭", key: settings.icon_favorite_candy, label: "Favorite Candy", value: ch.favoriteCandy },
+    { icon: "🍭", key: settings.icon_favorite_candy, label: ch.favoriteLabel || "Favorite Candy", value: ch.favoriteCandy },
     { icon: "♥", key: settings.icon_best_friend, label: "Best Friend", value: ch.bestFriend },
     { icon: "📅", key: settings.icon_birthday, label: "Birthday", value: ch.birthday },
     { icon: "◎", key: settings.icon_appears_in, label: "Appears In", value: ch.appearsIn || ch.collectionName },
