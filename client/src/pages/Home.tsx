@@ -309,8 +309,13 @@ export default function Home() {
                   </Link>
                 </div>
                 <div className="rounded-card overflow-hidden shadow-soft relative aspect-[4/3] bg-bg-soft">
-                  {featured.heroImage ? (
-                    <img src={featured.heroImage} alt={featured.name} className="w-full h-full object-cover" />
+                  {/* Card Image: the square artwork, same one the circles use. */}
+                  {featured.cardImage || featured.heroImage ? (
+                    <img
+                      src={featured.cardImage || featured.heroImage}
+                      alt={featured.name}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <FigurePlaceholder color="#F2C14E" size={220} />
