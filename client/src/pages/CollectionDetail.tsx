@@ -104,8 +104,17 @@ export default function CollectionDetail() {
                 }`}
               />
             )}
-            <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
-            <div className="absolute bottom-0 left-0 p-5 sm:p-8 md:p-12">
+            {/* The overlay copy fades out with the video so it never covers it. */}
+            <div
+              className={`absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 via-black/25 to-transparent transition-opacity duration-700 ${
+                videoOn ? "opacity-0" : "opacity-100"
+              }`}
+            />
+            <div
+              className={`absolute bottom-0 left-0 p-5 sm:p-8 md:p-12 transition-opacity duration-700 ${
+                videoOn ? "opacity-0 pointer-events-none" : "opacity-100"
+              }`}
+            >
               <h1 className="text-white text-[30px] sm:text-4xl md:text-6xl mb-3">{c.name}</h1>
               <p className="text-white/85 italic text-base md:text-lg mb-6 max-w-xl">{c.description || c.tagline}</p>
               <a href="#collection-grid" className="btn-pill btn-primary bg-white text-ink">MEET THE COLLECTION</a>
@@ -147,7 +156,7 @@ export default function CollectionDetail() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               {regulars.map((ch: any) => (
                 <Link key={ch.id} to={`/characters/${ch.slug}`} className="fade-up rounded-card border border-borderc shadow-soft overflow-hidden transition-transform hover:-translate-y-1" style={{ background: ch.cardBgColor || "#FFE3EF" }}>
-                  <div className="flex items-center justify-center p-5 sm:p-6 h-56 md:h-64">
+                  <div className="flex items-center justify-center p-4 sm:p-6 aspect-square md:aspect-auto md:h-64">
                     {ch.imageFront ? <img src={ch.imageFront} alt={ch.name} className="h-full object-contain" /> : <FigurePlaceholder color={ch.cardBgColor} size={170} />}
                   </div>
                   <div className="text-center py-4 bg-white">
@@ -164,7 +173,7 @@ export default function CollectionDetail() {
                   className="fade-up rounded-card border border-borderc shadow-soft overflow-hidden transition-transform hover:-translate-y-1"
                   style={{ background: "radial-gradient(ellipse at 50% 40%, rgba(242,193,78,0.35) 0%, #0F0F0F 62%)" }}
                 >
-                  <div className="flex items-center justify-center p-5 sm:p-6 h-56 md:h-64 gold-pulse">
+                  <div className="flex items-center justify-center p-4 sm:p-6 aspect-square md:aspect-auto md:h-64 gold-pulse">
                     {secretRare.imageFront ? (
                       <img src={secretRare.imageFront} alt={secretRare.name} className="h-full object-contain" />
                     ) : (

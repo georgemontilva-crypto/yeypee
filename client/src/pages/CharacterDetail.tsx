@@ -156,7 +156,7 @@ export default function CharacterDetail() {
                   to={`/characters/${r.slug}`}
                   className="rounded-card bg-white border border-borderc overflow-hidden transition-transform hover:-translate-y-1"
                 >
-                  <div className="h-40 md:h-52 flex items-center justify-center p-4">
+                  <div className="aspect-square md:aspect-auto md:h-52 flex items-center justify-center p-4">
                     {r.imageFront ? (
                       <img src={r.imageFront} alt={r.name} className="max-h-full object-contain" />
                     ) : r.rarity === "secret_rare" ? (

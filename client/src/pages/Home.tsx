@@ -393,7 +393,7 @@ export default function Home() {
                     className="snap-start shrink-0 w-56 md:w-64 rounded-card border border-borderc shadow-soft overflow-hidden transition-transform hover:-translate-y-1"
                     style={{ background: ch.cardBgColor || "#FFE3EF" }}
                   >
-                    <div className="flex items-center justify-center p-6 h-52">
+                    <div className="flex items-center justify-center p-5 sm:p-6 aspect-square md:aspect-auto md:h-52">
                       {ch.imageFront ? (
                         <img src={ch.imageFront} alt={ch.name} className="h-full object-contain" />
                       ) : (
@@ -422,7 +422,7 @@ export default function Home() {
                   className="snap-start shrink-0 w-56 md:w-64 rounded-card overflow-hidden transition-transform hover:-translate-y-1 relative"
                   style={{ background: "radial-gradient(circle at 50% 40%, #F2C14E 0%, #0F0F0F 55%)" }}
                 >
-                  <div className="flex items-center justify-center p-6 h-52 gold-pulse">
+                  <div className="flex items-center justify-center p-5 sm:p-6 aspect-square md:aspect-auto md:h-52 gold-pulse">
                     {secretCard || secretRare?.imageFront ? (
                       <img
                         src={secretCard || secretRare.imageFront}
@@ -557,7 +557,7 @@ export default function Home() {
           <div className="space-y-4">
             {data?.news?.length ? (
               data.news.map((n: any) => (
-                <div key={n.id} className="fade-up rounded-smcard border border-borderc bg-white p-5 md:p-6 flex items-center gap-6 hover:shadow-soft transition-shadow">
+                <div key={n.id} className="fade-up rounded-smcard border border-borderc bg-white p-4 sm:p-5 md:p-6 flex items-center gap-4 sm:gap-6 hover:shadow-soft transition-shadow overflow-hidden">
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-smcard overflow-hidden shrink-0 bg-bg-soft">
                     {n.thumbnail ? (
                       <img src={n.thumbnail} alt={n.title} className="w-full h-full object-cover" />
@@ -565,11 +565,18 @@ export default function Home() {
                       <div className="w-full h-full flex items-center justify-center text-2xl">✦</div>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg md:text-xl mb-1 normal-case font-bold">{n.title}</h3>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="text-base sm:text-lg md:text-xl mb-1 normal-case font-bold">{n.title}</h3>
+                      {/* Inside the text column so it can never push past the card. */}
+                      {n.badgeLabel && (
+                        <span className="badge-pink shrink-0 whitespace-nowrap text-[9px] px-2 py-1">
+                          {n.badgeLabel}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-body text-sm">{n.excerpt}</p>
                   </div>
-                  {n.badgeLabel && <span className="badge-pink shrink-0">{n.badgeLabel}</span>}
                 </div>
               ))
             ) : (
