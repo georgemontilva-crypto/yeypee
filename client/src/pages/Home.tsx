@@ -318,16 +318,17 @@ export default function Home() {
                     MEET THE COLLECTION
                   </Link>
                 </div>
-                <div className="rounded-card overflow-hidden shadow-soft relative aspect-[4/3] bg-bg-soft">
-                  {/* Card Image: the square artwork, same one the circles use. */}
+                {/* The image sets the shape: whatever ratio it has, it is shown
+                    whole instead of being cropped to a fixed box. */}
+                <div className="rounded-card overflow-hidden shadow-soft relative bg-bg-soft">
                   {featured.cardImage || featured.heroImage ? (
                     <img
                       src={featured.cardImage || featured.heroImage}
                       alt={featured.name}
-                      className="w-full h-full object-cover"
+                      className="block w-full h-auto"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
+                    <div className="w-full aspect-[4/3] flex items-center justify-center">
                       <FigurePlaceholder color="#F2C14E" size={220} />
                     </div>
                   )}
