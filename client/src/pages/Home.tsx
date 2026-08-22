@@ -303,7 +303,17 @@ export default function Home() {
                 <div>
                   <div className="kicker text-candy-pink mb-3">FEATURED COLLECTION</div>
                   <h2 className="text-[30px] sm:text-4xl md:text-6xl mb-4">{featured.name}</h2>
-                  <p className="text-body leading-relaxed mb-8">{featured.tagline || featured.description}</p>
+                  {featured.tagline && (
+                    <p className="text-ink/80 text-lg md:text-xl italic mb-4">{featured.tagline}</p>
+                  )}
+                  {/* The longer story comes from the collection's Description
+                      field in the admin. */}
+                  {featured.description && (
+                    <p className="text-body leading-relaxed mb-8 max-w-prose whitespace-pre-line">
+                      {featured.description}
+                    </p>
+                  )}
+                  {!featured.tagline && !featured.description && <div className="mb-8" />}
                   <Link to={`/collections/${featured.slug}`} className="btn-pill btn-primary">
                     MEET THE COLLECTION
                   </Link>
