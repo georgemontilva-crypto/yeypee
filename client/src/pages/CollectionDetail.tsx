@@ -136,10 +136,10 @@ export default function CollectionDetail() {
                     : "CHARACTERS"),
               },
               { big: c.seriesLabel || "SERIES 1", small: c.statSeriesLabel || c.name.toUpperCase() },
-              { big: c.releaseYear || "2024", small: c.statYearLabel || "RELEASED" },
+              { big: c.releaseYear || "—", small: c.statYearLabel || "RELEASED" },
             ].map((s, i) => (
               <div key={i} className="py-6 text-center">
-                <div className="text-3xl md:text-4xl font-extrabold">{s.big}</div>
+                <div className={`font-extrabold ${String(s.big).length > 8 ? "text-2xl md:text-3xl" : "text-3xl md:text-4xl"}`}>{s.big}</div>
                 <div className="kicker text-body mt-1">{s.small}</div>
               </div>
             ))}

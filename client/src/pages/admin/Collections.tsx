@@ -5,7 +5,13 @@ const FIELDS: FieldSpec[] = [
   { key: "tagline", label: "Tagline", type: "text", placeholder: "The sweetest world to explore" },
   { key: "description", label: "Description", type: "textarea", placeholder: "Full description of this world..." },
   { key: "seriesLabel", label: "Series Label", type: "text", placeholder: "Series 1" },
-  { key: "releaseYear", label: "Release Year", type: "text", placeholder: "2024" },
+  {
+    key: "releaseYear",
+    label: "Release date",
+    type: "text",
+    placeholder: "November 2026",
+    hint: "Free text: a month, a year, or both. Shown as the third figure of the stats bar",
+  },
   {
     key: "statCountValue",
     label: "Stats — first figure",

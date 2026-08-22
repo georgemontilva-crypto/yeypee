@@ -372,10 +372,10 @@ export default function Home() {
                     big: featured.seriesLabel || "SERIES 1",
                     small: featured.statSeriesLabel || (featured.name || "").toUpperCase(),
                   },
-                  { big: featured.releaseYear || "2024", small: featured.statYearLabel || "RELEASED" },
+                  { big: featured.releaseYear || "—", small: featured.statYearLabel || "RELEASED" },
                 ].map((s, i) => (
                   <div key={i} className="py-5 md:py-6 px-3 text-center">
-                    <div className="text-2xl md:text-4xl font-extrabold text-ink break-words">{s.big}</div>
+                    <div className={`font-extrabold text-ink break-words ${String(s.big).length > 8 ? "text-xl md:text-3xl" : "text-2xl md:text-4xl"}`}>{s.big}</div>
                     <div className="kicker text-body mt-1 leading-snug">{s.small}</div>
                   </div>
                 ))}
@@ -601,7 +601,7 @@ export default function Home() {
             )}
           </div>
           <div className="text-center mt-10 fade-up">
-            <Link to="/collections" className="btn-pill btn-primary">VIEW ALL UPCOMING</Link>
+            <Link to="/collections" className="btn-pill btn-primary">VIEW ALL COLLECTIONS</Link>
           </div>
         </div>
       </section>
