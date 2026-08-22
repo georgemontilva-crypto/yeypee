@@ -56,7 +56,8 @@ export default function CollectionDetail() {
   }
   const c = data.collection;
   const chars = data.characters || [];
-  const secretRare = chars.find((ch: any) => ch.rarity === "secret_rare");
+  const secretRares = chars.filter((ch: any) => ch.rarity === "secret_rare");
+  const secretRare = secretRares[0];
   const regulars = chars.filter((ch: any) => ch.rarity !== "secret_rare");
 
   return (
@@ -114,8 +115,16 @@ export default function CollectionDetail() {
           <div className="mt-8 border-t border-borderc grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-borderc fade-up">
             {[
               {
-                big: c.statCountValue || `${chars.length}${secretRare ? "+1" : ""}`,
-                small: c.statCountLabel || (secretRare ? "CHARACTERS + 1 SECRET RARE" : "CHARACTERS"),
+                // Regular characters and secret rares are counted separately:
+                // "7+1" means seven to collect plus one secret.
+                big:
+                  c.statCountValue ||
+                  (secretRares.length ? `${regulars.length}+${secretRares.length}` : `${regulars.length}`),
+                small:
+                  c.statCountLabel ||
+                  (secretRares.length
+                    ? `CHARACTERS + ${secretRares.length} SECRET RARE${secretRares.length > 1 ? "S" : ""}`
+                    : "CHARACTERS"),
               },
               { big: c.seriesLabel || "SERIES 1", small: c.statSeriesLabel || c.name.toUpperCase() },
               { big: c.releaseYear || "2024", small: c.statYearLabel || "RELEASED" },

@@ -62,6 +62,8 @@ export default function Home() {
   const featuredCharacters = (data?.characters ?? []).filter(
     (ch: any) => featured && ch.collectionId === featured.id
   );
+  const featuredSecrets = featuredCharacters.filter((ch: any) => ch.rarity === "secret_rare");
+  const featuredRegulars = featuredCharacters.filter((ch: any) => ch.rarity !== "secret_rare");
   const carouselIds = data?.settings?.carousel_character_ids ?? null;
   const secretRareId = data?.settings?.secret_rare_character_id ?? null;
   const carousel = carouselIds
@@ -320,8 +322,16 @@ export default function Home() {
               <div className="mt-10 md:mt-12 border-t border-borderc grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-borderc fade-up">
                 {[
                   {
-                    big: featured.statCountValue || String(featuredCharacters.length || ""),
-                    small: featured.statCountLabel || "CHARACTERS",
+                    big:
+                      featured.statCountValue ||
+                      (featuredSecrets.length
+                        ? `${featuredRegulars.length}+${featuredSecrets.length}`
+                        : `${featuredRegulars.length}`),
+                    small:
+                      featured.statCountLabel ||
+                      (featuredSecrets.length
+                        ? `CHARACTERS + ${featuredSecrets.length} SECRET RARE${featuredSecrets.length > 1 ? "S" : ""}`
+                        : "CHARACTERS"),
                   },
                   {
                     big: featured.seriesLabel || "SERIES 1",
