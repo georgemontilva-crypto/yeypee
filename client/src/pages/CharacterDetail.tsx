@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { contentApi } from "../lib/api";
 import { Icon } from "../components/Icons";
 import { useFadeUp } from "../components/ScrollToTop";
-import { BackLink, EmptyState, FigurePlaceholder, Badge } from "../components/Shared";
+import { BackLink, EmptyState, FigurePlaceholder, Badge, SECRET_FIGURE_IMAGE } from "../components/Shared";
 
 export default function CharacterDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -46,19 +46,25 @@ export default function CharacterDetail() {
     );
   }
   const ch = data.character;
+  const related = data.related || [];
   const attrs = [
     { icon: "🍭", key: settings.icon_favorite_candy, label: "Favorite Candy", value: ch.favoriteCandy },
     { icon: "♥", key: settings.icon_best_friend, label: "Best Friend", value: ch.bestFriend },
     { icon: "📅", key: settings.icon_birthday, label: "Birthday", value: ch.birthday },
     { icon: "◎", key: settings.icon_appears_in, label: "Appears In", value: ch.appearsIn || ch.collectionName },
   ].filter((a) => a.value);
-  const currentImg = view === "front" ? ch.imageFront : view === "side" ? ch.imageSide : ch.imageBack;
+  const rawImg = view === "front" ? ch.imageFront : view === "side" ? ch.imageSide : ch.imageBack;
+  const currentImg = rawImg || ch.imageFront || ch.imageSide || ch.imageBack;
 
-  const views: { key: "front" | "side" | "back"; img: string | null }[] = [
-    { key: "front", img: ch.imageFront },
-    { key: "side", img: ch.imageSide },
-    { key: "back", img: ch.imageBack },
-  ];
+  // Only the views that actually have an image: empty SIDE/BACK boxes looked
+  // like something failed to load.
+  const views = (
+    [
+      { key: "front", img: ch.imageFront },
+      { key: "side", img: ch.imageSide },
+      { key: "back", img: ch.imageBack },
+    ] as { key: "front" | "side" | "back"; img: string | null }[]
+  ).filter((v) => !!v.img);
 
   return (
     <>
@@ -89,7 +95,8 @@ export default function CharacterDetail() {
                 <FigurePlaceholder color={ch.cardBgColor} size={220} />
               )}
             </div>
-            {/* Thumbnails */}
+            {/* Thumbnails — hidden when there is only one view to choose from */}
+            {views.length > 1 && (
             <div className="flex gap-4 mt-5">
               {views.map((v) => (
                 <button
@@ -97,21 +104,18 @@ export default function CharacterDetail() {
                   onClick={() => setView(v.key)}
                   className={`flex-1 rounded-smcard border overflow-hidden h-24 transition-all ${view === v.key ? "border-ink ring-2 ring-ink/10" : "border-borderc opacity-70 hover:opacity-100"}`}
                 >
-                  {v.img ? (
-                    <img src={v.img} alt={v.key} className="w-full h-full object-contain p-2" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[10px] font-bold uppercase tracking-wider text-body bg-bg-soft">
-                      {v.key}
-                    </div>
-                  )}
+                  <img src={v.img!} alt={v.key} className="w-full h-full object-contain p-2" />
                 </button>
               ))}
             </div>
-            <div className="flex justify-center gap-6 mt-3">
-              {views.map((v) => (
-                <span key={v.key} className={`kicker ${view === v.key ? "text-ink" : "text-body"}`}>{v.key.toUpperCase()}</span>
-              ))}
-            </div>
+            )}
+            {views.length > 1 && (
+              <div className="flex justify-center gap-6 mt-3">
+                {views.map((v) => (
+                  <span key={v.key} className={`kicker ${view === v.key ? "text-ink" : "text-body"}`}>{v.key.toUpperCase()}</span>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="fade-up">
@@ -134,6 +138,53 @@ export default function CharacterDetail() {
           </div>
         </div>
       </section>
+
+      {/* More from the same collection — like a shop's "related products". */}
+      {related.length > 0 && (
+        <section className="py-12 md:py-16 bg-bg-soft">
+          <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
+            <div className="flex items-baseline justify-between gap-4 mb-6 fade-up">
+              <h2 className="text-2xl md:text-[32px]">MORE FROM {ch.collectionName?.toUpperCase()}</h2>
+              <Link to={`/collections/${ch.collectionSlug}`} className="nav-link btn-label text-body shrink-0">
+                VIEW ALL
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 fade-up">
+              {related.map((r: any) => (
+                <Link
+                  key={r.id}
+                  to={`/characters/${r.slug}`}
+                  className="rounded-card bg-white border border-borderc overflow-hidden transition-transform hover:-translate-y-1"
+                >
+                  <div className="h-40 md:h-52 flex items-center justify-center p-4">
+                    {r.imageFront ? (
+                      <img src={r.imageFront} alt={r.name} className="max-h-full object-contain" />
+                    ) : r.rarity === "secret_rare" ? (
+                      <img src={SECRET_FIGURE_IMAGE} alt="Secret rare" className="max-h-full object-contain" />
+                    ) : (
+                      <FigurePlaceholder color="#FF5FA2" size={110} />
+                    )}
+                  </div>
+                  <div className="text-center pb-4 px-2">
+                    <div className="font-extrabold uppercase tracking-tight text-sm md:text-base truncate">{r.name}</div>
+                    {r.rarity !== "common" && (
+                      <div
+                        className="mt-1 text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-md inline-block"
+                        style={{
+                          background: `var(--rarity-${r.rarity}-bg, var(--candy-pink-100))`,
+                          color: `var(--rarity-${r.rarity}-fg, var(--candy-pink))`,
+                        }}
+                      >
+                        {r.rarity.replace("_", " ")}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

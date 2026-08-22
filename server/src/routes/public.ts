@@ -351,6 +351,19 @@ router.get("/characters/:slug", async (req, res) => {
     },
     prev: idx > 0 ? allInColl[idx - 1] : null,
     next: idx < allInColl.length - 1 ? allInColl[idx + 1] : null,
+    // Other characters from the same collection, for the "more from" strip.
+    related: await Promise.all(
+      allInColl
+        .filter((x) => x.id !== ch.id)
+        .slice(0, 4)
+        .map(async (x) => ({
+          id: x.id,
+          name: x.name,
+          slug: x.slug,
+          rarity: x.rarity,
+          imageFront: await mediaById(db, x.imageFrontId),
+        }))
+    ),
   });
 });
 
