@@ -74,16 +74,21 @@ export default function CollectionDetail() {
               c.heroVideo ? "h-[300px] md:h-[420px]" : ""
             }`}
           >
-            {c.heroImage ? (
+            {c.heroImage || c.cardImage ? (
               // The banner sets the height: no cropping, so a wide strip with
               // the character on one side is shown exactly as uploaded.
-              <img
-                src={c.heroImage}
-                alt={c.name}
-                className={`block w-full transition-opacity duration-700 ${
-                  c.heroVideo ? "h-full object-cover" : "h-auto"
-                } ${videoOn ? "opacity-0" : "opacity-100"}`}
-              />
+              <picture>
+                {/* Phones get the square Card Image: the wide strip is too thin
+                    to see anything on a narrow screen. */}
+                {c.cardImage && <source media="(max-width: 767px)" srcSet={c.cardImage} />}
+                <img
+                  src={c.heroImage || c.cardImage}
+                  alt={c.name}
+                  className={`block w-full transition-opacity duration-700 ${
+                    c.heroVideo ? "h-full object-cover" : "h-auto"
+                  } ${videoOn ? "opacity-0" : "opacity-100"}`}
+                />
+              </picture>
             ) : !c.heroVideo ? (
               <div className="w-full aspect-[21/9] flex items-center justify-center">
                 <FigurePlaceholder color="#F2C14E" size={240} />

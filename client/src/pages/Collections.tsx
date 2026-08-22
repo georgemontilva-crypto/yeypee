@@ -30,9 +30,19 @@ export default function Collections() {
             {collections.map((c, i) => {
               const active = c.status !== "coming_soon";
               return (
-                <div key={c.id} className="zoom-parent relative rounded-card overflow-hidden h-[220px] md:h-[240px] fade-up bg-bg-soft">
-                  {/* The wide banner comes from Hero Image, same as the collection page. */}
-                  {c.heroImage && <img src={c.heroImage} alt={c.name} className="zoom-img absolute inset-0 w-full h-full object-cover object-right" />}
+                <div key={c.id} className="zoom-parent relative rounded-card overflow-hidden h-[300px] sm:h-[260px] md:h-[240px] fade-up bg-bg-soft">
+                  {/* Wide banner (Hero Image) on desktop; on phones the square
+                      Card Image reads much better than a thin strip. */}
+                  {(c.heroImage || c.cardImage) && (
+                    <picture>
+                      {c.cardImage && <source media="(max-width: 767px)" srcSet={c.cardImage} />}
+                      <img
+                        src={c.heroImage || c.cardImage}
+                        alt={c.name}
+                        className="zoom-img absolute inset-0 w-full h-full object-cover object-right md:object-right"
+                      />
+                    </picture>
+                  )}
                   {/* Only a soft scrim on the text side, so the artwork keeps its own colours. */}
                   <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
                   <div className="relative z-10 h-full flex items-center justify-between px-5 sm:px-8 md:px-12">
