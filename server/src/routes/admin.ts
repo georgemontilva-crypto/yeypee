@@ -768,6 +768,7 @@ const productSchema = z.object({
   description: z.string().nullable().optional(),
   sku: z.string().max(120).nullable().optional(),
   priceCents: z.number().int().nonnegative().default(0),
+  showPrice: z.boolean().optional(),
   compareAtPriceCents: z.number().int().nonnegative().nullable().optional(),
   currency: z.string().max(8).default("USD"),
   stock: z.number().int().nonnegative().default(0),

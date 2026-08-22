@@ -193,6 +193,8 @@ export const products = mysqlTable(
     description: text("description"),
     sku: varchar("sku", { length: 120 }),
     priceCents: bigint("price_cents", { mode: "number" }).notNull().default(0),
+    // When false the price is hidden on the public shop for this product.
+    showPrice: boolean("show_price").notNull().default(true),
     compareAtPriceCents: bigint("compare_at_price_cents", { mode: "number" }),
     currency: varchar("currency", { length: 8 }).notNull().default("USD"),
     stock: int("stock").notNull().default(0),

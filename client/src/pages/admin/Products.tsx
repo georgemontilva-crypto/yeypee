@@ -38,6 +38,7 @@ export default function AdminProducts() {
       columns={COLUMNS}
       toForm={(row: any) => ({
         ...row,
+        showPrice: row.showPrice !== false,
         priceCents: row.priceCents ?? "",
         stock: row.stock ?? 0,
         collectionId: row.collectionId ?? "",
@@ -56,6 +57,13 @@ function buildFields(collections: any[]): FieldSpec[] {
     { key: "name", label: "Product Name", type: "text", placeholder: "Blind Box Display Case" },
     { key: "sku", label: "SKU", type: "text", placeholder: "YEY-DISPLAY-01" },
     { key: "priceCents", label: "Price (USD cents)", type: "number", placeholder: "2499", hint: "2499 = $24.99" },
+    {
+      key: "showPrice",
+      label: "Show the price on the site",
+      type: "boolean",
+      defaultValue: true,
+      hint: "Turn it off to hide this product's price in the shop",
+    },
     {
       key: "collectionId",
       label: "Collection (optional)",
