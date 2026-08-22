@@ -5,7 +5,7 @@ export const cfg = {
   jwtSecret: process.env.JWT_SECRET || "change-me",
   appUrl: process.env.APP_URL || "http://localhost:3000",
   port: Number(process.env.PORT || 3000),
-  mailFrom: process.env.MAIL_FROM || "hello@yeypee.com",
+  mailFrom: process.env.MAIL_FROM || "info@unifiedtradinggroup.com",
   resendApiKey: process.env.RESEND_API_KEY,
   nodeEnv: process.env.NODE_ENV || "development",
 

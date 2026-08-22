@@ -42,12 +42,12 @@ and shown off. Whichever one you get, it belongs to a family.`,
     label: "Contact",
     images: 1,
     fallbackTitle: "CONTACT US",
-    fallbackBody: `We would love to hear from you — about a collection, a store, a collaboration
-or just to say hello.
+    fallbackBody: `For wholesale, retail partnerships, and distribution inquiries:
 
-## Write to us
+info@unifiedtradinggroup.com
 
-hello@yeypee.com
+Unified Trading Group
+Master Distributor – North America
 
 ## Stores and distribution
 
@@ -100,7 +100,8 @@ working. We do not sell your data to anyone.
 ## Leaving the club
 
 Every email we send includes a link to unsubscribe, and you can ask us to
-delete your account and your data at any time by writing to hello@yeypee.com.
+delete your account and your data at any time by writing to
+info@unifiedtradinggroup.com.
 
 ## Cookies
 
