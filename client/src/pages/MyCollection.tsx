@@ -86,16 +86,16 @@ export default function MyCollection() {
                         const done = progress[ch.id];
                         return (
                           <Link key={ch.id} to={`/characters/${ch.slug}`} className={`rounded-smcard border overflow-hidden transition-all ${done ? "border-jungle bg-jungle/5" : isSecret ? "border-gold/50 bg-black/5" : "border-borderc opacity-60"}`}>
-                            <div className="flex items-center justify-center p-4 h-36" style={{ background: isSecret ? undefined : (done ? undefined : ch.cardBgColor) }}>
+                            <div className="flex items-center justify-center p-2 aspect-square sm:aspect-auto sm:h-40" style={{ background: isSecret ? undefined : (done ? undefined : ch.cardBgColor) }}>
                               {isSecret ? (
                                 // Transparent PNG: no background box behind it.
                                 <img
                                   src={SECRET_FIGURE_IMAGE}
                                   alt="Secret rare"
-                                  className="h-full object-contain"
+                                  className="h-full w-full object-contain scale-[1.12]"
                                 />
                               ) : done ? (
-                                <img src={ch.imageFront || undefined} alt={ch.name} className="h-full object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                                <img src={ch.imageFront || undefined} alt={ch.name} className="h-full w-full object-contain scale-[1.12]" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                               ) : (
                                 <FigurePlaceholder color={ch.cardBgColor} size={90} />
                               )}
