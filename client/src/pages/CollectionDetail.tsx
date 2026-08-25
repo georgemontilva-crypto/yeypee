@@ -161,8 +161,8 @@ export default function CollectionDetail() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               {regulars.map((ch: any) => (
                 <Link key={ch.id} to={`/characters/${ch.slug}`} className="fade-up rounded-card border border-borderc shadow-soft overflow-hidden transition-transform hover:-translate-y-1" style={{ background: ch.cardBgColor || "#FFE3EF" }}>
-                  <div className="flex items-center justify-center p-4 sm:p-6 aspect-square md:aspect-auto md:h-64">
-                    {ch.imageFront ? <img src={ch.imageFront} alt={ch.name} className="h-full object-contain" /> : <FigurePlaceholder color={ch.cardBgColor} size={170} />}
+                  <div className="flex items-center justify-center p-2 sm:p-3 aspect-square md:aspect-auto md:h-64">
+                    {ch.imageFront ? <img src={ch.imageFront} alt={ch.name} className="h-full w-full object-contain scale-[1.12]" /> : <FigurePlaceholder color={ch.cardBgColor} size={170} />}
                   </div>
                   <div className="text-center py-4 bg-white">
                     <div className="font-extrabold uppercase tracking-tight text-xl">{ch.name}</div>
@@ -178,11 +178,11 @@ export default function CollectionDetail() {
                   className="fade-up rounded-card border border-borderc shadow-soft overflow-hidden transition-transform hover:-translate-y-1"
                   style={{ background: "radial-gradient(ellipse at 50% 40%, rgba(242,193,78,0.35) 0%, #0F0F0F 62%)" }}
                 >
-                  <div className="flex items-center justify-center p-4 sm:p-6 aspect-square md:aspect-auto md:h-64 gold-pulse">
+                  <div className="flex items-center justify-center p-2 sm:p-3 aspect-square md:aspect-auto md:h-64 gold-pulse">
                     {secretRare.imageFront ? (
-                      <img src={secretRare.imageFront} alt={secretRare.name} className="h-full object-contain" />
+                      <img src={secretRare.imageFront} alt={secretRare.name} className="h-full w-full object-contain scale-[1.12]" />
                     ) : (
-                      <img src={SECRET_FIGURE_IMAGE} alt="Secret rare" className="h-full object-contain" />
+                      <img src={SECRET_FIGURE_IMAGE} alt="Secret rare" className="h-full w-full object-contain scale-[1.12]" />
                     )}
                   </div>
                   <div className="text-center py-4 bg-ink">

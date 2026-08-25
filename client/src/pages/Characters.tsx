@@ -88,8 +88,8 @@ export default function Characters() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {filtered.map((ch: any) => (
               <Link key={ch.id} to={`/characters/${ch.slug}`} className="fade-up rounded-card border border-borderc shadow-soft overflow-hidden transition-transform hover:-translate-y-1" style={{ background: ch.cardBgColor || "#FFE3EF" }}>
-                <div className="flex items-center justify-center p-4 sm:p-6 aspect-square md:aspect-auto md:h-48">
-                  {ch.imageFront ? <img src={ch.imageFront} alt={ch.name} className="h-full object-contain" /> : <FigurePlaceholder color={ch.cardBgColor} size={140} />}
+                <div className="flex items-center justify-center p-2 sm:p-3 aspect-square md:aspect-auto md:h-48">
+                  {ch.imageFront ? <img src={ch.imageFront} alt={ch.name} className="h-full w-full object-contain scale-[1.12]" /> : <FigurePlaceholder color={ch.cardBgColor} size={140} />}
                 </div>
                 <div className="text-center py-4 bg-white">
                   <div className="font-extrabold uppercase tracking-tight text-lg">{ch.name}</div>

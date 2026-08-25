@@ -412,9 +412,9 @@ export default function Home() {
                     className="snap-start shrink-0 w-56 md:w-64 rounded-card border border-borderc shadow-soft overflow-hidden transition-transform hover:-translate-y-1"
                     style={{ background: ch.cardBgColor || "#FFE3EF" }}
                   >
-                    <div className="flex items-center justify-center p-5 sm:p-6 aspect-square md:aspect-auto md:h-52">
+                    <div className="flex items-center justify-center p-2 sm:p-3 aspect-square md:aspect-auto md:h-52">
                       {ch.imageFront ? (
-                        <img src={ch.imageFront} alt={ch.name} className="h-full object-contain" />
+                        <img src={ch.imageFront} alt={ch.name} className="h-full w-full object-contain scale-[1.12]" />
                       ) : (
                         <FigurePlaceholder color={ch.cardBgColor || "#FF5FA2"} size={150} />
                       )}
@@ -441,15 +441,15 @@ export default function Home() {
                   className="snap-start shrink-0 w-56 md:w-64 rounded-card overflow-hidden transition-transform hover:-translate-y-1 relative"
                   style={{ background: "radial-gradient(circle at 50% 40%, #F2C14E 0%, #0F0F0F 55%)" }}
                 >
-                  <div className="flex items-center justify-center p-5 sm:p-6 aspect-square md:aspect-auto md:h-52 gold-pulse">
+                  <div className="flex items-center justify-center p-2 sm:p-3 aspect-square md:aspect-auto md:h-52 gold-pulse">
                     {secretCard || secretRare?.imageFront ? (
                       <img
                         src={secretCard || secretRare.imageFront}
                         alt={secretRare?.name || "Secret rare"}
-                        className="h-full object-contain"
+                        className="h-full w-full object-contain scale-[1.12]"
                       />
                     ) : (
-                      <img src={SECRET_FIGURE_IMAGE} alt="Secret rare" className="h-full object-contain" />
+                      <img src={SECRET_FIGURE_IMAGE} alt="Secret rare" className="h-full w-full object-contain scale-[1.12]" />
                     )}
                   </div>
                   <div className="text-center py-4">
