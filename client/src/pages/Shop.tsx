@@ -164,7 +164,7 @@ export default function Shop() {
         <div className="grid md:grid-cols-2 gap-10 items-center mb-16 fade-up">
           <div className="rounded-card overflow-hidden border border-borderc bg-bg-soft aspect-square flex items-center justify-center">
             {lead?.image ? (
-              <img src={lead.image} alt={lead.name} className="w-full h-full object-contain p-3 scale-[1.08]" />
+              <img src={lead.image} alt={lead.name} className="w-full h-full object-contain p-3 scale-[1.18]" />
             ) : (
               <FigurePlaceholder color="#FF5FA2" size={260} />
             )}
@@ -207,8 +207,8 @@ export default function Shop() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {rest.map((p: any) => (
                 <div key={p.id} className="rounded-card border border-borderc bg-white p-4 sm:p-5">
-                  <div className="aspect-square sm:aspect-auto sm:h-44 flex items-center justify-center mb-4 bg-bg-soft rounded-smcard p-2">
-                    {p.image ? <img src={p.image} alt={p.name} className="h-full w-full object-contain scale-[1.12]" /> : <FigurePlaceholder size={100} />}
+                  <div className="aspect-square sm:aspect-auto sm:h-44 flex items-center justify-center mb-4 bg-bg-soft rounded-smcard p-1">
+                    {p.image ? <img src={p.image} alt={p.name} className="h-full w-full object-contain scale-[1.28]" /> : <FigurePlaceholder size={100} />}
                   </div>
                   <div className="font-extrabold uppercase text-sm">{p.name}</div>
                   {p.showPrice !== false && p.priceCents > 0 && (
