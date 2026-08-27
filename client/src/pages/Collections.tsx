@@ -47,10 +47,10 @@ export default function Collections() {
                   <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
                   <div className="relative z-10 h-full flex items-center justify-between px-5 sm:px-8 md:px-12">
                     <div>
-                      <h3 className="text-white mb-1" style={{ fontSize: "clamp(20px, 2.4vw, 28px)", lineHeight: 1.1 }}>
+                      <h3 className="text-white mb-1" style={{ fontSize: "clamp(18px, 1.9vw, 26px)", lineHeight: 1.1 }}>
                         {c.name}
                       </h3>
-                      <p className="text-white/85 italic" style={{ fontSize: "clamp(12px, 1.2vw, 16px)" }}>
+                      <p className="text-white/85 italic" style={{ fontSize: "clamp(11px, 1vw, 15px)" }}>
                         {c.tagline || c.description}
                       </p>
                       {c.status === "coming_soon" && <span className="badge-pink mt-3">COMING SOON</span>}

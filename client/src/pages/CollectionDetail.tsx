@@ -124,13 +124,13 @@ export default function CollectionDetail() {
                 className="text-white mb-3"
                 // Fluid instead of stepped: at 60px it was proportionate on a
                 // wide desktop but oversized on tablets and small laptops.
-                style={{ fontSize: "clamp(26px, 4.4vw, 60px)", lineHeight: 1.05 }}
+                style={{ fontSize: "clamp(24px, 3.2vw, 52px)", lineHeight: 1.05 }}
               >
                 {c.name}
               </h1>
               <p
                 className="text-white/85 italic mb-6 max-w-xl"
-                style={{ fontSize: "clamp(14px, 1.4vw, 18px)" }}
+                style={{ fontSize: "clamp(13px, 1.15vw, 17px)" }}
               >
                 {c.description || c.tagline}
               </p>
