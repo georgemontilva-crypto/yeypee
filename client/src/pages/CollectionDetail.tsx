@@ -120,8 +120,20 @@ export default function CollectionDetail() {
                 videoOn ? "opacity-0 pointer-events-none" : "opacity-100"
               }`}
             >
-              <h1 className="text-white text-[30px] sm:text-4xl md:text-6xl mb-3">{c.name}</h1>
-              <p className="text-white/85 italic text-base md:text-lg mb-6 max-w-xl">{c.description || c.tagline}</p>
+              <h1
+                className="text-white mb-3"
+                // Fluid instead of stepped: at 60px it was proportionate on a
+                // wide desktop but oversized on tablets and small laptops.
+                style={{ fontSize: "clamp(26px, 4.4vw, 60px)", lineHeight: 1.05 }}
+              >
+                {c.name}
+              </h1>
+              <p
+                className="text-white/85 italic mb-6 max-w-xl"
+                style={{ fontSize: "clamp(14px, 1.4vw, 18px)" }}
+              >
+                {c.description || c.tagline}
+              </p>
               <a href="#collection-grid" className="btn-pill btn-primary bg-white text-ink">MEET THE COLLECTION</a>
             </div>
           </div>
