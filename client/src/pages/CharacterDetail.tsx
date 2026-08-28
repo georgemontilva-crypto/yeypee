@@ -48,12 +48,14 @@ export default function CharacterDetail() {
   const ch = data.character;
   const related = data.related || [];
   const attrs = [
-    // The icon sits next to the value, not the label. The food row has none:
-    // its value already carries the emoji that matches the food.
+    // The icon sits next to the value, not the label. The food row has none of
+    // its own: the emoji is already part of the food text.
     { icon: "", key: "", label: ch.favoriteLabel || "Favorite Candy", value: ch.favoriteCandy },
-    { icon: "", key: settings.icon_best_friend || "heart", label: "Best Friend", value: ch.bestFriend },
-    { icon: "", key: settings.icon_birthday || "calendar", label: "Birthday", value: ch.birthday },
-    { icon: "", key: settings.icon_appears_in || "sparkle", label: "Appears In", value: ch.appearsIn || ch.collectionName },
+    // Colour emoji, to match the food value (🥛 Milk) rather than the flat
+    // line icons, which looked out of place next to it.
+    { icon: "\u2764\uFE0F", key: settings.icon_best_friend, label: "Best Friend", value: ch.bestFriend },
+    { icon: "\uD83C\uDF82", key: settings.icon_birthday, label: "Birthday", value: ch.birthday },
+    { icon: "\u2728", key: settings.icon_appears_in, label: "Appears In", value: ch.appearsIn || ch.collectionName },
   ].filter((a) => a.value);
   const rawImg = view === "front" ? ch.imageFront : view === "side" ? ch.imageSide : ch.imageBack;
   const currentImg = rawImg || ch.imageFront || ch.imageSide || ch.imageBack;
@@ -130,7 +132,11 @@ export default function CharacterDetail() {
                 <div key={a.label} className="flex items-center gap-4 border-b border-borderc pb-4">
                   <div className="kicker text-body w-36 shrink-0">{a.label}</div>
                   <div className="font-bold text-ink flex items-center gap-2">
-                    {a.key ? <Icon name={a.key} size={20} className="shrink-0 text-ink" /> : null}
+                    {a.key ? (
+                      <Icon name={a.key} size={20} className="shrink-0 text-ink" />
+                    ) : a.icon ? (
+                      <span className="shrink-0 text-lg leading-none">{a.icon}</span>
+                    ) : null}
                     <span>{a.value}</span>
                   </div>
                 </div>
