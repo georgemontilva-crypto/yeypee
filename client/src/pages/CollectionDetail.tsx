@@ -134,7 +134,15 @@ export default function CollectionDetail() {
               >
                 {c.description || c.tagline}
               </p>
-              <a href="#collection-grid" className="btn-pill btn-primary bg-white text-ink">MEET THE COLLECTION</a>
+              <a href="#collection-grid" className="btn-pill btn-primary bg-white text-ink">
+                {regulars.length
+                  ? `${regulars.length} TO COLLECT${
+                      secretRares.length
+                        ? ` + ${secretRares.length} SECRET RARE${secretRares.length > 1 ? "S" : ""}!`
+                        : "!"
+                    }`
+                  : "MEET THE COLLECTION"}
+              </a>
             </div>
           </div>
           {/* Stats */}
