@@ -48,12 +48,12 @@ export default function CharacterDetail() {
   const ch = data.character;
   const related = data.related || [];
   const attrs = [
-    // No icon here: the food value already carries its own emoji, and two
-    // icons side by side read as a mistake.
+    // These rows are shown without icons: the labels are clear on their own and
+    // the food value already carries its own emoji.
     { icon: "", key: "", label: ch.favoriteLabel || "Favorite Candy", value: ch.favoriteCandy },
-    { icon: "♥", key: settings.icon_best_friend, label: "Best Friend", value: ch.bestFriend },
-    { icon: "📅", key: settings.icon_birthday, label: "Birthday", value: ch.birthday },
-    { icon: "◎", key: settings.icon_appears_in, label: "Appears In", value: ch.appearsIn || ch.collectionName },
+    { icon: "", key: "", label: "Best Friend", value: ch.bestFriend },
+    { icon: "", key: "", label: "Birthday", value: ch.birthday },
+    { icon: "", key: "", label: "Appears In", value: ch.appearsIn || ch.collectionName },
   ].filter((a) => a.value);
   const rawImg = view === "front" ? ch.imageFront : view === "side" ? ch.imageSide : ch.imageBack;
   const currentImg = rawImg || ch.imageFront || ch.imageSide || ch.imageBack;
