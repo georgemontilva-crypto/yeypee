@@ -48,12 +48,12 @@ export default function CharacterDetail() {
   const ch = data.character;
   const related = data.related || [];
   const attrs = [
-    // These rows are shown without icons: the labels are clear on their own and
-    // the food value already carries its own emoji.
+    // The icon sits next to the value, not the label. The food row has none:
+    // its value already carries the emoji that matches the food.
     { icon: "", key: "", label: ch.favoriteLabel || "Favorite Candy", value: ch.favoriteCandy },
-    { icon: "", key: "", label: "Best Friend", value: ch.bestFriend },
-    { icon: "", key: "", label: "Birthday", value: ch.birthday },
-    { icon: "", key: "", label: "Appears In", value: ch.appearsIn || ch.collectionName },
+    { icon: "", key: settings.icon_best_friend || "heart", label: "Best Friend", value: ch.bestFriend },
+    { icon: "", key: settings.icon_birthday || "calendar", label: "Birthday", value: ch.birthday },
+    { icon: "", key: settings.icon_appears_in || "sparkle", label: "Appears In", value: ch.appearsIn || ch.collectionName },
   ].filter((a) => a.value);
   const rawImg = view === "front" ? ch.imageFront : view === "side" ? ch.imageSide : ch.imageBack;
   const currentImg = rawImg || ch.imageFront || ch.imageSide || ch.imageBack;
@@ -128,13 +128,11 @@ export default function CharacterDetail() {
             <div className="space-y-4 mb-10">
               {attrs.map((a) => (
                 <div key={a.label} className="flex items-center gap-4 border-b border-borderc pb-4">
-                  {(a.key || a.icon) && (
-                    <span className="w-8 flex items-center justify-center text-xl text-ink">
-                      {a.key ? <Icon name={a.key} size={22} /> : a.icon}
-                    </span>
-                  )}
-                  <div className="kicker text-body w-36">{a.label}</div>
-                  <div className="font-bold text-ink">{a.value}</div>
+                  <div className="kicker text-body w-36 shrink-0">{a.label}</div>
+                  <div className="font-bold text-ink flex items-center gap-2">
+                    {a.key ? <Icon name={a.key} size={20} className="shrink-0 text-ink" /> : null}
+                    <span>{a.value}</span>
+                  </div>
                 </div>
               ))}
             </div>
