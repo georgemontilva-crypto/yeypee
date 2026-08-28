@@ -180,7 +180,9 @@ router.get("/home", async (_req, res) => {
 
   // Resolve media in parallel
   const resolved = await Promise.all([
-    ...allCollections.map((c) => Promise.all([mediaById(db, c.heroImageId), mediaById(db, c.cardImageId)])),
+    ...allCollections.map((c) =>
+      Promise.all([mediaById(db, c.heroImageId), mediaById(db, c.cardImageId), mediaById(db, c.heroVideoId)])
+    ),
     ...allCharacters.map((ch) => mediaById(db, ch.imageFrontId)),
     ...newsRows.map((n) => mediaById(db, n.thumbnailImageId)),
     ...partnerRows.map((p) => mediaById(db, p.logoImageId)),
@@ -191,6 +193,7 @@ router.get("/home", async (_req, res) => {
     ...c,
     heroImage: resolved[i]?.[0] ?? null,
     cardImage: resolved[i]?.[1] ?? null,
+    heroVideo: resolved[i]?.[2] ?? null,
   }));
   const charactersOut = allCharacters.map((ch, i) => ({
     ...ch,

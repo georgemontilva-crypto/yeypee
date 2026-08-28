@@ -36,6 +36,13 @@ export default function Home() {
       mobile: mobileSlides[i] ?? mobileSlides[mobileSlides.length - 1] ?? null,
     })
   );
+  // Video shown under "Explore our worlds": the hero video of the collection
+  // picked in Settings, or of the featured one when none is chosen.
+  const worldsVideoCollectionId = data?.settings?.worlds_video_collection_id;
+  const worldsVideo =
+    (data?.collections ?? []).find((c: any) =>
+      worldsVideoCollectionId ? c.id === Number(worldsVideoCollectionId) : c.heroVideo
+    )?.heroVideo ?? null;
   const secretBanner = data?.settings?.secret_rare_banner ?? null;
   // Every secret rare across all collections, newest collection last.
   const secretSlides = (data?.characters ?? [])
@@ -309,6 +316,22 @@ export default function Home() {
             </div>
           ) : (
             <EmptyState title="No worlds yet" text="Collections will appear here once created in the admin panel." />
+          )}
+
+          {/* Feature video: the animation of whichever collection is chosen in
+              Settings, so the homepage shows it without duplicating the file. */}
+          {worldsVideo && (
+            <div className="mt-10 md:mt-14 rounded-card overflow-hidden shadow-soft fade-up">
+              <video
+                src={worldsVideo}
+                className="block w-full h-auto"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
+            </div>
           )}
         </div>
       </section>

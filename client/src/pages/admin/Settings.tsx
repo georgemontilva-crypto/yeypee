@@ -187,6 +187,9 @@ export default function AdminSettingsPage() {
       await adminApi.patchSettings({
         ...values,
         featured_collection_id: featuredCollectionId,
+        worlds_video_collection_id: values.worlds_video_collection_id
+          ? Number(values.worlds_video_collection_id)
+          : null,
         secret_rare_character_id: secretRareCharacterId,
         carousel_character_ids: carouselIds,
       });
@@ -231,6 +234,30 @@ export default function AdminSettingsPage() {
             ))}
           </select>
           <p className="text-[11px] text-body mt-1.5">The collection highlighted on the homepage hero area. If unset, the first collection is used.</p>
+        </div>
+        <div className="p-5">
+          <div className="kicker text-body mb-1.5">Animation video under "Explore our worlds"</div>
+          <select
+            value={values.worlds_video_collection_id ?? ""}
+            onChange={(e) =>
+              setValues({
+                ...values,
+                worlds_video_collection_id: e.target.value ? Number(e.target.value) : null,
+              })
+            }
+            className="w-full rounded-lg border border-borderc px-3 py-2.5 text-sm outline-none focus:border-ink"
+          >
+            <option value="">— None —</option>
+            {collections.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-[11px] text-body mt-1.5">
+            Plays the Hero Video of the chosen collection on the homepage, right under the round
+            shortcuts. Upload the video in that collection (Collections → Hero Video).
+          </p>
         </div>
         <div className="p-5">
           <div className="kicker text-body mb-1.5">Character carousel (show on homepage)</div>
