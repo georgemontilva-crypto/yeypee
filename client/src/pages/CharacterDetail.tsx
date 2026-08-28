@@ -48,7 +48,9 @@ export default function CharacterDetail() {
   const ch = data.character;
   const related = data.related || [];
   const attrs = [
-    { icon: "🍭", key: settings.icon_favorite_candy, label: ch.favoriteLabel || "Favorite Candy", value: ch.favoriteCandy },
+    // No icon here: the food value already carries its own emoji, and two
+    // icons side by side read as a mistake.
+    { icon: "", key: "", label: ch.favoriteLabel || "Favorite Candy", value: ch.favoriteCandy },
     { icon: "♥", key: settings.icon_best_friend, label: "Best Friend", value: ch.bestFriend },
     { icon: "📅", key: settings.icon_birthday, label: "Birthday", value: ch.birthday },
     { icon: "◎", key: settings.icon_appears_in, label: "Appears In", value: ch.appearsIn || ch.collectionName },
@@ -126,9 +128,11 @@ export default function CharacterDetail() {
             <div className="space-y-4 mb-10">
               {attrs.map((a) => (
                 <div key={a.label} className="flex items-center gap-4 border-b border-borderc pb-4">
-                  <span className="w-8 flex items-center justify-center text-xl text-ink">
-                    {a.key ? <Icon name={a.key} size={22} /> : a.icon}
-                  </span>
+                  {(a.key || a.icon) && (
+                    <span className="w-8 flex items-center justify-center text-xl text-ink">
+                      {a.key ? <Icon name={a.key} size={22} /> : a.icon}
+                    </span>
+                  )}
                   <div className="kicker text-body w-36">{a.label}</div>
                   <div className="font-bold text-ink">{a.value}</div>
                 </div>
