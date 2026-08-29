@@ -176,7 +176,19 @@ export default function CollectionDetail() {
         <div id="collection-grid" className="max-w-[1280px] mx-auto px-6 lg:px-10 pt-20">
           <div className="mb-10 fade-up">
             <h2 className="text-[26px] sm:text-3xl md:text-5xl mb-3">MEET THE COLLECTION</h2>
-            <p className="text-body italic">{chars.length > 1 ? `${chars.length} to collect + 1 secret rare!` : "Collect them all!"}</p>
+            {/* Same rule as the banner button: the manual label wins, otherwise
+                regulars and secret rares are counted separately (chars.length
+                counted the secret twice). */}
+            <p className="text-body italic">
+              {c.ctaLabel ||
+                (regulars.length
+                  ? `${regulars.length} to collect${
+                      secretRares.length
+                        ? ` + ${secretRares.length} secret rare${secretRares.length > 1 ? "s" : ""}!`
+                        : "!"
+                    }`
+                  : "Collect them all!")}
+            </p>
           </div>
           {regulars.length || secretRare ? (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
