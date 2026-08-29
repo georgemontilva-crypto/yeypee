@@ -23,6 +23,13 @@ const FIELDS: FieldSpec[] = [
   { key: "statSeriesLabel", label: "Stats — middle caption", type: "text", placeholder: "leave empty to use the collection name" },
   { key: "statYearLabel", label: "Stats — right caption", type: "text", placeholder: "RELEASED" },
   {
+    key: "ctaLabel",
+    label: "Banner button text",
+    type: "text",
+    placeholder: "6 to collect + 1 secret rare!",
+    hint: "Leave empty to count the characters automatically",
+  },
+  {
     key: "favoriteLabel",
     label: "\"Favorite candy\" row label",
     type: "text",

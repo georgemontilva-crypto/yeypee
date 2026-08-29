@@ -80,6 +80,8 @@ export const collections = mysqlTable("collections", {
   // Some worlds do not run on candy: this renames the "Favorite Candy" row on
   // every character of the collection.
   favoriteLabel: varchar("favorite_label", { length: 120 }),
+  // Text of the banner button. Empty = counted from the characters.
+  ctaLabel: varchar("cta_label", { length: 120 }),
   status: varchar("status", { length: 20 }).notNull().default("active"),
   heroImageId: int("hero_image_id"),
   cardImageId: int("card_image_id"),
