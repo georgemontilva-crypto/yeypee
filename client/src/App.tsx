@@ -13,6 +13,7 @@ import Register from "./pages/Register";
 import Account from "./pages/Account";
 import ResetPassword from "./pages/ResetPassword";
 import ContentPage from "./pages/ContentPage";
+import Wholesale from "./pages/Wholesale";
 import { FOOTER_PAGES } from "./lib/footerPages";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -25,6 +26,7 @@ import AdminLeads from "./pages/admin/Leads";
 import AdminMedia from "./pages/admin/Media";
 import AdminCollections from "./pages/admin/Collections";
 import AdminPages from "./pages/admin/Pages";
+import AdminWholesale from "./pages/admin/Wholesale";
 import AdminCharacters from "./pages/admin/Characters";
 import AdminProducts from "./pages/admin/Products";
 import AdminNews from "./pages/admin/News";
@@ -65,6 +67,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/account" element={<RequireLogin><Account /></RequireLogin>} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/wholesale" element={<Wholesale />} />
           {FOOTER_PAGES.map((p) => (
             <Route
               key={p.slug}
@@ -89,6 +92,7 @@ export default function App() {
           <Route path="partners" element={<AdminPartners />} />
           <Route path="stores" element={<AdminStores />} />
           <Route path="pages" element={<AdminPages />} />
+          <Route path="wholesale" element={<AdminWholesale />} />
           <Route path="settings" element={<AdminSettingsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

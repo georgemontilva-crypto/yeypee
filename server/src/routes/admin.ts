@@ -20,6 +20,7 @@ import {
   users,
   sessions,
   leads,
+  wholesaleInquiries,
   collections,
   characters,
   retailPartners,
@@ -361,6 +362,29 @@ router.delete("/users/:id", async (req: AuthedRequest, res) => {
 });
 
 // ---------------- Leads ----------------
+// ---------------- Wholesale enquiries ----------------
+router.get("/wholesale", async (req: AuthedRequest, res) => {
+  const db = await getDb();
+  const rows = await db.select().from(wholesaleInquiries).orderBy(desc(wholesaleInquiries.id));
+  res.json({ wholesale: rows });
+});
+
+router.patch("/wholesale/:id", async (req: AuthedRequest, res) => {
+  const id = Number(req.params.id);
+  const status = String(req.body?.status || "new");
+  const db = await getDb();
+  await db.update(wholesaleInquiries).set({ status }).where(eq(wholesaleInquiries.id, id));
+  res.json({ ok: true });
+});
+
+router.delete("/wholesale/:id", async (req: AuthedRequest, res) => {
+  const id = Number(req.params.id);
+  const db = await getDb();
+  await db.delete(wholesaleInquiries).where(eq(wholesaleInquiries.id, id));
+  await recordAudit(db, req.user?.id, "delete", "wholesale", String(id), {}, ipOf(req));
+  res.json({ ok: true });
+});
+
 router.get("/leads", async (req: AuthedRequest, res) => {
   const db = await getDb();
   const page = Math.max(1, Number(req.query.page) || 1);

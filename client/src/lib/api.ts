@@ -51,6 +51,8 @@ export const contentApi = {
   progress: () => api<any>("/api/collection/progress"),
   toggleProgress: (characterId: number, collected: boolean) =>
     api<any>("/api/collection/toggle", { method: "POST", body: JSON.stringify({ characterId, collected }) }),
+  wholesale: (body: Record<string, string>) =>
+    api<any>("/api/wholesale", { method: "POST", body: JSON.stringify(body) }),
   createLead: (body: { email: string; source?: string; consent?: boolean; hp?: string }) =>
     api<any>("/api/leads", { method: "POST", body: JSON.stringify(body) }),
 };
@@ -81,6 +83,10 @@ export const adminApi = {
   deleteLead: (id: number) => api<any>(`/api/admin/leads/${id}`, { method: "DELETE" }),
   getPresign: (body: { filename: string; mimeType: string; sizeBytes: number; folder?: string }) =>
     api<any>("/api/admin/media/presign", { method: "POST", body: JSON.stringify(body) }),
+  wholesale: () => api<any>("/api/admin/wholesale"),
+  setWholesaleStatus: (id: number, status: string) =>
+    api<any>(`/api/admin/wholesale/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
+  deleteWholesale: (id: number) => api<any>(`/api/admin/wholesale/${id}`, { method: "DELETE" }),
   r2Status: () => api<any>("/api/admin/r2-status"),
   registerMedia: (body: any) => api<any>("/api/admin/media", { method: "POST", body: JSON.stringify(body) }),
   media: (params?: Record<string, string>) => {

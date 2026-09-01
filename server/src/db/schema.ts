@@ -285,6 +285,26 @@ export const adminAuditLog = mysqlTable(
   })
 );
 
+/** Wholesale / retail partnership enquiries sent from the public form. */
+export const wholesaleInquiries = mysqlTable(
+  "wholesale_inquiries",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    businessName: varchar("business_name", { length: 255 }).notNull(),
+    contactName: varchar("contact_name", { length: 255 }).notNull(),
+    phone: varchar("phone", { length: 60 }),
+    email: varchar("email", { length: 255 }).notNull(),
+    address: text("address"),
+    notes: text("notes"),
+    status: varchar("status", { length: 20 }).notNull().default("new"),
+    ip: varchar("ip", { length: 60 }),
+    createdAt: datetime("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => ({
+    emailIdx: index("wholesale_email_idx").on(table.email),
+  })
+);
+
 export const siteSettings = mysqlTable(
   "site_settings",
   {

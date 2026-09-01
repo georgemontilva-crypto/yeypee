@@ -11,12 +11,14 @@ import {
   mediaAssets,
   userCollectionProgress,
   siteSettings,
+  wholesaleInquiries,
   leads,
 } from "../db/schema";
 import { getDb } from "../db/client";
 import { requireAuth, type AuthedRequest } from "../middleware/auth";
 import { recordAudit } from "../middleware/auth";
 import { welcomeClubEmail, sendEmail } from "../services/email";
+import { cfg } from "../config";
 import { haversineKm, zipCoords } from "../utils";
 
 const router = asyncRouter();
@@ -33,6 +35,59 @@ const leadSchema = z.object({
   source: z.enum(["homepage_club", "footer", "popup"]).default("homepage_club"),
   consent: z.boolean().default(true),
   hp: z.string().optional(), // honeypot
+});
+
+const wholesaleSchema = z.object({
+  businessName: z.string().min(2).max(255),
+  contactName: z.string().min(2).max(255),
+  phone: z.string().max(60).optional().nullable(),
+  email: z.string().email().max(255),
+  address: z.string().max(2000).optional().nullable(),
+  notes: z.string().max(4000).optional().nullable(),
+  // Honeypot: bots fill hidden fields, humans never see them.
+  hp: z.string().optional(),
+});
+
+router.post("/wholesale", async (req, res) => {
+  const parsed = wholesaleSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Please check the form and try again." });
+    return;
+  }
+  if (parsed.data.hp) {
+    res.json({ ok: true });
+    return;
+  }
+  const d = parsed.data;
+  const db = await getDb();
+  await db.insert(wholesaleInquiries).values({
+    businessName: d.businessName,
+    contactName: d.contactName,
+    phone: d.phone || null,
+    email: d.email,
+    address: d.address || null,
+    notes: d.notes || null,
+    ip: req.ip,
+  });
+
+  // Best-effort notification; a mail failure must not lose the enquiry.
+  try {
+    await sendEmail(
+      cfg.mailFrom,
+      `Wholesale enquiry - ${d.businessName}`,
+      `<h2>New wholesale enquiry</h2>
+        <p><b>Business:</b> ${d.businessName}</p>
+        <p><b>Contact:</b> ${d.contactName}</p>
+        <p><b>Email:</b> ${d.email}</p>
+        <p><b>Phone:</b> ${d.phone || "-"}</p>
+        <p><b>Address:</b> ${d.address || "-"}</p>
+        <p><b>Notes:</b> ${d.notes || "-"}</p>`
+    );
+  } catch {
+    /* ignore */
+  }
+
+  res.json({ ok: true });
 });
 
 router.post("/leads", async (req, res) => {

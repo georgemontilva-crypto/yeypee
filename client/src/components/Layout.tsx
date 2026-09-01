@@ -317,6 +317,9 @@ export default function Layout() {
                   {p.label.toUpperCase()}
                 </Link>
               ))}
+              <Link to="/wholesale" className="nav-link btn-label text-body">
+                WHOLESALE
+              </Link>
             </nav>
           </div>
           <div className="mt-10 pt-6 border-t border-borderc text-sm text-body">
