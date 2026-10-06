@@ -11,11 +11,20 @@ interface SearchItem {
   label: string;
   to: string;
   image: string | null;
+  /** Extra text matched against, but not displayed (slug, collection, sku). */
+  extra?: string;
 }
 
+/** Lower-cased and stripped of accents, so "bon" matches "Bón". */
+const normalize = (t: string) =>
+  t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
 function searchIndex(items: SearchItem[], q: string): SearchItem[] {
-  const needle = q.trim().toLowerCase();
-  return items.filter((i) => i.label.toLowerCase().includes(needle)).slice(0, 8);
+  const needle = normalize(q.trim());
+  if (!needle) return [];
+  return items
+    .filter((i) => normalize(`${i.label} ${i.extra ?? ""}`).includes(needle))
+    .slice(0, 8);
 }
 
 const NAV_LINKS = [
@@ -31,6 +40,7 @@ export default function Layout() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [catalog, setCatalog] = useState<SearchItem[]>([]);
+  const [searchError, setSearchError] = useState("");
   const [logos, setLogos] = useState<{ header: string | null; footer: string | null }>({ header: null, footer: null });
   const [siteSettings, setSiteSettings] = useState<Record<string, any>>({});
   const location = useLocation();
@@ -64,25 +74,40 @@ export default function Layout() {
       .catch(() => undefined);
   }, []);
 
-  // The search index is fetched once, the first time the overlay is opened.
+  // The search index is loaded on mount so the overlay is usable the moment it
+  // opens, and retried when it is opened with an empty index.
   useEffect(() => {
-    if (!searchOpen || catalog.length) return;
+    if (catalog.length) return;
+    setSearchError("");
     Promise.all([
-      contentApi.characters().catch(() => ({ characters: [] })),
-      contentApi.collections().catch(() => ({ collections: [] })),
-      contentApi.products().catch(() => ({ products: [] })),
+      contentApi.characters().catch((e) => {
+        console.error("search: characters", e);
+        return { characters: [] };
+      }),
+      contentApi.collections().catch((e) => {
+        console.error("search: collections", e);
+        return { collections: [] };
+      }),
+      contentApi.products().catch((e) => {
+        console.error("search: products", e);
+        return { products: [] };
+      }),
     ]).then(([ch, co, pr]: any[]) => {
-      setCatalog([
+      const items = [
         ...(co.collections || []).map((c: any) => ({
-          kind: "Collection", label: c.name, to: `/collections/${c.slug}`, image: c.cardImage || c.heroImage || null,
+          kind: "Collection", label: c.name, to: `/collections/${c.slug}`,
+          image: c.cardImage || c.heroImage || null, extra: c.slug || "",
         })),
         ...(ch.characters || []).map((c: any) => ({
-          kind: "Character", label: c.name, to: `/characters/${c.slug}`, image: c.imageFront || null,
+          kind: "Character", label: c.name, to: `/characters/${c.slug}`,
+          image: c.imageFront || null, extra: `${c.slug || ""} ${c.collectionName || ""}`,
         })),
         ...(pr.products || []).map((p: any) => ({
-          kind: "Product", label: p.name, to: "/shop", image: p.image || null,
+          kind: "Product", label: p.name, to: "/shop", image: p.image || null, extra: p.sku || "",
         })),
-      ]);
+      ];
+      setCatalog(items);
+      if (!items.length) setSearchError("Could not load the catalogue. Please reload the page.");
     });
   }, [searchOpen, catalog.length]);
 
@@ -258,7 +283,11 @@ export default function Layout() {
               </button>
             </div>
             <div className="max-h-[50vh] overflow-y-auto">
-              {query.trim().length < 2 ? (
+              {searchError ? (
+                <p className="px-5 py-6 text-sm text-candy-pink font-bold">{searchError}</p>
+              ) : !catalog.length ? (
+                <p className="px-5 py-6 text-sm text-body">Loading...</p>
+              ) : query.trim().length < 2 ? (
                 <p className="px-5 py-6 text-sm text-body">Type at least two letters.</p>
               ) : results.length === 0 ? (
                 <p className="px-5 py-6 text-sm text-body">Nothing found for “{query}”.</p>
