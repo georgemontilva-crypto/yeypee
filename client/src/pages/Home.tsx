@@ -216,16 +216,19 @@ export default function Home() {
           </div>
         )}
 
-        {/* Readability scrim: from the top on phones (text above the figures),
-            from the left on desktop (text beside them). */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/92 via-white/30 via-45% to-transparent lg:bg-gradient-to-r lg:from-white/80 lg:via-white/25 lg:to-transparent" />
-
+        {/* No scrim over the image: the hero art shows at full colour.
+            Legibility comes from a soft white glow on the text itself. */}
         <div className="absolute inset-0 flex items-start lg:items-center">
           <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-[12%] sm:pt-[10%] lg:pt-0">
             <div className="text-center lg:text-left mx-auto lg:mx-0 max-w-none lg:max-w-[52%]">
               <h1
                 className="text-ink font-extrabold uppercase tracking-tight"
-                style={{ fontSize: "clamp(28px, 5.8vw, 88px)", lineHeight: 1.1 }}
+                style={{
+                  fontSize: "clamp(28px, 5.8vw, 88px)",
+                  lineHeight: 1.1,
+                  textShadow:
+                    "0 0 10px rgba(255,255,255,0.9), 0 0 28px rgba(255,255,255,0.65)",
+                }}
               >
                 <span className="whitespace-nowrap">Collect.</span>
                 <br />
@@ -235,7 +238,12 @@ export default function Home() {
               </h1>
               <p
                 className="mt-4 lg:mt-7 text-ink/80 mx-auto lg:mx-0 max-w-[22ch]"
-                style={{ fontSize: "clamp(13px, 1.7vw, 21px)", lineHeight: 1.45 }}
+                style={{
+                  fontSize: "clamp(13px, 1.7vw, 21px)",
+                  lineHeight: 1.45,
+                  textShadow:
+                    "0 0 8px rgba(255,255,255,0.95), 0 0 20px rgba(255,255,255,0.7)",
+                }}
               >
                 Step into the magical world of YEYPEE.
               </p>
