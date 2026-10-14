@@ -220,7 +220,18 @@ export default function Home() {
             Legibility comes from a soft white glow on the text itself. */}
         <div className="absolute inset-0 flex items-start lg:items-center">
           <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-[12%] sm:pt-[10%] lg:pt-0">
-            <div className="text-center lg:text-left mx-auto lg:mx-0 max-w-none lg:max-w-[52%]">
+            <div className="relative text-center lg:text-left mx-auto lg:mx-0 max-w-none lg:max-w-[52%]">
+              {/* Localised halo: a soft white glow only behind the text block,
+                  fading out before it reaches the rest of the hero image. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -inset-x-8 -inset-y-10 lg:-inset-x-14 lg:-inset-y-16"
+                style={{
+                  background:
+                    "radial-gradient(60% 55% at 50% 45%, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.62) 45%, rgba(255,255,255,0.22) 70%, rgba(255,255,255,0) 88%)",
+                }}
+              />
+              <div className="relative">
               <h1
                 className="text-ink font-extrabold uppercase tracking-tight"
                 style={{
@@ -254,6 +265,7 @@ export default function Home() {
               >
                 EXPLORE COLLECTIONS <span aria-hidden>→</span>
               </Link>
+              </div>
             </div>
           </div>
         </div>
